@@ -69,6 +69,12 @@ const toggleNavigatorBtnClick = () => {
  * 导航宽度
  */
 const navigatorWidth = computed(() => {
+    if (
+        store.state.app.navigator.width.current === null ||
+        store.state.app.navigator.collapse
+    ) {
+        return null;
+    }
     return {
         width: store.state.app.navigator.width.current + 'px'
     }

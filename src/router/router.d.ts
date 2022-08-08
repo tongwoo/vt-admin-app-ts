@@ -7,9 +7,3 @@ declare module 'vue-router' {
         permission?: string,
     }
 }
-
-declare module '@vue/runtime-core' {
-    interface ComponentCustomOptions {
-        default: Record<string, never>
-    }
-}

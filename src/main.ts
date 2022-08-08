@@ -4,7 +4,10 @@ import router from './router'
 import {store, key} from './store'
 import elementPlus from 'element-plus'
 
-import 'element-plus/dist/index.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './assets/styles/element.scss';
+import './assets/styles/element-patch.scss';
+import './assets/styles/app.scss';
 
 const app = createApp(App)
 app.use(store, key)

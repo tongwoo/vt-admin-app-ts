@@ -42,7 +42,7 @@ export interface AppState {
         //导航宽度
         width: {
             //当前宽度
-            current: number,
+            current: number | null,
             //最大宽度
             max: number,
             //最小宽度

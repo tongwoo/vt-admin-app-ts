@@ -80,131 +80,136 @@
             </el-dropdown>
         </div>
         <!--修改密码弹框-->
-        <el-dialog title="修改密码" v-model="password.dialog.show" :close-on-click-modal="false" append-to-body width="400px">
-            <transition name="el-fade-in" mode="out-in">
-                <change-password v-if="password.dialog.show" @close="password.dialog.show=false"></change-password>
-            </transition>
-        </el-dialog>
+        <!--<el-dialog title="修改密码" v-model="password.dialog.show" :close-on-click-modal="false" append-to-body width="400px">-->
+        <!--    <transition name="el-fade-in" mode="out-in">-->
+        <!--        <change-password v-if="password.dialog.show" @close="password.dialog.show=false"></change-password>-->
+        <!--    </transition>-->
+        <!--</el-dialog>-->
         <!--用户头像表单-->
-        <el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">
-            <transition name="el-fade-in" mode="out-in">
-                <avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>
-            </transition>
-        </el-dialog>
+        <!--<el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">-->
+        <!--    <transition name="el-fade-in" mode="out-in">-->
+                <!--<avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>-->
+            <!--</transition>-->
+        <!--</el-dialog>-->
     </div>
 </template>
 <script lang="ts" setup>
-import {useStore} from "vuex";
-import {computed, reactive, ref} from "vue";
-import {useRouter, useRoute} from "vue-router";
-import {ElLoading, ElMessage} from "element-plus";
-import http from "@/utils/http";
-import logo from "@/assets/logo.svg";
-import setting from "@/setting";
-import ChangePassword from "@/views/ChangePassword.vue";
-import AvatarSetting from "@/views/AvatarSetting.vue";
-import mitter from "@/utils/mitter";
-import defaultAvatar from "@/assets/images/icons/avatar-default.png";
+import {useStore} from "@/store/index"
+import {computed, reactive, ref} from "vue"
+import {useRouter, useRoute} from "vue-router"
+import {ElLoading, ElMessage} from "element-plus"
+import {http} from "@/utils/http"
+import logo from "@/assets/logo.svg"
+import setting from "@/setting"
+//import ChangePassword from "@/views/ChangePassword.vue"
+//import AvatarSetting from "@/views/AvatarSetting.vue";
+import mitter from "@/utils/mitter"
+import defaultAvatar from "@/assets/images/icons/avatar-default.png"
 
-
-const store = useStore();
-const router = useRouter();
-const route = useRoute();
+const store = useStore()
+const router = useRouter()
+const route = useRoute()
 
 //标题
-const title = ref(setting.name);
+const title = ref(setting.name)
 //是否全屏
-const isFullScreen = ref(false);
+const isFullScreen = ref(false)
 //菜单是否折叠
 const isCollapsed = computed(() => {
-    return store.state.setting.navigator.collapse;
-});
+    return store.state.app.navigator.collapse
+})
 //消息未读数
 const messageUnread = computed(() => {
-    return store.state.message.unread;
-});
+    return store.state.message.unread
+})
 /**
  * 面包屑列表
  * @type {ComputedRef<*[]>}
  */
 const breadcrumbs = computed(() => {
     if (route.path.indexOf('/error') === 0) {
-        return [];
+        return []
     }
     return route.matched.filter((item) => {
-        return item.meta.title;
-    });
-});
+        return item.meta.title
+    })
+})
 
 /**
  * 导航切换按钮class样式
  */
 const toggleNavigatorBtnClass = computed(() => {
-    return store.state.app.navigator.collapse ? 'bi-text-indent-left' : 'bi-text-indent-right';
-});
+    return store.state.app.navigator.collapse ? 'bi-text-indent-left' : 'bi-text-indent-right'
+})
 
 /**
  * 导航切换按钮点击
  */
 const toggleNavigatorBtnClick = () => {
-    store.commit('app/toggleNavigator');
-};
+    store.commit('app/toggleNavigator')
+}
 
 /**
  * 导航宽度
  */
 const navigatorWidth = computed(() => {
+    if (
+        store.state.app.navigator.width.current === null ||
+        store.state.app.navigator.collapse
+    ) {
+        return null;
+    }
     return {
-        flexBasis: store.state.app.navigator.width.current + 'px',
-    };
-});
+        flexBasis: store.state.app.navigator.width.current + 'px'
+    }
+})
 
 /**
  * 全屏按钮点击
  */
 const toggleFullScreenBtnClick = () => {
     if (isFullScreen.value) {
-        document.exitFullscreen();
+        document.exitFullscreen()
     } else {
-        document.documentElement.requestFullscreen();
+        document.documentElement.requestFullscreen()
     }
-    isFullScreen.value = !isFullScreen.value;
-};
+    isFullScreen.value = !isFullScreen.value
+}
 
 /**
  * 文档按钮点击
  */
 const docBtnClick = () => {
-    window.location = 'http://doc.duckpear.com/guide/index.html';
-};
+    window.location.href = 'http://doc.duckpear.com/guide/index.html'
+}
 
 /**
  * 刷新页面
  */
 const refreshPage = () => {
-    mitter.emit('page-refresh');
-};
+    mitter.emit('page-refresh')
+}
 
 /**
  * 用户下拉菜单点击
  * @param {string} command 菜单命令
  */
-const userDropdownCommand = (command) => {
+const userDropdownCommand = (command: string) => {
     if (command === 'change-password') {
-        password.dialog.show = true;
+        password.dialog.show = true
     } else if (command === 'avatar') {
-        avatar.dialog.show = true;
+        avatar.dialog.show = true
     } else if (command === 'exit') {
-        exitSystem();
+        exitSystem()
     }
-};
+}
 
 //密码配置
 const password = reactive({
     dialog: {
         show: false
     }
-});
+})
 
 /**
  * 退出系统
@@ -212,17 +217,17 @@ const password = reactive({
 const exitSystem = () => {
     const loading = ElLoading.service({
         lock: true,
-        text: '退出中',
-    });
+        text: '退出中'
+    })
     //调用失败也退出
     http.post(
         '/system/logout'
     ).finally(() => {
-        loading.close();
-        store.commit('CLEANUP');
-        router.replace('/login');
-    });
-};
+        loading.close()
+        store.commit('CLEANUP')
+        router.replace('/login')
+    })
+}
 
 /**
  * 头像
@@ -234,23 +239,24 @@ const avatar = {
     dialog: reactive({
         show: false,
         title: null
-    }),
-};
+    })
+}
 
 /**
  * 头像加载失败
  */
-const avatarError = (error) => {
-    console.info(error);
-    error.target.src = defaultAvatar;
-};
+const avatarError = (event: Event) => {
+    console.info(event)
+
+    (event.target as HTMLImageElement).src = defaultAvatar
+}
 
 /**
  * 语言改变
  */
-const languageChange = (lang) => {
-    store.commit('setting/UPDATE_LANGUAGE', lang);
-};
+const languageChange = (lang: string) => {
+    store.commit('app/updateLanguage', lang)
+}
 </script>
 <style lang="scss" scoped>
 .base-header {
@@ -331,9 +337,9 @@ const languageChange = (lang) => {
         gap: 10px;
         font-size: 14px;
 
-        img{
+        img {
             width: 32px;
-            height:32px;
+            height: 32px;
             border-radius: 32px;
         }
 

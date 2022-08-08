@@ -14,7 +14,10 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: 'dashboard',
                 name: 'dashboard',
-                component: UserList
+                component: UserList,
+                meta: {
+                    title: '用户管理'
+                }
             }
         ]
     },
@@ -70,7 +73,7 @@ router.beforeEach((to) => {
     if (to.meta?.permission !== undefined) {
         if (!checkAccess(to.meta.permission)) {
             return {
-                path:'/error/forbidden'
+                path: '/error/forbidden'
             }
         }
     }

@@ -41,8 +41,14 @@ const emits = defineEmits(['close'])
 const loading = ref(false)
 //表单
 const form = ref(null)
+
+interface error2 {
+    show: boolean,
+    message: null | string
+}
+
 //错误
-const error: Ref<{ show: boolean, message: null | string }> = reactive({
+const error: Ref<error2> = reactive({
     show: false,
     message: null
 })

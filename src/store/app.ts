@@ -18,7 +18,7 @@ const module: Module<AppState, RootState> = {
                 //导航宽度
                 width: {
                     //当前宽度
-                    current: 236,
+                    current: null,
                     //最大宽度
                     max: 350,
                     //最小宽度

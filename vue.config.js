@@ -1,15 +1,11 @@
 const {defineConfig} = require('@vue/cli-service')
 module.exports = defineConfig({
+    publicPath: process.env.VUE_APP_PUBLIC_PATH,
+    outputDir: 'app',
     transpileDependencies: true,
     lintOnSave: false,
-    devServer:{
+    devServer: {
         port: 12345,
-        //open: true,
-        //allowedHosts: true,
-        //overlay: {
-        //    warnings: false,
-        //    errors: true
-        //},
         proxy: {
             //接口路径和映射地址，不要修改此处，酌情修改 .env.development 文件
             [process.env.VUE_APP_BASE_API]: {

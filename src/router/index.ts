@@ -1,3 +1,4 @@
+import baseRoutes from "@/router/base-routes"
 import {useStore} from "@/store/index"
 import {checkAccess} from "@/utils/authorize"
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
@@ -6,6 +7,7 @@ import UserList from '../views/user/UserList.vue'
 import setting from "@/setting"
 
 const routes: Array<RouteRecordRaw> = [
+    ...baseRoutes,
     {
         path: '/',
         name: 'home',

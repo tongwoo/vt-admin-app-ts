@@ -4,7 +4,7 @@ module.exports = defineConfig({
     lintOnSave: false,
     devServer:{
         port: 12345,
-        open: true,
+        //open: true,
         //allowedHosts: true,
         //overlay: {
         //    warnings: false,

@@ -1,10 +1,10 @@
-/**
- * 用户信息
- */
 import {updateObject} from "@/utils/object"
 import {Module} from "vuex"
 import {RootState, UserState} from "@/store/types"
 
+/**
+ * 用户模块
+ */
 const module: Module<UserState, RootState> = {
     namespaced: true,
     state() {
@@ -22,12 +22,9 @@ const module: Module<UserState, RootState> = {
     mutations: {
         /**
          * 更新用户信息
-         * @param {Object} state
-         * @param {Object} payload 用户信息，state中出现的相关字段
          */
-        UPDATE(state: UserState, payload: any) {
-            state.nickname = 'ssssssssssss'
-            //updateObject(state, payload)
+        update(state: UserState, payload: object) {
+            updateObject(state, payload)
         }
     }
 }

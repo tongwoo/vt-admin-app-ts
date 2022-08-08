@@ -2,8 +2,15 @@
  * 跟状态
  */
 export interface RootState {
+    //本地数据是否已经同步
     synced: boolean,
-    count: number
+    //消息
+    message: {
+        //未读数
+        unread: number,
+        //总数
+        total: number
+    }
 }
 
 /**
@@ -21,8 +28,42 @@ export interface UserState {
 }
 
 /**
+ * 应用设置
+ */
+export interface AppState {
+    //语言
+    language: string,
+    //导航器
+    navigator: {
+        //是否折叠
+        collapse: boolean,
+        //页面小于多少宽度折叠菜单
+        size: number,
+        //导航宽度
+        width: {
+            //当前宽度
+            current: number,
+            //最大宽度
+            max: number,
+            //最小宽度
+            min: number
+        }
+    }
+}
+
+/**
+ * 组件状态
+ */
+export interface KeepAliveState {
+    //要缓存的组件名称列表
+    componentNames: string[]
+}
+
+/**
  * 全局状态
  */
 export interface GlobalState extends RootState {
-    user: UserState
+    app: AppState,
+    user: UserState,
+    keepalive: KeepAliveState,
 }

@@ -1,36 +1,19 @@
 import baseRoutes from "@/router/base-routes"
-import {useStore} from "@/store/index"
+import businessRoutes from "@/router/business-routes"
+import {store} from "@/store/index"
 import {checkAccess} from "@/utils/authorize"
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import BaseLayout from '../views/layouts/BaseLayout.vue'
 import UserList from '../views/user/UserList.vue'
 import setting from "@/setting"
 
+
+/**
+ * 路由列表
+ */
 const routes: Array<RouteRecordRaw> = [
     ...baseRoutes,
-    {
-        path: '/',
-        name: 'home',
-        component: BaseLayout,
-        children: [
-            {
-                path: 'dashboard',
-                name: 'dashboard',
-                component: UserList,
-                meta: {
-                    title: '用户管理'
-                }
-            }
-        ]
-    },
-    {
-        path: '/about',
-        name: 'about',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-    }
+    ...businessRoutes
 ]
 
 /**
@@ -42,7 +25,7 @@ const router = createRouter({
 })
 
 /**
- * 路由是否存在
+ * 前置守卫 - 路由是否存在
  */
 router.beforeEach((to) => {
     if (to.matched.length === 0) {
@@ -54,7 +37,7 @@ router.beforeEach((to) => {
 })
 
 /**
- * 是否有权限
+ * 前置守卫 - 是否有权限
  */
 router.beforeEach((to) => {
     //配置中是否启用了认证功能
@@ -66,7 +49,7 @@ router.beforeEach((to) => {
         return true
     }
     //如果本地没有认证信息则跳转到登录页面
-    if (useStore().state.user.authorization === null) {
+    if (store.state.user.authorization === null) {
         return {
             path: '/login'
         }
@@ -80,6 +63,31 @@ router.beforeEach((to) => {
         }
     }
     return true
+})
+
+//后置守卫 - 缓存组件，检查路由meta是否有cache属性，如果有且为true则进行缓存
+router.afterEach((to) => {
+    const cache = to.meta?.cache
+    if (cache) {
+        const store = useStore()
+        const component = to.matched[to.matched.length - 1].components
+        const name = (component?.default as Record<string,string>).__name
+        console.info('name',name)
+        console.info(store)
+        if (name) {
+            store.commit('keepalive/add', name)
+        }
+    }
+    return true
+})
+
+//后置守卫 - 设置页面标题
+router.afterEach((to) => {
+    if (to.meta?.title !== undefined) {
+        document.title = to.meta.title + ' - ' + setting.name
+    } else {
+        document.title = setting.name
+    }
 })
 
 export default router

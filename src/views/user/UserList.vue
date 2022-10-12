@@ -4,3 +4,11 @@
 
     </div>
 </template>
+<script lang="ts" setup>
+import {onMounted} from "vue"
+import {useRoute} from "vue-router"
+
+onMounted(()=>{
+    console.info(useRoute().matched)
+})
+</script>

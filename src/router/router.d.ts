@@ -6,4 +6,8 @@ declare module 'vue-router' {
         auth?: boolean,
         permission?: string,
     }
+
+    interface RawRouteComponent {
+        __name?: string
+    }
 }

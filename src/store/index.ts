@@ -16,7 +16,7 @@ export const key: InjectionKey<Store<RootState>> = Symbol()
 /**
  * Store实例
  */
-export const store = createStore<RootState>({
+export const store = createStore({
     state: {
         //本地数据是否已经同步
         synced: false,
@@ -73,7 +73,7 @@ export const store = createStore<RootState>({
         },
         /**
          * 清空
-         * @param {Object} state
+         * @param state
          */
         cleanup(state) {
             const store = useStore()

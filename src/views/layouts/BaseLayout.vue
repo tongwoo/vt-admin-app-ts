@@ -101,6 +101,7 @@ onUnmounted(() => {
 const reload: Ref = ref(false)
 onMounted(() => {
     mitter.on('page-refresh', () => {
+        console.info(route.matched)
         if (route.matched.length > 0) {
             //const matchedName = route.matched[route.matched.length - 1].components?.default?.__name as string
             //store.commit('keepalive/remove', matchedName)

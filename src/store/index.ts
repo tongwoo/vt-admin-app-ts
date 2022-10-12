@@ -11,12 +11,12 @@ import keepalive from "@/store/keepalive"
 /**
  * Store的Key
  */
-export const key: InjectionKey<Store<RootState>> = Symbol()
+export const storeKey: InjectionKey<Store<RootState>> = Symbol()
 
 /**
  * Store实例
  */
-export const store = createStore({
+export const store = createStore<RootState>({
     state: {
         //本地数据是否已经同步
         synced: false,
@@ -49,7 +49,6 @@ export const store = createStore({
         },
         /**
          * 读取本地存储的信息同步到Store
-         * @param state
          */
         localSync(state) {
             const store = useStore()
@@ -73,9 +72,8 @@ export const store = createStore({
         },
         /**
          * 清空
-         * @param state
          */
-        cleanup(state) {
+        cleanup() {
             const store = useStore()
             localStorage.removeItem('localStore')
             //用户
@@ -99,5 +97,5 @@ export const store = createStore({
  * Setup方式使用此方法应用Store实例
  */
 export function useStore<S = GlobalState>() {
-    return _useStore<S>(key)
+    return _useStore<S>(storeKey)
 }

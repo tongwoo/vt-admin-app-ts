@@ -3,10 +3,9 @@ import businessRoutes from "@/router/business-routes"
 import {store} from "@/store/index"
 import {checkAccess} from "@/utils/authorize"
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
-import BaseLayout from '../views/layouts/BaseLayout.vue'
-import UserList from '../views/user/UserList.vue'
 import setting from "@/setting"
-
+import {Store} from 'vuex'
+import {GlobalState} from "@/store/types"
 
 /**
  * 路由列表
@@ -49,7 +48,8 @@ router.beforeEach((to) => {
         return true
     }
     //如果本地没有认证信息则跳转到登录页面
-    if (store.state.user.authorization === null) {
+    const global: Store<GlobalState> = store as Store<GlobalState>
+    if (global.state.user.authorization === null) {
         return {
             path: '/login'
         }
@@ -69,11 +69,8 @@ router.beforeEach((to) => {
 router.afterEach((to) => {
     const cache = to.meta?.cache
     if (cache) {
-        const store = useStore()
         const component = to.matched[to.matched.length - 1].components
-        const name = (component?.default as Record<string,string>).__name
-        console.info('name',name)
-        console.info(store)
+        const name = (component?.default as Record<string, string>).__name
         if (name) {
             store.commit('keepalive/add', name)
         }

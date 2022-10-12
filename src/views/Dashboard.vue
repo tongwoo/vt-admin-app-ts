@@ -257,30 +257,44 @@
 </template>
 
 <script lang="ts" setup>
-import EasyChart from "@/components/EasyChart";
-import DashboardUserLine from "@/charts/examples/DashboardUserLine.js";
-import DashboardSeasonLine from "@/charts/examples/DashboardSeasonLine.js";
-import DashboardUserWherePie from "@/charts/examples/DashboardUserWherePie.js";
-import moment from "moment";
-import CountUp from '@/components/CountUp.vue';
+import EasyChart from "@/components/EasyChart"
+import DashboardUserLine from "@/charts/examples/DashboardUserLine.js"
+import DashboardSeasonLine from "@/charts/examples/DashboardSeasonLine.js"
+import DashboardUserWherePie from "@/charts/examples/DashboardUserWherePie.js"
+import {useStore} from "@/store/index"
+import moment from "moment"
+import CountUp from '@/components/CountUp.vue'
+
+const store = useStore()
 
 /**
  * 百分比格式化
  */
 const percentFormat = () => {
-    return '';
-};
+    return ''
+}
+
+/**
+ * 订单
+ */
+interface Order {
+    no: string,
+    user: string,
+    name: string,
+    price: string | number,
+    time: string
+}
 
 //订单
-const orders = [...new Array(8)].map((item) => {
+const orders: Order[] = [...new Array(8)].map((item) => {
     return {
         no: moment().format('YYYYMMDD') + Math.ceil(Math.random() * 100000),
         user: '东哥',
         name: 'PlayStation 5 耳机套装',
         price: (Math.random() * 1000).toFixed(2),
         number: Math.ceil(Math.random() * 10),
-        time: moment().format('YYYY-MM-DD HH:mm:ss'),
-    };
+        time: moment().format('YYYY-MM-DD HH:mm:ss')
+    }
 })
 </script>
 

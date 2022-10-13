@@ -35,7 +35,7 @@ export const store = createStore<RootState>({
          * @returns {boolean}
          */
         isLogin(state) {
-            return useStore().state.user.authorization !== null
+            return (state as GlobalState).user.authorization !== null
         }
     },
     mutations: {
@@ -51,7 +51,7 @@ export const store = createStore<RootState>({
          * 读取本地存储的信息同步到Store
          */
         localSync(state) {
-            const store = useStore()
+            const gs = state as GlobalState
             //设置为已同步，路由守卫不会再次进行同步处理
             state.synced = true
             //本地信息
@@ -64,25 +64,25 @@ export const store = createStore<RootState>({
                 updateObject(state, localState)
             }
             //恢复语言设置
-            if (store.state.app.language !== null) {
-                i18n.global.locale = store.state.app.language as 'zh-CN'|'en-US'
+            if (gs.app.language !== null) {
+                i18n.global.locale = gs.app.language as 'zh-CN'|'en-US'
             }
             //恢复授权信息
-            store.state.user.authorization = readAuthorization()
+            gs.user.authorization = readAuthorization()
         },
         /**
          * 清空
          */
-        cleanup() {
-            const store = useStore()
+        cleanup(state) {
+            const gs = state as GlobalState
             localStorage.removeItem('localStore')
             //用户
-            store.state.user.authorization = null
-            store.state.user.nickname = null
-            store.state.user.avatar = null
-            store.state.user.permissions = []
+            gs.user.authorization = null
+            gs.user.nickname = null
+            gs.user.avatar = null
+            gs.user.permissions = []
             //组件缓存
-            store.state.keepalive.componentNames = []
+            gs.keepalive.componentNames = []
         }
     },
     actions: {},

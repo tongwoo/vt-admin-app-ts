@@ -224,7 +224,7 @@ const exitSystem = () => {
         '/system/logout'
     ).finally(() => {
         loading.close()
-        store.commit('CLEANUP')
+        store.commit('cleanup')
         router.replace('/login')
     })
 }

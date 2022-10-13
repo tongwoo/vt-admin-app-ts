@@ -18,10 +18,10 @@
                 <div class="panel-body">
                     <el-form ref="form" :model="model" :rules="rules" :disabled="loading" label-width="80px" label-position="top" size="large" hide-required-asterisk @submit.prevent>
                         <el-form-item label="用户名" prop="username">
-                            <el-input v-model="model.username" placeholder="请输入用户名"></el-input>
+                            <el-input v-model="model.username" placeholder="请输入用户名" maxlength="20"></el-input>
                         </el-form-item>
                         <el-form-item label="登录密码" prop="password">
-                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码"></el-input>
+                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码" maxlength="20"></el-input>
                         </el-form-item>
                         <!--
                         <el-form-item label="验证码" prop="captcha">
@@ -31,10 +31,10 @@
                             </div>
                         </el-form-item>
                         -->
-                        <div class="error-container" v-if="errorMessage!==null">
-                            <el-alert type="error" title="提示" :description="errorMessage" :closable="false" show-icon></el-alert>
+                        <div class="error-container" v-if="tip">
+                            <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
                         </div>
-                        <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
+                        <el-button type="primary" round @click="login" native-type="submit" :loading="loading">登录</el-button>
                         <!--
                         <div class="separator"><span class="text">或者</span></div>
                         <el-button type="default" round>找回密码</el-button>
@@ -45,17 +45,17 @@
         </div>
     </div>
 </template>
-<script setup>
-import {ref, reactive, onMounted} from "vue"
-import {ElLoading, ElMessage} from "element-plus"
-import {http} from "@/utils/http"
+<script lang="ts" setup>
 import {useStore} from "@/store/index"
+import {ref, reactive, onMounted, Ref} from "vue"
+import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
 import {useRouter} from "vue-router"
 import defaultAvatar from "@/assets/images/icons/avatar-default.png"
 import {cleanAuthorization, writeAuthorization} from "@/utils/authorize"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
 import {API_PATH_DEFAULT} from "@/constants/api-path"
+import {fetchProfile, LoginModel, submitLogin} from '@/modules/authorization'
 
 const store = useStore()
 const router = useRouter()
@@ -63,21 +63,21 @@ const router = useRouter()
 //系统名
 const name = setting.name
 //表单
-const form = ref(null)
+const form = ref<FormInstance>()
 //验证码
-const captcha = ref(null)
+const captcha = ref<HTMLImageElement>()
 //错误信息
-const errorMessage = ref(null)
+const tip = ref()
 //加载中
 const loading = ref(false)
 //模型
 const model = reactive({
     //用户名
-    username: null,
+    username: '',
     //密码
-    password: null,
+    password: '',
     //验证码
-    captcha: null
+    captcha: ''
 })
 //规则
 const rules = {
@@ -116,49 +116,48 @@ const rules = {
  * 刷新验证码
  */
 const refreshCaptcha = () => {
-    captcha.value.src = API_PATH_DEFAULT + '/login/captcha?v=' + Math.random()
+    if (captcha.value) {
+        captcha.value.src = API_PATH_DEFAULT + '/login/captcha?v=' + Math.random()
+    }
 }
 
 /**
  * 提交登录
  */
-const submitLogin = async () => {
-    errorMessage.value = null
+const login = async () => {
+    tip.value = null
+    if (!form.value) {
+        return
+    }
     //表单是否有效
     const success = await form.value.validate().catch(() => false)
     if (!success) {
         return
     }
     //登录参数
-    const params = {
+    const params: LoginModel = {
         username: model.username,
-        password: model.password,
-        captcha: model.captcha
+        password: model.password
     }
     loading.value = true
-    http.post(
-        '/login',
-        params
-    ).then((response) => {
-        const body = response.data
-        if (!response.isOk) {
-            errorMessage.value = body.message ?? '网络错误'
+    submitLogin(params).then(({success, message, data}) => {
+        if (!success) {
+            tip.value = message ?? '网络错误'
             return false
         }
-        const data = body.data
         //授权数据
         const authorization = data.token
         //保存授权数据
         writeAuthorization(authorization)
         //填充用户信息
-        store.commit('user/UPDATE', {
+        store.commit('user/update', {
             authorization: authorization,
             nickname: data.name,
             avatar: data.avatar ?? defaultAvatar,
             permissions: data.permissions
         })
         //加载用户数据（如果需要额外调用接口的话）
-        //loadUser();
+        //loadProfile();
         router.push('/').catch((err) => {
             console.error('跳转出现异常：', err)
         })
@@ -170,20 +169,17 @@ const submitLogin = async () => {
 /**
  * 载入用户信息
  */
-const loadUser = () => {
-    const loading = ElLoading.service({
+const loadProfile = () => {
+    const loading = loadingTip.service({
         lock: true,
         text: '初始化中'
     })
-    http.get(
-        '/user/info'
-    ).then((response) => {
-        if (!response.isOk) {
-            errorMessage.value = response.message
+    fetchProfile().then(({success, message, data}) => {
+        if (!success) {
+            tip.value = message
             return false
         }
-        const data = response.data.data
-        store.commit('user/UPDATE', {
+        store.commit('user/update', {
             nickname: data.name,
             avatar: defaultAvatar,
             permissions: []
@@ -208,7 +204,7 @@ const mockLogin = () => {
         //保存授权数据
         writeAuthorization(authorization)
         //填充用户信息
-        store.commit('user/UPDATE', {
+        store.commit('user/update', {
             authorization: authorization,
             nickname: '超级管理员',
             avatar: defaultAvatar,
@@ -227,121 +223,4 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.login-container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: url("../assets/images/login-bg.webp") no-repeat;
-    background-size: 100% 120%;
-
-    .login-brand {
-        position: absolute;
-        top: 30px;
-        left: 50px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 22px;
-        user-select: none;
-
-        img {
-            height: 20px;
-        }
-    }
-
-    .login-box {
-        display: flex;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, .07);
-        border-radius: 5px;
-        overflow: hidden;
-
-        .login-welcome {
-            width: 500px;
-            box-sizing: border-box;
-            padding: 60px;
-            color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, .1);
-            background: #2F53EB url("../assets/images/login-welcome.svg") center 180px no-repeat;
-            background-size: 470px auto;
-            user-select: none;
-
-            h1 {
-                margin-top: 0;
-                font-size: 30px;
-            }
-
-            .content {
-                font-size: 14px;
-                margin: 5px 0;
-                letter-spacing: 2px;
-            }
-        }
-
-        .login-panel {
-            width: 300px;
-            background-color: white;
-            overflow: hidden;
-            padding: 50px;
-
-            .panel-header {
-                font-size: 20px;
-                padding-bottom: 20px;
-                border-bottom: 1px solid #eee;
-            }
-
-            .panel-body {
-                margin-top: 20px;
-
-                .captcha-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-
-                    :deep(.el-input) {
-                        flex: 1;
-                    }
-
-                    img {
-                        width: 80px;
-                        height: 38px;
-                        border: 1px solid #dcdfe6;
-                        cursor: pointer;
-                    }
-                }
-
-                :deep(.el-button) {
-                    width: 100%;
-                }
-
-                .separator {
-                    border-bottom: 1px solid #ddd;
-                    font-size: 0;
-                    text-align: center;
-                    margin: 20px 0;
-                    line-height: 0;
-
-
-                    .text {
-                        background-color: white;
-                        font-size: 12px;
-                        color: #c2c2c2;
-                        position: relative;
-                        bottom: -6px;
-                        padding: 0 20px;
-                    }
-                }
-
-                .form-item-button {
-                    margin-bottom: 0;
-                }
-            }
-
-            .error-container {
-                margin-bottom: 10px;
-            }
-        }
-    }
-}
-</style>
+<style lang="scss" src="../assets/styles/user-login.scss" scoped></style>

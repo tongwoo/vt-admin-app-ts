@@ -2,7 +2,7 @@
  * 克隆一个对象，这个对象必须是 plain object
  * @param target 待克隆的对象
  */
-function cloneObject(target: object): object {
+function cloneObject(target: any): any {
     return JSON.parse(JSON.stringify(target))
 }
 

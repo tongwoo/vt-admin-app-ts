@@ -261,11 +261,17 @@ import EasyChart from "@/components/EasyChart"
 import DashboardUserLine from "@/charts/examples/DashboardUserLine.js"
 import DashboardSeasonLine from "@/charts/examples/DashboardSeasonLine.js"
 import DashboardUserWherePie from "@/charts/examples/DashboardUserWherePie.js"
+import {getUserStateName} from "@/constants/user-state"
 import {useStore} from "@/store/index"
 import moment from "moment"
 import CountUp from '@/components/CountUp.vue'
+import {onMounted} from "vue"
 
 const store = useStore()
+
+onMounted(()=>{
+    console.info(getUserStateName(2143))
+})
 
 /**
  * 百分比格式化

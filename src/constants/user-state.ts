@@ -11,7 +11,6 @@ import {NameValue} from "../types/built-in"
 const USER_STATE_ENABLED = 1
 /**
  * 禁用
- * @type {string|int}
  */
 const USER_STATE_DISABLED = 0
 

@@ -58,17 +58,17 @@
                 <div class="data-container">
                     <div class="data-table">
                         <el-table
+                            ref="table"
                             border
                             stripe
                             size="small"
                             row-key="id"
-                            :ref="recordset.table"
                             header-row-class-name="table-header-row"
                             header-cell-class-name="table-header-cell"
                             cell-class-name="table-cell"
                             row-class-name="table-row"
-                            :data="recordset.items"
-                            v-loading="recordset.loading"
+                            :data="record.items"
+                            v-loading="record.loading"
                             @selection-change="selectionChange"
                         >
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
@@ -99,9 +99,9 @@
                 <!--数据分页-->
                 <div class="pagination-container">
                     <el-pagination
-                        v-model:page-size="recordset.size"
+                        v-model:page-size="record.size"
                         v-model:current-page="query.page"
-                        :total="recordset.total"
+                        :total="record.total"
                         @current-change="pageChange"
                         layout="total, prev, pager, next, jumper"
                         background
@@ -120,14 +120,14 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {QueryParam, ID} from "@/types/built-in"
-import {ref, reactive, onMounted, defineAsyncComponent, Ref} from "vue"
-import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable, Table} from "element-plus"
+import {QueryParam, ID, RecordSet} from "@/types/built-in"
+import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
+import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
 import {getUserStates, getUserStateClass} from "@/constants/user-state"
-import {removeUser, fetchPageUsers, UserItem} from "@/modules/user"
+import {removeUser, fetchPageUsers, UserModel, UserItem} from "@/modules/user"
 import moment from "moment"
 
 //用户表单
@@ -139,7 +139,7 @@ const states = ref(getUserStates())
 /**
  * 查询参数
  */
-const query = reactive<QueryParam>({
+const query = reactive({
     //页码
     page: 1,
     //用户名
@@ -156,35 +156,17 @@ const query = reactive<QueryParam>({
     loginTime: null
 })
 
-/**
- * 提交查询
- */
-const submitQuery = () => {
-    query.page = 1
-    loadUsers()
-}
-
-/**
- * 重置
- */
-const resetQuery = () => {
-    Object.keys(query).forEach((key: string) => {
-        query[key] = null
-    })
-    query.page = 1
-    loadUsers()
-}
+type QueryType = keyof typeof query
 
 /**
  * 构建查询参数
- * @return {Object}
  */
 const buildQuery = () => {
     const params: QueryParam = {
         //当前页码
         page: query.page,
         //每页记录数
-        pageSize: recordset.size,
+        pageSize: record.size,
         //用户名
         username: query.username,
         //登录密码
@@ -203,6 +185,25 @@ const buildQuery = () => {
         params.loginTime = moment(query.loginTime).format('YYYY-MM-DD')
     }
     return params
+}
+
+/**
+ * 提交查询
+ */
+const submitQuery = () => {
+    query.page = 1
+    loadUsers()
+}
+
+/**
+ * 重置查询
+ */
+const resetQuery = () => {
+    Object.keys(query).forEach((key) => {
+        query[key as Exclude<QueryType, 'page'>] = null
+    })
+    query.page = 1
+    loadUsers()
 }
 
 /**
@@ -268,7 +269,7 @@ const removeBtnClick = (row: { id: ID }) => {
  * 批量删除按钮点击
  */
 const batchRemoveBtnClick = () => {
-    if (recordset.selected.length === 0) {
+    if (record.selected.length === 0) {
         messageTip.error('请选择要删除的数据')
         return
     }
@@ -277,7 +278,7 @@ const batchRemoveBtnClick = () => {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
     }).then(() => {
-        const ids = recordset.selected.map((item: UserItem) => {
+        const ids = record.selected.map((item) => {
             return item.id
         }).join(',')
         submitRemove(ids)
@@ -300,7 +301,7 @@ const submitRemove = (ids: ID | ID[]) => {
             messageTip.error(message)
         } else {
             messageTip.success(message)
-            recordset.selected = []
+            record.selected = []
             loadUsers()
         }
     }).catch((err) => {
@@ -313,46 +314,30 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-interface RecordSet<T> {
-    //总数
-    total: number,
-    //是否加载中
-    loading: boolean,
-    //每页记录数
-    size: number,
-    //记录集列表
-    items: T[],
-    //表格DOM
-    table: Ref,
-    //已选中的项目列表
-    selected: T[],
-}
-
-/**
- * 记录集
- */
-const recordset = reactive<RecordSet<UserItem>>({
+const record = reactive<RecordSet<UserItem>>({
     total: 0,
     loading: false,
     size: setting.pagination.size,
     items: [],
-    table: ref<InstanceType<typeof ElTable>>(),
     selected: []
 })
+
+//表格ref
+const table = ref<InstanceType<typeof ElTable>>()
 
 /**
  * 表格复选框选中状态变更
  * @param {Object[]} records 已选中的复选框数据
  */
-const selectionChange = (records) => {
-    recordset.selected = records
+const selectionChange = (records: UserItem[]) => {
+    record.selected = records
 }
 
 /**
  * 分页变更
- * @param {number} page 改变后的页码
+ * @param page 改变后的页码
  */
-const pageChange = (page) => {
+const pageChange = (page: number) => {
     query.page = page
     loadUsers()
 }
@@ -363,37 +348,30 @@ const pageChange = (page) => {
  */
 const loadUsers = () => {
     const params = buildQuery()
-    recordset.loading = true
+    record.loading = true
     return fetchPageUsers(params).then((data) => {
         if (data.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadUsers()
             return
         }
-        recordset.total = data.total
-        recordset.items = data.items.map((item) => {
+        record.total = data.total
+        record.items = data.items.map<UserItem>((item) => {
+            const user = item as UserModel
             return {
-                ...item,
-                roleNames: item.roles.map(item => item.description),
-                stateClass: getUserStateClass(item.state) //状态样式Class
+                ...user,
+                roleNames: user.roles!.map(item => item.description),
+                stateClass: getUserStateClass(user.state)
             }
         })
-    }).catch((err) => {
-        httpErrorHandler(err)
-    }).finally(() => {
-        recordset.loading = false
+    }).catch(httpErrorHandler).finally(() => {
+        record.loading = false
     })
 }
 
 onMounted(() => {
     //载入用户
     loadUsers()
-    //window.setInterval(()=>{
-    //    recordset.items.push({
-    //        id:Date.now(),
-    //        username:Math.random()
-    //    })
-    //},2000)
 })
 </script>
 <style lang="scss" scope>

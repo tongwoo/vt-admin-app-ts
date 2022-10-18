@@ -1,20 +1,49 @@
-/**
+/*
  * 功能：用户
- * 日期：2022-06-14
- */
-import {ID, NameValue, PageResult, RecordItem} from "@/types/built-in"
+ * 作者：wutong
+ * 日期：2022-10-14
+*/
+import {RoleModel} from "@/modules/role"
 import {http, HttpResponse} from '@/utils/http'
+import {ID, NameValue, PageResult, Model} from "@/types/built-in"
 
-
-export interface UserItem extends RecordItem {
+/**
+ * 用户模型
+ */
+export interface UserModel extends Model {
+    //用户名
+    username: string,
+    //登录密码
+    password: string,
+    //姓名
     name: string,
+    //头像
+    avatar: string,
+    //状态
+    state: number,
+    //上次登录时间
+    loginTime: string,
+    //拥有的角色列表
+    roles?: RoleModel[]
+}
+
+/**
+ * 用户项
+ */
+export interface UserItem extends Model {
+    //角色名称列表
+    roleNames:string[],
+    //状态名称
+    stateName?: string,
+    //状态样式
+    stateClass?: string,
 }
 
 /**
  * 新增用户
  * @param data 数据
  */
-function createUser(data: object): Promise<HttpResponse> {
+export function createUser(data: object): Promise<HttpResponse> {
     return http.post(
         '/user/create',
         data
@@ -31,7 +60,7 @@ function createUser(data: object): Promise<HttpResponse> {
  * 更新用户
  * @param data 数据
  */
-function updateUser(data: object): Promise<HttpResponse> {
+export function updateUser(data: object): Promise<HttpResponse> {
     return http.post(
         '/user/update',
         data
@@ -48,7 +77,7 @@ function updateUser(data: object): Promise<HttpResponse> {
  * 删除用户
  * @param ids 数据ID
  */
-function removeUser(ids: ID | ID[]): Promise<HttpResponse> {
+export function removeUser(ids: ID | ID[]): Promise<HttpResponse> {
     return http.post(
         '/user/delete',
         {
@@ -67,15 +96,16 @@ function removeUser(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取用户详情
  * @param id 主键ID
  */
-function fetchUser(id: ID): Promise<HttpResponse> {
+export function fetchUser(id: ID): Promise<HttpResponse> {
     return http.get(
         '/user/detail?id=' + id
     ).then((response) => {
         const body = response.data
+        const success = response.isOk
         return {
-            success: response.isOk,
+            success: success,
             message: body.message,
-            data: body.data?.item
+            data: success ? body.data.item : null
         }
     })
 }
@@ -83,19 +113,16 @@ function fetchUser(id: ID): Promise<HttpResponse> {
 /**
  * 获取用户列表
  * @param params 参数
+ * @return {Promise<Array>}
  */
-function fetchUsers(params: object = {}): Promise<Record<string, any>[]> {
+export function fetchUsers(params: object = {}): Promise<Array<UserModel>> {
     return http.get(
         '/user/items',
         {
             params
         }
     ).then((response) => {
-        const body = response.data
-        if (!response.isOk) {
-            return []
-        }
-        return body.data.items
+        return response.data.data.items
     })
 }
 
@@ -103,7 +130,7 @@ function fetchUsers(params: object = {}): Promise<Record<string, any>[]> {
  * 获取分页之后的用户列表
  * @param params 参数
  */
-function fetchPageUsers(params: object = {}): Promise<PageResult> {
+export function fetchPageUsers(params: object = {}): Promise<PageResult> {
     return http.get(
         '/user/page-items',
         {
@@ -127,7 +154,7 @@ function fetchPageUsers(params: object = {}): Promise<PageResult> {
  * 获取用户键值对列表
  * @param params 参数
  */
-function fetchPairUsers(params: object = {}): Promise<Array<NameValue<string>>> {
+export function fetchPairUsers(params: object = {}): Promise<Array<NameValue>> {
     return fetchUsers(params).then((items) => {
         return items.map((item) => {
             return {
@@ -139,12 +166,3 @@ function fetchPairUsers(params: object = {}): Promise<Array<NameValue<string>>> 
     })
 }
 
-export {
-    createUser,
-    updateUser,
-    removeUser,
-    fetchUser,
-    fetchUsers,
-    fetchPageUsers,
-    fetchPairUsers
-}

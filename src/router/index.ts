@@ -24,6 +24,18 @@ const router = createRouter({
 })
 
 /**
+ * 前置守卫 - 恢复本地数据
+ */
+router.beforeEach(() => {
+    const global: Store<GlobalState> = store as Store<GlobalState>
+    if (global.state.synced) {
+        return true
+    }
+    store.commit('localSync')
+    return true
+})
+
+/**
  * 前置守卫 - 路由是否存在
  */
 router.beforeEach((to) => {

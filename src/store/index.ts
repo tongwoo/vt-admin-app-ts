@@ -93,6 +93,22 @@ export const store = createStore<RootState>({
     }
 })
 
+
+/**
+ * 在每次提交Mutation后保存到localStorage
+ */
+store.subscribe((mutation, state) => {
+    //忽略的Mutation列表，有些Mutation是不需要处理的
+    const ignoreMutations = [
+        'localSync',
+        'cleanup',
+    ]
+    if (ignoreMutations.indexOf(mutation.type) !== -1) {
+        return
+    }
+    localStorage.setItem('localStore', JSON.stringify(state))
+})
+
 /**
  * Setup方式使用此方法应用Store实例
  */

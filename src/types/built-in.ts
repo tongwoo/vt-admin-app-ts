@@ -22,6 +22,9 @@ export class ResponseCode {
     }
 }
 
+/**
+ * 名称&值
+ */
 export interface NameValue<T = any> {
     [key: string]: any,
 
@@ -39,7 +42,7 @@ export type ID = string | number
  */
 export interface PageResult {
     total: number,
-    items: Array<object>
+    items: any[]
 }
 
 /**
@@ -52,11 +55,27 @@ export interface QueryParam {
 }
 
 /**
- * 记录项
+ * 基础模型
  */
-export interface RecordItem {
+export interface Model {
     [key: string]: any,
 
     //主键ID
     id: ID,
+}
+
+/**
+ * 记录集
+ */
+export interface RecordSet<T> {
+    //总数
+    total: number,
+    //是否加载中
+    loading: boolean,
+    //每页记录数
+    size: number,
+    //记录集列表
+    items: T[],
+    //已选中的记录项列表
+    selected: T[],
 }

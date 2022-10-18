@@ -27,7 +27,7 @@
                 </el-select>
             </el-form-item>
             -->
-            <div class="error-container" v-if="tip!==null">
+            <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
@@ -38,7 +38,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {HttpResponse} from "@/utils/http"
 import {ref, reactive, onMounted} from "vue"
 import {ElMessage as messageTip, FormInstance} from "element-plus"
 import {updateObject} from "@/utils/object"
@@ -46,7 +45,7 @@ import {httpErrorHandler} from "@/utils/error"
 import {getUserStates} from "@/constants/user-state"
 import {createUser, updateUser, fetchUser} from "@/modules/user"
 import {fetchPairRoles} from "@/modules/role"
-import {ID} from "@/types/built-in"
+import {ID, NameValue} from "@/types/built-in"
 
 //属性
 const props = defineProps({
@@ -66,7 +65,7 @@ const tip = ref()
 //状态列表
 const states = ref(getUserStates())
 //角色列表
-const roles = ref([])
+const roles = ref<NameValue[]>([])
 
 /**
  * 载入角色列表

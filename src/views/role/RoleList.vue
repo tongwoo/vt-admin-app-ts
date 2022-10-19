@@ -1,7 +1,7 @@
 <!--
-功能：用户
-作者：tongwoo
-日期：2022-06-14
+功能：角色
+作者：wutong
+日期：2022-10-19
 -->
 <template>
     <div class="page-container">
@@ -13,25 +13,15 @@
                 <div class="query-container">
                     <div class="form-container margin-none">
                         <el-form size="default" inline @submit.prevent>
-                            <el-form-item label="用户名">
-                                <el-input v-model="query.username" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="姓名">
+                            <el-form-item label="角色名称">
                                 <el-input v-model="query.name" clearable></el-input>
                             </el-form-item>
-                            <el-form-item label="状态">
-                                <el-select v-model="query.state" class="el-select-long">
-                                    <el-option v-for="(item,i) in states" :key="i" :label="item.name"
-                                               :value="item.value"></el-option>
-                                </el-select>
+                            <el-form-item label="角色描述">
+                                <el-input v-model="query.description" clearable></el-input>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="submitQuery" native-type="submit"><i
-                                    class="bi bi-search el-icon--left"></i>查询
-                                </el-button>
-                                <el-button type="default" @click="resetQuery"><i
-                                    class="bi bi-arrow-clockwise el-icon--left"></i>重置
-                                </el-button>
+                                <el-button type="primary" @click="submitQuery" native-type="submit"><i class="bi bi-search el-icon--left"></i>查询</el-button>
+                                <el-button type="default" @click="resetQuery"><i class="bi bi-arrow-clockwise el-icon--left"></i>重置</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -41,15 +31,11 @@
         <div class="page-segment">
             <div class="segment-header with-bordered">
                 <div class="header-flex">
-                    <div class="header-title">用户列表</div>
+                    <div class="header-title">角色列表</div>
                     <div class="header-flexible"></div>
                     <div class="header-buttons">
-                        <el-button type="primary" size="default" @click="createBtnClick"><i
-                            class="bi bi-plus-lg el-icon--left"></i>新增
-                        </el-button>
-                        <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i
-                            class="bi bi-trash el-icon--left"></i>删除
-                        </el-button>
+                        <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
+                        <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
                     </div>
                 </div>
             </div>
@@ -63,33 +49,26 @@
                             stripe
                             size="small"
                             row-key="id"
-                            header-row-class-name="table-header-row"
-                            header-cell-class-name="table-header-cell"
-                            cell-class-name="table-cell"
-                            row-class-name="table-row"
                             :data="record.items"
                             v-loading="record.loading"
                             @selection-change="selectionChange"
                         >
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
                             <el-table-column type="index" fixed="left" label="序号" align="center"></el-table-column>
-                            <el-table-column prop="name" label="姓名" align="center" width="200" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="username" label="用户名" align="center" width="200" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="roleNames" label="角色" align="center" min-width="200" show-overflow-tooltip></el-table-column>
-                            <!--<el-table-column prop="avatar" label="头像" align="center" min-width="100" show-overflow-tooltip></el-table-column>-->
-                            <el-table-column prop="stateName" label="状态" align="center" width="80" show-overflow-tooltip>
+                            <el-table-column prop="name" label="角色名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="description" label="角色描述" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="ruleName" label="规则名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="isBuiltInName" label="是否内置" align="center" min-width="100" show-overflow-tooltip>
                                 <template v-slot="{row}">
-                                    <div class="constant-bg" :class="row.stateClass">{{ row.stateName }}</div>
+                                    <div :class="row.isBuiltInClass">{{ row.isBuiltInName }}</div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="loginTime" label="上次登录时间" align="center" width="160" show-overflow-tooltip></el-table-column>
-                            <el-table-column fixed="right" label="操作" width="140" align="center">
+                            <el-table-column fixed="right" label="操作" width="180" align="center">
                                 <template v-slot="{row}">
                                     <div class="table-operation">
-                                        <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改
-                                        </el-button>
-                                        <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除
-                                        </el-button>
+                                        <el-button type="primary" size="small" text bg @click="permissionBtnClick(row)">权限</el-button>
+                                        <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改</el-button>
+                                        <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除</el-button>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -109,31 +88,41 @@
             </div>
         </div>
         <!--维护表单弹框-->
-        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false"
-                   @close="maintainDialogClose" append-to-body width="450px">
+        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="maintainDialogClose" append-to-body width="500px">
             <transition name="el-fade-in" mode="out-in">
-                <user-form v-if="maintain.dialog.show" :payload="maintain.data"
-                           @close="maintainDialogClose"></user-form>
+                <role-form v-if="maintain.dialog.show" :payload="maintain.data" @close="maintainDialogClose"></role-form>
+            </transition>
+        </el-dialog>
+        <!--角色权限表单弹框-->
+        <el-dialog :title="permission.dialog.title" v-model="permission.dialog.show" :close-on-click-modal="false" append-to-body width="500px">
+            <transition name="el-fade-in" mode="out-in">
+                <role-permission-form v-if="permission.dialog.show" :payload="permission.data" @close="permissionDialogClose"></role-permission-form>
             </transition>
         </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
-import {QueryParam, ID, RecordSet} from "@/types/built-in"
+import moment from "moment"
+import {QueryParam, ID, RecordSet, DialogOption} from "@/types/built-in.js"
 import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
 import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {getUserStates, getUserStateClass} from "@/constants/user-state"
-import {removeUser, fetchPageUsers, UserModel, UserItem} from "@/modules/user"
-import moment from "moment"
+import {getConfirms, getConfirmName, getConfirmClass} from "@/constants/confirm"
+import {RoleItem, RoleModel, removeRole, fetchPageRoles} from "@/modules/role"
 
-//用户表单
-const UserForm = defineAsyncComponent(() => import('@/views/user/UserForm.vue'))
+//角色表单
+const RoleForm = defineAsyncComponent(() => import('@/views/role/RoleForm.vue'))
+const RolePermissionForm = defineAsyncComponent(() => import('@/views/role/RolePermissionForm.vue'))
 
-//状态列表
-const states = ref(getUserStates())
+//是否内置列表
+const isBuiltIns = ref(getConfirms())
+
+onMounted(() => {
+    //载入角色
+    loadRoles()
+})
 
 /**
  * 查询参数
@@ -141,18 +130,14 @@ const states = ref(getUserStates())
 const query = reactive({
     //页码
     page: 1,
-    //用户名
-    username: null,
-    //登录密码
-    password: null,
-    //姓名
+    //角色名称
     name: null,
-    //头像
-    avatar: null,
-    //状态
-    state: null,
-    //上次登录时间
-    loginTime: null
+    //角色描述
+    description: null,
+    //规则名称
+    ruleName: null,
+    //是否内置
+    isBuiltIn: null
 })
 
 type QueryType = keyof typeof query
@@ -161,27 +146,15 @@ type QueryType = keyof typeof query
  * 构建查询参数
  */
 const buildQuery = () => {
-    const params: QueryParam = {
+    const params = {
         //当前页码
         page: query.page,
         //每页记录数
         pageSize: record.size,
-        //用户名
-        username: query.username,
-        //登录密码
-        password: query.password,
-        //姓名
+        //角色名称
         name: query.name,
-        //头像
-        avatar: query.avatar,
-        //状态
-        state: query.state,
-        //上次登录时间
-        loginTime: null
-    }
-    //上次登录时间
-    if (moment(query.loginTime).isValid()) {
-        params.loginTime = moment(query.loginTime).format('YYYY-MM-DD')
+        //角色描述
+        description: query.description,
     }
     return params
 }
@@ -191,7 +164,7 @@ const buildQuery = () => {
  */
 const submitQuery = () => {
     query.page = 1
-    loadUsers()
+    loadRoles()
 }
 
 /**
@@ -202,15 +175,46 @@ const resetQuery = () => {
         query[key as Exclude<QueryType, 'page'>] = null
     })
     query.page = 1
-    loadUsers()
+    loadRoles()
+}
+
+/**
+ * 权限
+ */
+const permission: DialogOption = {
+    //传递给表单的数据
+    data: null,
+    //弹框
+    dialog: reactive({
+        show: false,
+        title: null
+    })
+}
+
+/**
+ * 权限按钮点击
+ * @param row 当前行数据
+ */
+const permissionBtnClick = (row: RoleItem) => {
+    permission.data = row
+    permission.dialog.show = true
+    permission.dialog.title = '权限'
+}
+
+/**
+ * 权限弹框关闭
+ * @param payload 返回的数据
+ */
+const permissionDialogClose = (payload: any) => {
+    permission.dialog.show = false
 }
 
 /**
  * 维护
  */
-const maintain = reactive({
+const maintain: DialogOption = reactive({
     //传递给表单的数据
-    data: undefined,
+    data: null,
     //弹框
     dialog: {
         show: false,
@@ -225,7 +229,7 @@ const maintain = reactive({
 const maintainDialogClose = (payload: any) => {
     maintain.dialog.show = false
     if (payload === 'save') {
-        loadUsers()
+        loadRoles()
     }
 }
 
@@ -233,9 +237,9 @@ const maintainDialogClose = (payload: any) => {
  * 新增按钮点击
  */
 const createBtnClick = () => {
-    maintain.data = undefined
+    maintain.data = null
     maintain.dialog.show = true
-    maintain.dialog.title = '新增用户'
+    maintain.dialog.title = '新增角色'
 }
 
 /**
@@ -245,14 +249,14 @@ const createBtnClick = () => {
 const modifyBtnClick = (row: object) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
-    maintain.dialog.title = '编辑用户'
+    maintain.dialog.title = '编辑角色'
 }
 
 /**
  * 单个删除按钮点击
  * @param {Object} row 当前行数据
  */
-const removeBtnClick = (row: { id: ID }) => {
+const removeBtnClick = (row: RoleItem) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -295,17 +299,15 @@ const submitRemove = (ids: ID | ID[]) => {
         lock: true,
         text: '删除中'
     })
-    return removeUser(ids).then(({success, message}) => {
+    return removeRole(ids).then(({success, message}) => {
         if (!success) {
             messageTip.error(message)
         } else {
             messageTip.success(message)
             record.selected = []
-            loadUsers()
+            loadRoles()
         }
-    }).catch((err) => {
-        httpErrorHandler(err)
-    }).finally(() => {
+    }).catch(httpErrorHandler).finally(() => {
         loading.close()
     })
 }
@@ -313,7 +315,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record = reactive<RecordSet<UserItem>>({
+const record = reactive<RecordSet<RoleItem>>({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -326,9 +328,9 @@ const table = ref<InstanceType<typeof ElTable>>()
 
 /**
  * 表格复选框选中状态变更
- * @param {Object[]} records 已选中的复选框数据
+ * @param records 已选中的复选框数据
  */
-const selectionChange = (records: UserItem[]) => {
+const selectionChange = (records: RoleItem[]) => {
     record.selected = records
 }
 
@@ -338,29 +340,32 @@ const selectionChange = (records: UserItem[]) => {
  */
 const pageChange = (page: number) => {
     query.page = page
-    loadUsers()
+    loadRoles()
 }
 
 /**
- * 加载用户列表
+ * 加载角色列表
  * @return {Promise}
  */
-const loadUsers = () => {
+const loadRoles = () => {
     const params = buildQuery()
     record.loading = true
-    return fetchPageUsers(params).then((data) => {
+    return fetchPageRoles(params).then((data) => {
         if (data.items.length === 0 && query.page > 1) {
             query.page -= 1
-            loadUsers()
+            loadRoles()
             return
         }
         record.total = data.total
-        record.items = data.items.map<UserItem>((item) => {
-            const user = item as UserModel
+        record.items = data.items.map<RoleItem>((item) => {
+            const role = item as RoleModel
             return {
-                ...user,
-                roleNames: user.roles!.map(item => item.description),
-                stateClass: getUserStateClass(user.state)
+                ...role,
+                name: role.name, //角色名称
+                description: role.description, //角色描述
+                ruleName: role.ruleName, //规则名称
+                isBuiltInName: getConfirmName(role.isBuiltIn), //是否内置名称
+                isBuiltInClass: getConfirmClass(role.isBuiltIn) //是否内置样式Class
             }
         })
     }).catch(httpErrorHandler).finally(() => {
@@ -369,24 +374,21 @@ const loadUsers = () => {
 }
 
 onMounted(() => {
-    //载入用户
-    loadUsers()
+    //载入角色
+    loadRoles()
 })
+
 </script>
 <style lang="scss" scoped>
 /**
- * 状态
+ * 是否内置
  */
-.state-enabled {
-    background-color: #eaf3ff;
-    border: 1px solid #98cbff;
-    color: #409EFF
+.confirm-yes {
+    color: #409EFF;
 }
 
-.state-disabled {
-    background-color: #ffeeee;
-    border: 1px solid #ff9e9e;
-    color: #F56C6C
+.confirm-no {
+    color: #F56C6C;
 }
 
 </style>

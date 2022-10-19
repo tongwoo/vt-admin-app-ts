@@ -1,29 +1,30 @@
 <!--
-功能：用户表单
-作者：tongwoo
-日期：2022-06-14
+功能：角色表单
+作者：wutong
+日期：2022-10-19
 -->
 <template>
     <div class="form-container" v-loading="loading">
-        <el-form ref="form" :model="model" :rules="rules" label-width="70px" size="default" @submit.prevent>
-            <el-form-item label="姓名" prop="name">
+        <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
+            <el-form-item label="角色名称" prop="name">
+                <template v-slot:label>
+                    <el-tooltip content="需要英文、下划线字符">
+                        <i class="bi bi-question-circle el-icon--left"></i>
+                    </el-tooltip>
+                    角色名称
+                </template>
                 <el-input v-model="model.name" maxlength="32"></el-input>
             </el-form-item>
-            <el-form-item label="角色" prop="roleIds">
-                <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
-                    <el-option v-for="(item,i) in roles" :key="i" :label="item.name" :value="item.value"></el-option>
-                </el-select>
+            <el-form-item label="角色描述" prop="description">
+                <el-input v-model="model.description" maxlength="32"></el-input>
             </el-form-item>
-            <el-form-item label="用户名" prop="username">
-                <el-input v-model="model.username" maxlength="32"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password" v-if="model.id===null">
-                <el-input v-model="model.password" maxlength="64" type="password" autocomplete="new-password" show-password></el-input>
+            <el-form-item label="规则名称" prop="ruleName">
+                <el-input v-model="model.ruleName" maxlength="50"></el-input>
             </el-form-item>
             <!--
-            <el-form-item label="状态" prop="state">
-                <el-select v-model="model.state" class="el-select-long">
-                    <el-option v-for="(item,i) in states" :key="i" :label="item.name" :value="item.value"></el-option>
+            <el-form-item label="是否内置" prop="isBuiltIn">
+                <el-select v-model="model.isBuiltIn" class="el-select-long">
+                    <el-option v-for="(item,i) in isBuiltIns" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
             -->
@@ -39,12 +40,12 @@
 </template>
 <script lang="ts" setup>
 import {ref, reactive, onMounted} from "vue"
-import {ElMessage as messageTip, FormInstance} from "element-plus"
-import {updateObject} from "@/utils/object"
+import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
+import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {getUserStates} from "@/constants/user-state"
-import {createUser, updateUser, fetchUser} from "@/modules/user"
-import {fetchPairRoles} from "@/modules/role"
+import moment from "moment"
+import {getConfirms} from "@/constants/confirm"
+import {createRole, updateRole, fetchRole} from "@/modules/role"
 import {ID, NameValue} from "@/types/built-in"
 
 //属性
@@ -62,111 +63,83 @@ const loading = ref(false)
 const form = ref<FormInstance>()
 //错误信息
 const tip = ref<string | null>(null)
-//状态列表
-const states = ref(getUserStates())
-//角色列表
-const roles = ref<NameValue[]>([])
-
-/**
- * 载入角色列表
- */
-const loadRoles = async () => {
-    roles.value = await fetchPairRoles()
-}
-
-onMounted(() => {
-    loadRoles()
-})
+//是否内置列表
+const isBuiltIns = ref(getConfirms())
 
 //模型
 const model = reactive({
     //主键
     id: null,
-    //用户名
-    username: null,
-    //登录密码
-    password: null,
-    //姓名
+    //角色名称
     name: null,
-    //头像
-    avatar: null,
-    //状态
-    state: null,
-    //上次登录时间
-    loginTime: null,
-    //角色ID列表
-    roleIds: []
+    //角色描述
+    description: null,
+    //规则名称
+    ruleName: null,
+    //是否内置
+    isBuiltIn: null
 })
 //规则
 const rules = {
-    //用户名
-    username: [
-        {
-            type: 'string',
-            required: true,
-            trigger: 'blur',
-            message: '用户名必须填写'
-        },
-        {
-            type: 'string',
-            max: 32,
-            trigger: 'blur',
-            message: '用户名最多32个字符'
-        }
-    ],
-    //登录密码
-    password: [
-        {
-            type: 'string',
-            required: true,
-            trigger: 'blur',
-            message: '登录密码必须填写'
-        },
-        {
-            type: 'string',
-            max: 64,
-            trigger: 'blur',
-            message: '登录密码最多64个字符'
-        }
-    ],
-    //姓名
+    //角色名称
     name: [
         {
             type: 'string',
             required: true,
             trigger: 'blur',
-            message: '姓名必须填写'
+            message: '角色名称必须填写'
         },
         {
             type: 'string',
             max: 32,
             trigger: 'blur',
-            message: '姓名最多32个字符'
+            message: '角色名称最多32个字符'
         }
     ],
-    //状态
-    state: [
+    //角色描述
+    description: [
+        {
+            type: 'string',
+            required: true,
+            trigger: 'blur',
+            message: '角色描述必须填写'
+        },
+        {
+            type: 'string',
+            max: 32,
+            trigger: 'blur',
+            message: '角色描述最多32个字符'
+        }
+    ],
+    //规则名称
+    ruleName: [
+        {
+            type: 'string',
+            required: false,
+            trigger: 'blur',
+            message: '规则名称必须填写'
+        },
+        {
+            type: 'string',
+            max: 50,
+            trigger: 'blur',
+            message: '规则名称最多50个字符'
+        }
+    ],
+    //是否内置
+    isBuiltIn: [
         {
             type: 'integer',
             required: false,
             trigger: 'blur',
-            message: '状态必须填写'
+            message: '是否内置必须填写'
         },
         {
             type: 'integer',
             min: 0,
             max: 255,
             trigger: 'blur',
-            message: '状态必须介于0-255之间'
-        }
-    ],
-    //角色
-    roleIds: [
-        {
-            type: 'array',
-            required: true,
-            trigger: 'blur',
-            message: '角色必须选择'
+            message: '是否内置必须介于0-255之间'
         }
     ]
 }
@@ -176,19 +149,16 @@ const rules = {
  */
 const saveBtnClick = async () => {
     tip.value = null
-    if (!form.value) {
-        return
-    }
-    const success = await form.value.validate().catch(() => false)
+    const success = await form.value!.validate().catch(() => false)
     if (!success) {
         return
     }
     const data = {
         id: model.id, //ID
-        username: model.username, //用户名
-        password: model.password, //登录密码
-        name: model.name, //姓名
-        roleIds: model.roleIds //角色
+        name: model.name, //角色名称
+        description: model.description, //角色描述
+        ruleName: model.ruleName, //规则名称
+        isBuiltIn: model.isBuiltIn //是否内置
     }
     //保存
     if (data?.id) {
@@ -206,13 +176,12 @@ const cancelBtnClick = () => {
 }
 
 /**
- * 用户新增
+ * 角色新增
  * @param data 新增的数据
- * @return {Promise}
  */
 const submitCreate = (data: object) => {
     loading.value = true
-    return createUser(data).then(({success, message}) => {
+    return createRole(data).then(({success, message}) => {
         if (!success) {
             tip.value = message
             return
@@ -225,13 +194,12 @@ const submitCreate = (data: object) => {
 }
 
 /**
- * 用户更新
+ * 角色更新
  * @param data 更新的数据
- * @return {Promise}
  */
 const submitUpdate = (data: object) => {
     loading.value = true
-    return updateUser(data).then(({success, message}) => {
+    return updateRole(data).then(({success, message}) => {
         if (!success) {
             tip.value = message
             return
@@ -244,20 +212,26 @@ const submitUpdate = (data: object) => {
 }
 
 /**
- * 用户载入
+ * 角色载入
  * @param id 主键ID
- * @return {Promise}
  */
-const loadUser = (id: ID) => {
+const loadRole = (id: ID) => {
     loading.value = true
-    return fetchUser(id).then((body) => {
+    return fetchRole(id).then((body) => {
         if (!body.success) {
             messageTip.error(body.message)
             return
         }
         const data = body.data
         updateObject(model, data)
-        model.roleIds = data.roles.map((item: { id: ID }) => item.id)
+        /*
+        //更新模型
+        model.id = data.id; //ID
+        model.name : data.name, //角色名称
+        model.description : data.description, //角色描述
+        model.ruleName : data.ruleName, //规则名称
+        model.isBuiltIn : data.isBuiltIn, //是否内置
+        */
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
@@ -265,7 +239,7 @@ const loadUser = (id: ID) => {
 
 onMounted(async () => {
     if (props.payload?.id) {
-        await loadUser(props.payload.id)
+        await loadRole(props.payload.id)
     }
 })
 </script>

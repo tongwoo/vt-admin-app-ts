@@ -79,3 +79,11 @@ export interface RecordSet<T> {
     //已选中的记录项列表
     selected: T[],
 }
+
+export interface DialogOption {
+    data: any,
+    dialog: {
+        show: boolean,
+        title: string | null
+    }
+}

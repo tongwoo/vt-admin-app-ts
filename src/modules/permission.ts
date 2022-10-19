@@ -1,15 +1,43 @@
-/**
+/*
  * 功能：权限
- * 日期：2022-06-14
+ * 作者：wutong
+ * 日期：2022-10-19
+*/
+import {http, HttpResponse} from '@/utils/http'
+import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+
+/**
+ * 权限模型
  */
-import http from '@/utils/http'
+export interface PermissionModel extends Model {
+    //父权限
+    parentId: number,
+    //权限名称
+    name: string,
+    //权限描述
+    description: string,
+    //规则名称
+    ruleName: string,
+}
+
+/**
+ * 权限列表项
+ */
+export interface PermissionItem extends Model {
+}
+
+/**
+ * 权限树
+ */
+export interface PermissionTree extends PermissionModel {
+    children: PermissionModel[]
+}
 
 /**
  * 新增权限
- * @param {Object} data 数据
- * @return {Promise<{success:boolean,message:string}>}
+ * @param data 数据
  */
-function createPermission(data) {
+export function createPermission(data: object): Promise<HttpResponse> {
     return http.post(
         '/permission/create',
         data
@@ -24,10 +52,9 @@ function createPermission(data) {
 
 /**
  * 更新权限
- * @param {Object} data 数据
- * @return {Promise<{success:boolean,message:string}>}
+ * @param data 数据
  */
-function updatePermission(data) {
+export function updatePermission(data: object): Promise<HttpResponse> {
     return http.post(
         '/permission/update',
         data
@@ -42,10 +69,9 @@ function updatePermission(data) {
 
 /**
  * 删除权限
- * @param {string|string[]|int|int[]} ids 数据ID,可为单个数值或数值数组
- * @return {Promise<{success:boolean,message:string}>}
+ * @param ids 数据ID
  */
-function removePermission(ids) {
+export function removePermission(ids: ID | ID[]): Promise<HttpResponse> {
     return http.post(
         '/permission/delete',
         {
@@ -62,45 +88,43 @@ function removePermission(ids) {
 
 /**
  * 获取权限详情
- * @param {string|int} id 主键ID
- * @return {Promise<{success:boolean,message:string,data:Object}>}
+ * @param id 主键ID
  */
-function fetchPermission(id) {
+export function fetchPermission(id: ID): Promise<HttpResponse> {
     return http.get(
         '/permission/detail?id=' + id
     ).then((response) => {
         const body = response.data
+        const success = response.isOk
         return {
-            success: response.isOk,
+            success: success,
             message: body.message,
-            data: response.isOk ? body.data.item : null
+            data: success ? body.data.item : null
         }
     })
 }
 
 /**
  * 获取权限列表
- * @param {Object} params 参数
+ * @param params 参数
  * @return {Promise<Array>}
  */
-function fetchPermissions(params = {}) {
+export function fetchPermissions(params: object = {}): Promise<Array<PermissionModel>> {
     return http.get(
         '/permission/items',
         {
             params
         }
     ).then((response) => {
-        const body = response.data
-        return body.data.items
+        return response.data.data.items
     })
 }
 
 /**
  * 获取分页之后的权限列表
- * @param {Object} params 参数
- * @return {Promise<{items:Array,total:int}>}
+ * @param params 参数
  */
-function fetchPagePermissions(params = {}) {
+export function fetchPagePermissions(params: object = {}): Promise<PageResult> {
     return http.get(
         '/permission/page-items',
         {
@@ -109,7 +133,7 @@ function fetchPagePermissions(params = {}) {
     ).then((response) => {
         const body = response.data
         const data = {
-            items: [],
+            items: [] as PermissionModel[],
             total: 0
         }
         if (response.isOk) {
@@ -122,10 +146,9 @@ function fetchPagePermissions(params = {}) {
 
 /**
  * 获取权限键值对列表
- * @param {Object} params 参数
- * @return {Promise<Array<{name:string,value:string|int,origin:Object}>>}
+ * @param params 参数
  */
-function fetchPairPermissions(params = {}) {
+export function fetchPairPermissions(params: object = {}): Promise<Array<NameValue>> {
     return fetchPermissions(params).then((items) => {
         return items.map((item) => {
             return {
@@ -141,7 +164,7 @@ function fetchPairPermissions(params = {}) {
  * 获取权限数
  * @return {Promise<Array>}
  */
-function fetchPermissionTree(params = {}) {
+export function fetchPermissionTree(params = {}): Promise<PermissionTree[]> {
     return http.get(
         '/permission/tree',
         {
@@ -153,15 +176,4 @@ function fetchPermissionTree(params = {}) {
         }
         return response.data.data.items
     })
-}
-
-export {
-    createPermission,
-    updatePermission,
-    removePermission,
-    fetchPermission,
-    fetchPermissions,
-    fetchPagePermissions,
-    fetchPairPermissions,
-    fetchPermissionTree
 }

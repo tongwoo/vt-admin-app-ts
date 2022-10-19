@@ -31,7 +31,6 @@ export default [
                     title: '用户管理'
                 }
             },
-            /*
             {
                 path: 'role',
                 component: () => import('@/views/role/RoleList.vue'),
@@ -39,6 +38,7 @@ export default [
                     title: '角色管理'
                 }
             },
+            /*
             {
                 path: 'permission',
                 component: () => import('@/views/permission/PermissionList.vue'),

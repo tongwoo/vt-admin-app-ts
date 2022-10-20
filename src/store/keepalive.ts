@@ -24,7 +24,7 @@ const module: Module<KeepAliveState, RootState> = {
         /**
          * 移除缓存组件
          * @param state
-         * @param {string} name 组件名
+         * @param name 组件名
          */
         remove(state: KeepAliveState, name: string) {
             const index = state.componentNames.indexOf(name)

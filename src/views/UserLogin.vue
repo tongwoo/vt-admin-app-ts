@@ -18,10 +18,10 @@
                 <div class="panel-body">
                     <el-form ref="form" :model="model" :rules="rules" :disabled="loading" label-width="80px" label-position="top" size="large" hide-required-asterisk @submit.prevent>
                         <el-form-item label="用户名" prop="username">
-                            <el-input v-model="model.username" placeholder="请输入用户名" maxlength="20"></el-input>
+                            <el-input v-model="model.username" placeholder="请输入用户名"></el-input>
                         </el-form-item>
                         <el-form-item label="登录密码" prop="password">
-                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码" maxlength="20"></el-input>
+                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码"></el-input>
                         </el-form-item>
                         <!--
                         <el-form-item label="验证码" prop="captcha">
@@ -31,10 +31,12 @@
                             </div>
                         </el-form-item>
                         -->
-                        <div class="error-container" v-if="tip">
-                            <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
-                        </div>
-                        <el-button type="primary" round @click="login" native-type="submit" :loading="loading">登录</el-button>
+                        <el-collapse-transition>
+                            <div class="error-container" v-if="tip!==null">
+                                <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
+                            </div>
+                        </el-collapse-transition>
+                        <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
                         <!--
                         <div class="separator"><span class="text">或者</span></div>
                         <el-button type="default" round>找回密码</el-button>
@@ -47,7 +49,7 @@
 </template>
 <script lang="ts" setup>
 import {useStore} from "@/store/index"
-import {ref, reactive, onMounted, Ref} from "vue"
+import {ref, reactive, onMounted} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
 import {useRouter} from "vue-router"
 import defaultAvatar from "@/assets/images/icons/avatar-default.png"
@@ -55,7 +57,7 @@ import {cleanAuthorization, writeAuthorization} from "@/utils/authorize"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
 import {API_PATH_DEFAULT} from "@/constants/api-path"
-import {fetchProfile, LoginModel, submitLogin} from '@/modules/authorization'
+import {fetchProfile, LoginModel, requestLogin} from '@/modules/authorization'
 
 const store = useStore()
 const router = useRouter()
@@ -67,17 +69,17 @@ const form = ref<FormInstance>()
 //验证码
 const captcha = ref<HTMLImageElement>()
 //错误信息
-const tip = ref()
+const tip = ref<string | null>(null)
 //加载中
 const loading = ref(false)
 //模型
-const model = reactive({
+const model = reactive<LoginModel>({
     //用户名
-    username: '',
+    username: null,
     //密码
-    password: '',
+    password: null,
     //验证码
-    captcha: ''
+    captcha: null
 })
 //规则
 const rules = {
@@ -116,31 +118,27 @@ const rules = {
  * 刷新验证码
  */
 const refreshCaptcha = () => {
-    if (captcha.value) {
-        captcha.value.src = API_PATH_DEFAULT + '/login/captcha?v=' + Math.random()
-    }
+    captcha.value!.src = API_PATH_DEFAULT + '/login/captcha?v=' + Math.random()
 }
 
 /**
  * 提交登录
  */
-const login = async () => {
+const submitLogin = async () => {
     tip.value = null
-    if (!form.value) {
-        return
-    }
     //表单是否有效
-    const success = await form.value.validate().catch(() => false)
+    const success = await form.value!.validate().catch(() => false)
     if (!success) {
         return
     }
     //登录参数
-    const params: LoginModel = {
+    const params = {
         username: model.username,
-        password: model.password
+        password: model.password,
+        captcha: model.captcha
     }
     loading.value = true
-    submitLogin(params).then(({success, message, data}) => {
+    requestLogin(params).then(({success, message, data}) => {
         if (!success) {
             tip.value = message ?? '网络错误'
             return false
@@ -204,7 +202,7 @@ const mockLogin = () => {
         //保存授权数据
         writeAuthorization(authorization)
         //填充用户信息
-        store.commit('user/update', {
+        store.commit('user/UPDATE', {
             authorization: authorization,
             nickname: '超级管理员',
             avatar: defaultAvatar,

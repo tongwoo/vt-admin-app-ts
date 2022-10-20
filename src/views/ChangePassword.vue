@@ -15,8 +15,8 @@
             <el-form-item label="确认密码" prop="confirmPassword">
                 <el-input v-model="model.confirmPassword" type="password" autocomplete="new-password"></el-input>
             </el-form-item>
-            <div class="error-container" v-if="error.show">
-                <el-alert type="error" :description="error.message" :closable="false" show-icon></el-alert>
+            <div class="error-container" v-if="tip">
+                <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
                 <el-button type="default" @click="cancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
@@ -27,12 +27,12 @@
 </template>
 
 <script lang="ts" setup>
-import {Ref, defineEmits} from "vue"
+import {defineEmits} from "vue"
 import {ref, reactive} from "vue"
 import {useStore} from "@/store/index"
-import {ElMessage} from "element-plus"
+import {ElMessage as messageTip, FormInstance} from "element-plus"
 import {httpErrorHandler} from "@/utils/error"
-import http from "@/utils/http"
+import {http} from "@/utils/http"
 
 const store = useStore()
 //事件
@@ -40,18 +40,9 @@ const emits = defineEmits(['close'])
 //加载中
 const loading = ref(false)
 //表单
-const form = ref(null)
-
-interface error2 {
-    show: boolean,
-    message: null | string
-}
-
+const form = ref<FormInstance>()
 //错误
-const error: Ref<error2> = reactive({
-    show: false,
-    message: null
-})
+const tip = ref<string | null>(null)
 //模型
 const model = reactive({
     //旧密码
@@ -90,15 +81,13 @@ const rules = {
  * 保存按钮点击
  */
 const saveBtnClick = async () => {
-    error.show = false
-    error.message = null
-    const success = await form.value.validate().catch(() => false)
+    tip.value = null
+    const success = await form.value!.validate().catch(() => false)
     if (!success) {
         return
     }
     if (model.newPassword !== model.confirmPassword) {
-        error.show = true
-        error.message = '两次输入的密码不一致'
+        tip.value = '两次输入的密码不一致'
         return
     }
     submitUpdate({
@@ -116,28 +105,22 @@ const cancelBtnClick = () => {
 
 /**
  * 提交更新密码
- * @param {Object} data 数据
+ * @param data 数据
  */
-const submitUpdate = (data) => {
-    error.show = false
-    error.message = null
+const submitUpdate = (data: object) => {
+    tip.value = null
     loading.value = true
-    http.get(
+    http.post(
         '/user/update-password',
-        {
-            params: data
-        }
+        data
     ).then((response) => {
         if (!response.isOk) {
-            error.show = true
-            error.message = response.data.message
+            tip.value = response.data.message
         } else {
-            ElMessage.success(response.data.message)
+            messageTip.success(response.data.message)
             emits('close')
         }
-    }).catch((err) => {
-        httpErrorHandler(err)
-    }).finally(() => {
+    }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
 }

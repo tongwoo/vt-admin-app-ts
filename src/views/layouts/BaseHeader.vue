@@ -80,11 +80,11 @@
             </el-dropdown>
         </div>
         <!--修改密码弹框-->
-        <!--<el-dialog title="修改密码" v-model="password.dialog.show" :close-on-click-modal="false" append-to-body width="400px">-->
-        <!--    <transition name="el-fade-in" mode="out-in">-->
-        <!--        <change-password v-if="password.dialog.show" @close="password.dialog.show=false"></change-password>-->
-        <!--    </transition>-->
-        <!--</el-dialog>-->
+        <el-dialog title="修改密码" v-model="password.dialog.show" :close-on-click-modal="false" append-to-body width="400px">
+            <transition name="el-fade-in" mode="out-in">
+                <change-password v-if="password.dialog.show" @close="password.dialog.show=false"></change-password>
+            </transition>
+        </el-dialog>
         <!--用户头像表单-->
         <!--<el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">-->
         <!--    <transition name="el-fade-in" mode="out-in">-->
@@ -101,7 +101,7 @@ import {ElLoading, ElMessage} from "element-plus"
 import {http} from "@/utils/http"
 import logo from "@/assets/logo.svg"
 import setting from "@/setting"
-//import ChangePassword from "@/views/ChangePassword.vue"
+import ChangePassword from "@/views/ChangePassword.vue"
 //import AvatarSetting from "@/views/AvatarSetting.vue";
 import mitter from "@/utils/mitter"
 import defaultAvatar from "@/assets/images/icons/avatar-default.png"
@@ -180,7 +180,7 @@ const toggleFullScreenBtnClick = () => {
  * 文档按钮点击
  */
 const docBtnClick = () => {
-    window.location.href = 'http://doc.duckpear.com/guide/index.html'
+    window.location.href = 'https://doc.duckpear.com/guide/index.html'
 }
 
 /**
@@ -246,8 +246,6 @@ const avatar = {
  * 头像加载失败
  */
 const avatarError = (event: Event) => {
-    console.info(event)
-
     (event.target as HTMLImageElement).src = defaultAvatar
 }
 

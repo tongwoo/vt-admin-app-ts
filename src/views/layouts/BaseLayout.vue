@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, defineAsyncComponent, onMounted, onUnmounted, Ref, ref} from "vue"
+import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from "vue"
 import {useStore} from "@/store/index"
 import {useRoute} from "vue-router"
 import mitter from "@/utils/mitter"
@@ -101,17 +101,16 @@ onUnmounted(() => {
 const reload: Ref = ref(false)
 onMounted(() => {
     mitter.on('page-refresh', () => {
-        console.info(route.matched)
         if (route.matched.length > 0) {
-            //const matchedName = route.matched[route.matched.length - 1].components?.default?.__name as string
-            //store.commit('keepalive/remove', matchedName)
-            //reload.value = true
-            //nextTick(() => {
-            //    reload.value = false
-            //    if (route?.meta?.cache) {
-            //        store.commit('keepalive/add', matchedName)
-            //    }
-            //})
+            const matchedName = ((route.matched[route.matched.length - 1].components?.default) as any).__name
+            store.commit('keepalive/remove', matchedName)
+            reload.value = true
+            nextTick(() => {
+                reload.value = false
+                if (route?.meta?.cache) {
+                    store.commit('keepalive/add', matchedName)
+                }
+            })
         }
     })
 })

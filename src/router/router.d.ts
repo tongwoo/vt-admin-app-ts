@@ -7,7 +7,7 @@ declare module 'vue-router' {
         permission?: string,
     }
 
-    interface RawRouteComponent {
-        __name?: string
+    interface RouteComponent {
+        __name: string
     }
 }

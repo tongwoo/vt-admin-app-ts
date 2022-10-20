@@ -132,7 +132,5 @@ const cancelBtnClick = () => {
 .permission-box {
     border: 1px solid #eee;
     margin-bottom: 10px;
-    max-height: 300px;
-    overflow: auto
 }
 </style>

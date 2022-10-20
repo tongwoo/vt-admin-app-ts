@@ -38,7 +38,6 @@ export default [
                     title: '角色管理'
                 }
             },
-            /*
             {
                 path: 'permission',
                 component: () => import('@/views/permission/PermissionList.vue'),
@@ -46,6 +45,7 @@ export default [
                     title: '权限管理'
                 }
             },
+            /*
             {
                 path: 'route',
                 component: () => import('@/views/route/RouteList.vue'),

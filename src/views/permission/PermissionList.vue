@@ -57,9 +57,10 @@
                             <el-table-column prop="description" label="权限描述" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="name" label="权限名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="ruleName" label="规则名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column fixed="right" label="操作" width="140" align="center">
+                            <el-table-column fixed="right" label="操作" width="240" align="center">
                                 <template v-slot="{row}">
                                     <div class="table-operation">
+                                        <el-button type="primary" size="small" text bg @click="newBtnClick(row)">新增子权限</el-button>
                                         <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改</el-button>
                                         <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除</el-button>
                                     </div>
@@ -194,6 +195,18 @@ const maintainDialogClose = (payload: any) => {
  */
 const createBtnClick = () => {
     maintain.data = null
+    maintain.dialog.show = true
+    maintain.dialog.title = '新增权限'
+}
+
+/**
+ * 新增子权限按钮点击
+ */
+const newBtnClick = (row: PermissionItem) => {
+    maintain.data = {
+        clone: true,
+        parentId: row.id
+    }
     maintain.dialog.show = true
     maintain.dialog.title = '新增权限'
 }

@@ -23,7 +23,8 @@ export interface PermissionModel extends Model {
 /**
  * 权限列表项
  */
-export interface PermissionItem extends Model {
+export interface PermissionItem extends PermissionModel {
+    //...
 }
 
 /**

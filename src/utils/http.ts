@@ -63,13 +63,14 @@ http.interceptors.response.use(
  * 对AxiosResponse进行包装
  */
 function normalize(response: AxiosResponse): AxiosResponse {
+    response.isOk = response.status == 200
     //将响应体转换成ResponseData结构
     if (typeof response.data === 'object') {
         if (response.data?.msg !== undefined) {
             response.data.message = response.data.msg
             delete response.data.msg
         }
-        response.isOk = ResponseCode.isOk(Number(response.data.code))
+        response.isOk = ResponseCode.isOk(Number(response.data?.code))
     }
     return response
 }

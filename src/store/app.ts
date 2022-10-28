@@ -54,7 +54,7 @@ const module: Module<AppState, RootState> = {
          * @param lang 语言
          */
         updateLanguage(state: AppState, lang: "zh-CN" | "en-US") {
-            i18n.global.locale = state.language = lang
+            i18n.global.locale.value = state.language = lang
         }
     }
 }

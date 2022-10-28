@@ -17,6 +17,30 @@ export default [
         ]
     },
     {
+        path: '/example',
+        component: BaseLayout,
+        meta: {
+            title: '示例'
+        },
+        children: [
+            {
+                path: 'i18n',
+                component: () => import('@/views/example/I18n.vue'),
+                meta: {
+                    title: '多语言'
+                }
+            },
+            {
+                path: 'chart',
+                component: () => import('@/views/example/ChartGuide.vue'),
+                meta: {
+                    title: '图表示例',
+                    cache: true
+                }
+            }
+        ]
+    },
+    {
         path: '/setting',
         component: BaseLayout,
         redirect: '/setting/user',

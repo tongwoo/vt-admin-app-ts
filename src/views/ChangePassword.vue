@@ -27,14 +27,11 @@
 </template>
 
 <script lang="ts" setup>
-import {defineEmits} from "vue"
 import {ref, reactive} from "vue"
-import {useStore} from "@/store/index"
 import {ElMessage as messageTip, FormInstance} from "element-plus"
 import {httpErrorHandler} from "@/utils/error"
 import {http} from "@/utils/http"
 
-const store = useStore()
 //事件
 const emits = defineEmits(['close'])
 //加载中

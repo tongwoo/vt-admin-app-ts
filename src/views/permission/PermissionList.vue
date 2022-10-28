@@ -90,14 +90,12 @@
     </div>
 </template>
 <script lang="ts" setup>
-import moment from "moment"
 import {QueryParam, ID, RecordSet, NameValue, DialogOption} from "@/types/built-in.js"
 import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
-import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {getConfirms, getConfirmName, getConfirmClass} from "@/constants/confirm"
 import {PermissionItem, PermissionModel, removePermission, fetchPagePermissions} from "@/modules/permission"
 
 //权限表单
@@ -223,7 +221,7 @@ const modifyBtnClick = (row: object) => {
 
 /**
  * 单个删除按钮点击
- * @param {Object} row 当前行数据
+ * @param row 当前行数据
  */
 const removeBtnClick = (row: PermissionItem) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
@@ -264,7 +262,7 @@ const batchRemoveBtnClick = () => {
  * @param ids 要删除的ID
  */
 const submitRemove = (ids: ID | ID[]) => {
-    const loading = ElLoading.service({
+    const loading = loadingTip.service({
         lock: true,
         text: '删除中'
     })

@@ -30,9 +30,9 @@ export interface UserModel extends Model {
 /**
  * 用户项
  */
-export interface UserItem extends Model {
+export interface UserItem extends UserModel {
     //角色名称列表
-    roleNames:string[],
+    roleNames: string[],
     //状态名称
     stateName?: string,
     //状态样式

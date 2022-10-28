@@ -65,7 +65,7 @@ export const store = createStore<RootState>({
             }
             //恢复语言设置
             if (gs.app.language !== null) {
-                i18n.global.locale = gs.app.language as 'zh-CN'|'en-US'
+                i18n.global.locale.value = gs.app.language as 'zh-CN' | 'en-US'
             }
             //恢复授权信息
             gs.user.authorization = readAuthorization()
@@ -101,7 +101,7 @@ store.subscribe((mutation, state) => {
     //忽略的Mutation列表，有些Mutation是不需要处理的
     const ignoreMutations = [
         'localSync',
-        'cleanup',
+        'cleanup'
     ]
     if (ignoreMutations.indexOf(mutation.type) !== -1) {
         return

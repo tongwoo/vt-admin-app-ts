@@ -3,6 +3,8 @@ import zhCN from './zh-CN/index'
 import enUS from './en-US/index'
 
 const i18n = createI18n({
+    legacy: false,
+    globalInjection: true,
     locale: 'zh-CN',
     fallbackLocale: 'zh-CN',
     messages: {

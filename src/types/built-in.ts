@@ -1,22 +1,22 @@
 /**
- * 响应数据
- */
-export type ResponseData = {
-    code: number | string | undefined,
-    message: string,
-    data: any
-}
-
-/**
  * 响应码
  */
 export class ResponseCode {
+    //正常
     public static readonly OK = 200
+    //未授权
     public static readonly UNAUTHORIZED = 401
-    public static readonly FORBIDDEN = 401
+    //无权限
+    public static readonly FORBIDDEN = 403
+    //没有找到路由
     public static readonly NOT_FOUND = 404
+    //服务器内部错误
     public static readonly ERROR = 500
 
+    /**
+     * 响应是否成功
+     * @param code 状态码
+     */
     public static isOk(code: number): boolean {
         return code === ResponseCode.OK
     }
@@ -80,6 +80,9 @@ export interface RecordSet<T> {
     selected: T[],
 }
 
+/**
+ * 弹框选项
+ */
 export interface DialogOption {
     data: any,
     dialog: {

@@ -8,10 +8,10 @@
      2022-09-30 重构部分代码
 -->
 <template>
-    <div v-show="!showTable" class="chart-container" ref="dom" :style="style"></div>
-    <div v-show="showTable" class="chart-table" :style="style">
-        <el-table border :size="table.size" row-key="id" :data="table.rows" :max-height="table.height">
-            <el-table-column v-for="(column,i) in table.columns" :key="column+'-'+i" :label="column" :fixed="i===0" align="center" show-overflow-tooltip>
+    <div v-show="!showTable" ref="dom" :style="style" class="chart-container"></div>
+    <div v-show="showTable" :style="style" class="chart-table">
+        <el-table :data="table.rows" :max-height="table.height" :size="table.size" border row-key="id">
+            <el-table-column v-for="(column,i) in table.columns" :key="column+'-'+i" :fixed="i===0" :label="column" align="center" show-overflow-tooltip>
                 <template v-slot="{row}">{{ row[i] }}</template>
             </el-table-column>
         </el-table>
@@ -19,8 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import {EChartsType, LineSeriesOption, SeriesOption} from "echarts"
-import {SeriesData} from "echarts/types/dist/shared"
+import {EChartsType,  SeriesOption} from "echarts"
 import {BarDataItemOption} from "echarts/types/src/chart/bar/BarSeries"
 import {LineDataItemOption} from "echarts/types/src/chart/line/LineSeries"
 import {PieDataItemOption} from "echarts/types/src/chart/pie/PieSeries"

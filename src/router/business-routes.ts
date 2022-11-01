@@ -1,6 +1,7 @@
 import BaseLayout from "@/views/layouts/BaseLayout.vue"
+import {RouteRecordRaw} from "vue-router"
 
-export default [
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         redirect: '/dashboard',
@@ -68,7 +69,7 @@ export default [
                 meta: {
                     title: '权限管理'
                 }
-            },
+            }
             /*
             {
                 path: 'route',
@@ -80,3 +81,5 @@ export default [
         ]
     }
 ]
+
+export default routes

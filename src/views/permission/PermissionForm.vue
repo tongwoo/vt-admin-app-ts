@@ -42,16 +42,18 @@ import {createPermission, updatePermission, fetchPermission, fetchPermissionTree
 import {ID, NameValue} from "@/types/built-in"
 
 //属性
-const props = defineProps({
+const props = withDefaults(defineProps<{
     //传递过来的数据
-    payload: {
-        type: Object
+    payload: any
+}>(), {
+    payload: () => {
+        return {}
     }
 })
 //事件
 const emits = defineEmits(['close'])
 //加载中
-const loading = ref(false)
+const loading = ref<boolean>(false)
 //表单
 const form = ref<FormInstance>()
 //错误信息
@@ -138,7 +140,7 @@ const rules = {
 }
 
 //父权限列表
-const parents = ref<PermissionTree[]>()
+const parents = ref<PermissionTree[]>([])
 
 /**
  * 载入父权限列表
@@ -244,21 +246,12 @@ const submitUpdate = (data: object) => {
  */
 const loadPermission = (id: ID) => {
     loading.value = true
-    return fetchPermission(id).then((body) => {
-        if (!body.success) {
-            messageTip.error(body.message)
+    return fetchPermission(id).then((data) => {
+        if (!data) {
+            messageTip.error('加载失败')
             return
         }
-        const data = body.data
         updateObject(model, data)
-        /*
-        //更新模型
-        model.id = data.id; //ID
-        model.parentId : data.parentId, //父权限
-        model.name : data.name, //权限名称
-        model.description : data.description, //权限描述
-        model.ruleName : data.ruleName, //规则名称
-        */
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })

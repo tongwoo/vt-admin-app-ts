@@ -96,7 +96,7 @@ import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messag
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {PermissionItem, PermissionModel, removePermission, fetchPagePermissions} from "@/modules/permission"
+import {PermissionItem, PermissionModel, removePermission, fetchPagePermissions, modelToPermissionItem} from "@/modules/permission"
 
 //权限表单
 const PermissionForm = defineAsyncComponent(() => import('@/views/permission/PermissionForm.vue'))
@@ -266,7 +266,7 @@ const submitRemove = (ids: ID | ID[]) => {
         lock: true,
         text: '删除中'
     })
-    return removePermission(ids).then(({success, message}) => {
+    removePermission(ids).then(({success, message}) => {
         if (!success) {
             messageTip.error(message)
         } else {
@@ -317,22 +317,15 @@ const pageChange = (page: number) => {
 const loadPermissions = () => {
     const params = buildQuery()
     record.loading = true
-    return fetchPagePermissions(params).then((data) => {
+    fetchPagePermissions(params).then((data) => {
         if (data.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadPermissions()
             return
         }
         record.total = data.total
-        record.items = data.items.map<PermissionItem>((item) => {
-            const permission = item as PermissionModel
-            return {
-                ...permission,
-                parentId: permission.parentId, //父权限
-                name: permission.name, //权限名称
-                description: permission.description, //权限描述
-                ruleName: permission.ruleName //规则名称
-            }
+        record.items = data.items.map((item) => {
+            return modelToPermissionItem(item)
         })
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false

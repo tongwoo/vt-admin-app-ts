@@ -1,7 +1,7 @@
 /*
  * 功能：权限
  * 作者：wutong
- * 日期：2022-10-19
+ * 日期：2022-11-01
 */
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
@@ -23,15 +23,40 @@ export interface PermissionModel extends Model {
 /**
  * 权限列表项
  */
-export interface PermissionItem extends PermissionModel {
-    //...
+export interface PermissionItem extends Model {
+    ///....
+}
+
+
+/**
+ * 将原始数据转换成权限模型
+ * @param data 要转换的数据
+ */
+export function dataToPermissionModel(data: any): PermissionModel {
+    return {
+        //原始数据
+        _raw: data,
+        //ID
+        id: data.id,
+        //父权限
+        parentId: data.parentId,
+        //权限名称
+        name: data.name,
+        //权限描述
+        description: data.description,
+        //规则名称
+        ruleName: data.ruleName
+    }
 }
 
 /**
- * 权限树
+ * 将权限模型转换成数据项
+ * @param model 权限模型
  */
-export interface PermissionTree extends PermissionModel {
-    children: PermissionModel[]
+export function modelToPermissionItem(model: PermissionModel): PermissionItem {
+    return {
+        ...model
+    }
 }
 
 /**
@@ -91,41 +116,40 @@ export function removePermission(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取权限详情
  * @param id 主键ID
  */
-export function fetchPermission(id: ID): Promise<HttpResponse> {
+export function fetchPermission(id: ID): Promise<PermissionModel | null> {
     return http.get(
         '/permission/detail?id=' + id
     ).then((response) => {
-        const body = response.data
-        const success = response.isOk
-        return {
-            success: success,
-            message: body.message,
-            data: success ? body.data.item : null
-        }
+        return response.isOk ? dataToPermissionModel(response.data.data.item) : null
     })
 }
 
 /**
  * 获取权限列表
- * @param params 参数
- * @return {Promise<Array>}
+ * @param params 查询参数
  */
-export function fetchPermissions(params: object = {}): Promise<Array<PermissionModel>> {
+export function fetchPermissions(params: Record<string, any> = {}): Promise<PermissionModel[]> {
     return http.get(
         '/permission/items',
         {
             params
         }
     ).then((response) => {
-        return response.data.data.items
+        const body = response.data
+        if (!response.isOk) {
+            return []
+        }
+        return body.data.items.map((item: any) => {
+            return dataToPermissionModel(item)
+        })
     })
 }
 
 /**
  * 获取分页之后的权限列表
- * @param params 参数
+ * @param params 查询参数
  */
-export function fetchPagePermissions(params: object = {}): Promise<PageResult> {
+export function fetchPagePermissions(params: Record<string, any> = {}): Promise<PageResult<PermissionModel>> {
     return http.get(
         '/permission/page-items',
         {
@@ -138,7 +162,9 @@ export function fetchPagePermissions(params: object = {}): Promise<PageResult> {
             total: 0
         }
         if (response.isOk) {
-            data.items = body.data.items
+            data.items = body.data.items.map((item: any) => {
+                return dataToPermissionModel(item)
+            })
             data.total = body.data.total
         }
         return data
@@ -147,9 +173,9 @@ export function fetchPagePermissions(params: object = {}): Promise<PageResult> {
 
 /**
  * 获取权限键值对列表
- * @param params 参数
+ * @param params 查询参数
  */
-export function fetchPairPermissions(params: object = {}): Promise<Array<NameValue>> {
+export function fetchPairPermissions(params: Record<string, any> = {}): Promise<NameValue[]> {
     return fetchPermissions(params).then((items) => {
         return items.map((item) => {
             return {
@@ -159,6 +185,13 @@ export function fetchPairPermissions(params: object = {}): Promise<Array<NameVal
             }
         })
     })
+}
+
+/**
+ * 权限树
+ */
+export interface PermissionTree extends PermissionModel {
+    children: PermissionModel[]
 }
 
 /**

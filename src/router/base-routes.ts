@@ -1,6 +1,7 @@
-import BaseLayout from "@/views/layouts/BaseLayout.vue";
+import BaseLayout from "@/views/layouts/BaseLayout.vue"
+import {RouteRecordRaw} from "vue-router"
 
-export default [
+const routes: RouteRecordRaw[] = [
     {
         path: '/login',
         component: () => import('@/views/UserLogin.vue'),
@@ -19,7 +20,7 @@ export default [
                 path: 'forbidden',
                 component: () => import('@/views/error/Forbidden.vue'),
                 meta: {
-                    title: '无权限',
+                    title: '无权限'
                 }
             },
             {
@@ -28,7 +29,9 @@ export default [
                 meta: {
                     title: '页面不存在'
                 }
-            },
+            }
         ]
     }
 ]
+
+export default routes

@@ -19,10 +19,11 @@
 </template>
 
 <script lang="ts" setup>
-import {EChartsType,  SeriesOption} from "echarts"
+import {EChartsOption, EChartsType, SeriesOption} from "echarts"
 import {BarDataItemOption} from "echarts/types/src/chart/bar/BarSeries"
 import {LineDataItemOption} from "echarts/types/src/chart/line/LineSeries"
 import {PieDataItemOption} from "echarts/types/src/chart/pie/PieSeries"
+import {CategoryAxisBaseOption} from "echarts/types/src/coord/axisCommonTypes"
 import {ref, reactive, onMounted, watch, onUnmounted, nextTick, computed} from "vue"
 import * as echarts from "echarts"
 
@@ -38,24 +39,16 @@ let initialized = false
 const dom = ref<HTMLElement | null>()
 
 //属性
-const props = defineProps({
+const props = withDefaults(defineProps<{
     //echarts配置对象
-    option: {
-        type: Object,
-        default() {
-            return {}
-        }
-    },
+    option: EChartsOption,
     //重置图表尺寸是否使用动画
-    resizeAnimation: {
-        type: Boolean,
-        default: false
-    },
+    resizeAnimation?: boolean,
     //是否显示表格
-    showTable: {
-        type: Boolean,
-        default: false
-    }
+    showTable?: boolean
+}>(), {
+    resizeAnimation: false,
+    showTable: false
 })
 
 //样式
@@ -77,7 +70,7 @@ const position = reactive({
 })
 
 //表格
-const table = reactive<{ size: string, columns: string[], rows: any[], height: string | undefined }>({
+const table = reactive<{ size: string, columns: any[], rows: any[], height: string | undefined }>({
     size: 'small',
     columns: [],
     rows: [],
@@ -128,17 +121,11 @@ const renderChart = () => {
  */
 const renderTable = () => {
     const option = props.option
-    if (option?.xAxis !== undefined) {
-        let xAxisData = []
-        if (Array.isArray(option.xAxis)) {
-            xAxisData = option.xAxis[0].data
-        } else {
-            xAxisData = option.xAxis.data
-        }
-        table.columns = ['类型', ...xAxisData]
+    if (option.xAxis) {
+        const xAxis = (Array.isArray(option.xAxis) && option.xAxis.length > 0 ? option.xAxis[0] : option.xAxis) as CategoryAxisBaseOption
+        table.columns = ['类型', ...xAxis.data!]
     }
-    table.rows.splice(0)
-    option.series.forEach((series: SeriesOption) => {
+    (option.series! as SeriesOption[]).forEach((series) => {
         if (series.type === 'pie') {
             table.columns = ['类型', '值']
             const items = series.data as PieDataItemOption[]

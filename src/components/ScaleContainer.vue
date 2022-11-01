@@ -9,42 +9,41 @@
     </div>
 </template>
 
-<script setup>
-import {ref, onMounted, onUnmounted} from "vue";
+<script lang="ts" setup>
+import {ref, onMounted, onUnmounted} from "vue"
 
 //容器
-const container = ref(null);
+const container = ref<HTMLElement>()
 
 //监听器
-let observer = null;
+let observer: ResizeObserver | undefined
 
 //属性
-const props = defineProps({
+const props = withDefaults(defineProps<{
     //内容宽度
-    width: Number,
+    width: number,
     //内容高度
-    height: Number,
+    height: number,
     //缩放到多少，默认为1，即缩放到容器尺寸的100%
-    percent: {
-        type: Number,
-        default: 1
-    }
-});
+    percent?: number
+}>(), {
+    percent: 1
+})
 
 onMounted(() => {
-    const parent = container.value.parentElement;
+    const parent = container.value!.parentElement!
     observer = new ResizeObserver(() => {
-        const width = parent.offsetWidth / props.width;
-        const height = parent.offsetHeight / props.height;
-        const scale = Math.min(width, height) * props.percent;
-        container.value.style.transform = `scale(${scale})`;
-    });
-    observer.observe(parent);
-});
+        const width = parent.offsetWidth / props.width
+        const height = parent.offsetHeight / props.height
+        const scale = Math.min(width, height) * props.percent
+        container.value!.style.transform = `scale(${scale})`
+    })
+    observer.observe(parent)
+})
 
 onUnmounted(() => {
-    observer.disconnect();
-});
+    observer!.disconnect()
+})
 </script>
 
 <style lang="scss" scoped>

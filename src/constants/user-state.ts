@@ -3,7 +3,7 @@
  * 日期：2022-06-14
  */
 
-import {NameValue} from "../types/built-in"
+import {NameValue} from "@/types/built-in"
 
 /**
  * 启用

@@ -3,10 +3,9 @@
  * 作者：wutong
  * 日期：2022-10-19
  */
+import {NameValue} from "@/types/built-in"
 
 //是
-import {NameValue} from "../types/built-in"
-
 export const CONFIRM_YES = 1
 
 //否

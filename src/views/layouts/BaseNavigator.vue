@@ -1,8 +1,4 @@
-<!--
-功能：左侧菜单导航
-作者：tongwoo
-日期：2021-12-14
--->
+<!-- 菜单导航 -->
 <template>
     <div class="base-navigator" :class="isCollapsed ? 'base-navigator-collapse' : null" :style="navigatorWidth">
         <virtual-drag v-if="!isCollapsed" :keep="false" class="navigator-drag" @drag-start="dragStart" @drag-move="dragMove" @drag-stop="dragStop"></virtual-drag>
@@ -34,17 +30,17 @@
 <script setup>
 import {computed, ref} from "vue"
 import {useStore} from "@/store/index"
-import {fetchMenus, fetchNavigateMenus} from '@/data/NavigateMenu'
 import MenuItem from '@/components/MenuItem.vue'
 import {useRoute} from "vue-router"
 import VirtualDrag from "@/components/VirtualDrag.vue"
 import defaultAvatar from "@/assets/images/icons/avatar-default.png"
+import {filterAuthMenus, navigateMenus} from '@/data/menu'
 
 const store = useStore()
 const route = useRoute()
 
 //菜单列表
-const menus = fetchMenus(fetchNavigateMenus())
+const menus = filterAuthMenus(navigateMenus)
 
 //菜单是否折叠
 const isCollapsed = computed(() => {
@@ -92,7 +88,6 @@ const dragStart = () => {
     document.querySelector('.header-title').style.transition = 'none'
     navigatorSize.value = wrapper.offsetWidth
 }
-
 
 /**
  * 拖动中

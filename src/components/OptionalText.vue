@@ -13,24 +13,20 @@
 import {computed, nextTick, onMounted, ref, watch} from "vue"
 import {CountUp} from 'countup.js'
 
-const props = defineProps({
-    modelValue: [String, Number],
+//属性
+const props = withDefaults(defineProps<{
+    modelValue: string | number | null | undefined,
     //值不符合规则显示的替换文本，默认为 "-"
-    text: {
-        type: [String, Number],
-        default: '-'
-    },
+    text?: string | number,
     //是否跳动
-    isJump: {
-        type: Boolean,
-        default: false
-    },
+    isJump?: boolean,
     //跳动参数
-    jumpOption: {
-        type: Object,
-        default() {
-            return {}
-        }
+    jumpOption?: object
+}>(), {
+    text: '--',
+    jsJump: false,
+    jumpOption: () => {
+        return {}
     }
 })
 

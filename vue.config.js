@@ -5,8 +5,9 @@ module.exports = defineConfig({
     transpileDependencies: true,
     lintOnSave: false,
     devServer: {
-        host: '127.0.0.1',
-        port: 12345,
+        open: true,
+        host: 'localhost',
+        allowedHosts: ['*'],
         proxy: {
             //接口路径和映射地址，不要修改此处，酌情修改 .env.development 文件
             [process.env.VUE_APP_BASE_API]: {

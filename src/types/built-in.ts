@@ -90,3 +90,15 @@ export interface DialogOption {
         title: string | null
     }
 }
+
+/**
+ * 菜单项
+ */
+export interface MenuItem {
+    name: string,
+    path: string,
+    icon?: string,
+    show: boolean,
+    permission?: string,
+    children?: Array<MenuItem>
+}

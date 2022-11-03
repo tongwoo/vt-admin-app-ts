@@ -1,15 +1,71 @@
-/**
- * 功能：路由
- * 日期：2022-06-16
- */
-import {ID, NameValue, PageResult} from "@/types/built-in"
+/*
+ * 路由
+*/
+import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from '@/utils/http'
+import {ID, NameValue, PageResult, Model} from "@/types/built-in"
 
 /**
- * 新增用户
+ * 路由模型
+ */
+export interface RouteModel extends Model {
+    //名称
+    name: string,
+    //路径
+    path: string,
+    //权限ID
+    permissionId: number,
+    //权限名称
+    permissionName?: string,
+    //权限描述
+    permissionDescription?: string,
+}
+
+/**
+ * 路由列表项
+ */
+export interface RouteItem extends Model {
+}
+
+
+/**
+ * 将原始数据转换成路由模型
+ * @param data 要转换的数据
+ */
+export function dataToRouteModel(data: any): RouteModel {
+    return {
+        //原始数据
+        _raw: data,
+        //ID
+        id: data.id,
+        //权限
+        permissionId: data.permissionId,
+        //名称
+        name: data.name,
+        //路径
+        path: data.path,
+        //权限名称
+        permissionName: data.permissionName,
+        //权限描述
+        permissionDescription: data.permissionDescription
+    }
+}
+
+/**
+ * 将路由模型转换成数据项
+ * @param model 路由模型
+ */
+export function modelToRouteItem(model: RouteModel): RouteItem {
+    return {
+        ...model
+    }
+}
+
+/**
+ * 新增路由
  * @param data 数据
  */
-function createRoute(data: object): Promise<HttpResponse> {
+export function createRoute(data: object): Promise<HttpResponse> {
     return http.post(
         '/route/create',
         data
@@ -23,10 +79,10 @@ function createRoute(data: object): Promise<HttpResponse> {
 }
 
 /**
- * 更新用户
+ * 更新路由
  * @param data 数据
  */
-function updateRoute(data: object): Promise<HttpResponse> {
+export function updateRoute(data: object): Promise<HttpResponse> {
     return http.post(
         '/route/update',
         data
@@ -40,10 +96,10 @@ function updateRoute(data: object): Promise<HttpResponse> {
 }
 
 /**
- * 删除用户
+ * 删除路由
  * @param ids 数据ID
  */
-function removeRoute(ids: ID | ID[]): Promise<HttpResponse> {
+export function removeRoute(ids: ID | ID[]): Promise<HttpResponse> {
     return http.post(
         '/route/delete',
         {
@@ -59,27 +115,22 @@ function removeRoute(ids: ID | ID[]): Promise<HttpResponse> {
 }
 
 /**
- * 获取用户详情
+ * 获取路由详情
  * @param id 主键ID
  */
-function fetchRoute(id: ID): Promise<HttpResponse> {
+export function fetchRoute(id: ID): Promise<RouteModel | null> {
     return http.get(
         '/route/detail?id=' + id
     ).then((response) => {
-        const body = response.data
-        return {
-            success: response.isOk,
-            message: body.message,
-            data: body.data?.item
-        }
+        return response.isOk ? dataToRouteModel(response.data.data.item) : null
     })
 }
 
 /**
- * 获取用户列表
- * @param params 参数
+ * 获取路由列表
+ * @param params 查询参数
  */
-function fetchRoutes(params: object = {}): Promise<Record<string, any>[]> {
+export function fetchRoutes(params: Record<string, any> = {}): Promise<RouteModel[]> {
     return http.get(
         '/route/items',
         {
@@ -90,15 +141,17 @@ function fetchRoutes(params: object = {}): Promise<Record<string, any>[]> {
         if (!response.isOk) {
             return []
         }
-        return body.data.items
+        return body.data.items.map((item: any) => {
+            return dataToRouteModel(item)
+        })
     })
 }
 
 /**
- * 获取分页之后的用户列表
- * @param params 参数
+ * 获取分页之后的路由列表
+ * @param params 查询参数
  */
-function fetchPageRoutes(params: object = {}): Promise<PageResult> {
+export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PageResult<RouteModel>> {
     return http.get(
         '/route/page-items',
         {
@@ -107,11 +160,13 @@ function fetchPageRoutes(params: object = {}): Promise<PageResult> {
     ).then((response) => {
         const body = response.data
         const data = {
-            items: [],
+            items: [] as RouteModel[],
             total: 0
         }
         if (response.isOk) {
-            data.items = body.data.items
+            data.items = body.data.items.map((item: any) => {
+                return dataToRouteModel(item)
+            })
             data.total = body.data.total
         }
         return data
@@ -119,10 +174,10 @@ function fetchPageRoutes(params: object = {}): Promise<PageResult> {
 }
 
 /**
- * 获取用户键值对列表
- * @param params 参数
+ * 获取路由键值对列表
+ * @param params 查询参数
  */
-function fetchPairRoutes(params: object = {}): Promise<Array<NameValue<string>>> {
+export function fetchPairRoutes(params: Record<string, any> = {}): Promise<NameValue[]> {
     return fetchRoutes(params).then((items) => {
         return items.map((item) => {
             return {
@@ -135,9 +190,33 @@ function fetchPairRoutes(params: object = {}): Promise<Array<NameValue<string>>>
 }
 
 /**
+ * 使用路由列表
+ * @param params 查询参数
+ */
+export function useRoutes(params: Record<string, any> = {}): Ref<RouteModel[]> {
+    const routes = ref<RouteModel[]>([])
+    onMounted(async () => {
+        routes.value = await fetchRoutes(params)
+    })
+    return routes
+}
+
+/**
+ * 使用路由名称值列表
+ * @param params 查询参数
+ */
+export function usePairRoutes(params: Record<string, any> = {}): Ref<NameValue[]> {
+    const routes = ref<NameValue[]>([])
+    onMounted(async () => {
+        routes.value = await fetchPairRoutes(params)
+    })
+    return routes
+}
+
+/**
  * 清空路由
  */
-function truncateRoutes(): Promise<boolean> {
+export function truncateRoutes(): Promise<boolean> {
     return http.get(
         '/route/truncate'
     ).then((response) => {
@@ -148,22 +227,10 @@ function truncateRoutes(): Promise<boolean> {
 /**
  * 生成路由
  */
-function generateRoutes(): Promise<boolean> {
+export function generateRoutes(): Promise<boolean> {
     return http.get(
         '/route/generate'
     ).then((response) => {
         return response.isOk
     })
-}
-
-export {
-    createRoute,
-    updateRoute,
-    removeRoute,
-    fetchRoute,
-    fetchRoutes,
-    fetchPageRoutes,
-    fetchPairRoutes,
-    truncateRoutes,
-    generateRoutes
 }

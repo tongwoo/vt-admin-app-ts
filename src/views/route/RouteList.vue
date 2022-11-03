@@ -1,23 +1,20 @@
 <!--
-功能：角色
+功能：路由
 作者：wutong
-日期：2022-10-19
+日期：2022-11-03
 -->
 <template>
     <div class="page-container">
         <div class="page-segment">
             <div class="segment-header with-bordered">
-                <div class="header-title">查询 {{users222}}</div>
+                <div class="header-title">查询</div>
             </div>
             <div class="segment-body">
                 <div class="query-container">
                     <div class="form-container margin-none">
                         <el-form size="default" inline @submit.prevent>
-                            <el-form-item label="角色名称">
+                            <el-form-item label="名称">
                                 <el-input v-model="query.name" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="角色描述">
-                                <el-input v-model="query.description" clearable></el-input>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="submitQuery" native-type="submit"><i class="bi bi-search el-icon--left"></i>查询</el-button>
@@ -31,11 +28,13 @@
         <div class="page-segment">
             <div class="segment-header with-bordered">
                 <div class="header-flex">
-                    <div class="header-title">角色列表</div>
+                    <div class="header-title">路由列表</div>
                     <div class="header-flexible"></div>
                     <div class="header-buttons">
                         <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
+                        <el-button type="primary" size="default" @click="generateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>内置生成</el-button>
                         <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
+                        <el-button type="danger" size="default" @click="truncateBtnClick"><i class="bi bi-trash el-icon--left"></i>清空</el-button>
                     </div>
                 </div>
             </div>
@@ -55,18 +54,12 @@
                         >
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
                             <el-table-column type="index" fixed="left" label="序号" align="center"></el-table-column>
-                            <el-table-column prop="name" label="角色名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="description" label="角色描述" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="ruleName" label="规则名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="isBuiltInName" label="是否内置" align="center" min-width="100" show-overflow-tooltip>
-                                <template v-slot="{row}">
-                                    <div :class="row.isBuiltInClass">{{ row.isBuiltInName }}</div>
-                                </template>
-                            </el-table-column>
-                            <el-table-column fixed="right" label="操作" width="180" align="center">
+                            <el-table-column prop="name" label="名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="path" label="路径" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="permissionDescription" label="权限" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column fixed="right" label="操作" width="140" align="center">
                                 <template v-slot="{row}">
                                     <div class="table-operation">
-                                        <el-button type="primary" size="small" text bg @click="permissionBtnClick(row)">权限</el-button>
                                         <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改</el-button>
                                         <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除</el-button>
                                     </div>
@@ -90,39 +83,27 @@
         <!--维护表单弹框-->
         <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="maintainDialogClose" append-to-body width="500px">
             <transition name="el-fade-in" mode="out-in">
-                <role-form v-if="maintain.dialog.show" :payload="maintain.data" @close="maintainDialogClose"></role-form>
-            </transition>
-        </el-dialog>
-        <!--角色权限表单弹框-->
-        <el-dialog :title="permission.dialog.title" v-model="permission.dialog.show" :close-on-click-modal="false" append-to-body width="500px">
-            <transition name="el-fade-in" mode="out-in">
-                <role-permission-form v-if="permission.dialog.show" :payload="permission.data" @close="permissionDialogClose"></role-permission-form>
+                <route-form v-if="maintain.dialog.show" :payload="maintain.data" @close="maintainDialogClose"></route-form>
             </transition>
         </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
-import {usePairUsers} from "@/modules/user"
 import moment from "moment"
-import {QueryParam, ID, RecordSet, DialogOption} from "@/types/built-in.js"
+import {QueryParam, ID, RecordSet, NameValue, DialogOption} from "@/types/built-in.js"
 import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
-import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {getConfirms, getConfirmName, getConfirmClass} from "@/constants/confirm"
-import {RoleItem, RoleModel, removeRole, fetchPageRoles} from "@/modules/role"
+import {RouteItem, RouteModel, modelToRouteItem, removeRoute, fetchPageRoutes, generateRoutes, truncateRoutes} from "@/modules/route"
 
-//角色表单
-const RoleForm = defineAsyncComponent(() => import('@/views/role/RoleForm.vue'))
-const RolePermissionForm = defineAsyncComponent(() => import('@/views/role/RolePermissionForm.vue'))
-
-//是否内置列表
-const isBuiltIns = ref(getConfirms())
+//路由表单
+const RouteForm = defineAsyncComponent(() => import('@/views/route/RouteForm.vue'))
 
 onMounted(() => {
-    //载入角色
-    loadRoles()
+    //载入路由
+    loadRoutes()
 })
 
 /**
@@ -131,14 +112,12 @@ onMounted(() => {
 const query = reactive({
     //页码
     page: 1,
-    //角色名称
+    //权限
+    permissionId: null,
+    //名称
     name: null,
-    //角色描述
-    description: null,
-    //规则名称
-    ruleName: null,
-    //是否内置
-    isBuiltIn: null
+    //路径
+    path: null
 })
 
 type QueryType = keyof typeof query
@@ -152,10 +131,12 @@ const buildQuery = () => {
         page: query.page,
         //每页记录数
         pageSize: record.size,
-        //角色名称
+        //权限
+        permissionId: query.permissionId,
+        //名称
         name: query.name,
-        //角色描述
-        description: query.description,
+        //路径
+        path: query.path
     }
     return params
 }
@@ -165,7 +146,7 @@ const buildQuery = () => {
  */
 const submitQuery = () => {
     query.page = 1
-    loadRoles()
+    loadRoutes()
 }
 
 /**
@@ -176,44 +157,13 @@ const resetQuery = () => {
         query[key as Exclude<QueryType, 'page'>] = null
     })
     query.page = 1
-    loadRoles()
-}
-
-/**
- * 权限
- */
-const permission: DialogOption = {
-    //传递给表单的数据
-    data: null,
-    //弹框
-    dialog: reactive({
-        show: false,
-        title: null
-    })
-}
-
-/**
- * 权限按钮点击
- * @param row 当前行数据
- */
-const permissionBtnClick = (row: RoleItem) => {
-    permission.data = row
-    permission.dialog.show = true
-    permission.dialog.title = '权限'
-}
-
-/**
- * 权限弹框关闭
- * @param payload 返回的数据
- */
-const permissionDialogClose = (payload: any) => {
-    permission.dialog.show = false
+    loadRoutes()
 }
 
 /**
  * 维护
  */
-const maintain: DialogOption = reactive({
+const maintain = reactive<DialogOption>({
     //传递给表单的数据
     data: null,
     //弹框
@@ -230,7 +180,7 @@ const maintain: DialogOption = reactive({
 const maintainDialogClose = (payload: any) => {
     maintain.dialog.show = false
     if (payload === 'save') {
-        loadRoles()
+        loadRoutes()
     }
 }
 
@@ -240,7 +190,44 @@ const maintainDialogClose = (payload: any) => {
 const createBtnClick = () => {
     maintain.data = null
     maintain.dialog.show = true
-    maintain.dialog.title = '新增角色'
+    maintain.dialog.title = '新增路由'
+}
+
+/**
+ * 生成路由按钮点击
+ */
+const generateBtnClick = () => {
+    messageBox.confirm('确定生成所有路由吗？已经生成的则忽略', '提示', {
+        type: 'warning'
+    }).then(() => {
+        generateRoutes().then((success) => {
+            success ? messageTip.success('生成成功') : messageTip.error('生成失败')
+            query.page = 1
+            loadRoutes()
+        }).catch(() => {
+            messageTip.error('生成失败')
+        })
+    }).catch(() => {
+        //...
+    })
+}
+
+/**
+ * 清空路由按钮点击
+ */
+const truncateBtnClick = () => {
+    messageBox.confirm('确定清空吗？', '提示', {
+        type: 'warning'
+    }).then(() => {
+        truncateRoutes().then((success) => {
+            success ? messageTip.success('清空成功') : messageTip.error('清空失败')
+            loadRoutes()
+        }).catch(() => {
+            messageTip.error('清空失败')
+        })
+    }).catch(() => {
+        //...
+    })
 }
 
 /**
@@ -250,14 +237,14 @@ const createBtnClick = () => {
 const modifyBtnClick = (row: object) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
-    maintain.dialog.title = '编辑角色'
+    maintain.dialog.title = '修改路由'
 }
 
 /**
  * 单个删除按钮点击
- * @param {Object} row 当前行数据
+ * @param row 当前行数据
  */
-const removeBtnClick = (row: RoleItem) => {
+const removeBtnClick = (row: RouteItem) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -296,17 +283,17 @@ const batchRemoveBtnClick = () => {
  * @param ids 要删除的ID
  */
 const submitRemove = (ids: ID | ID[]) => {
-    const loading = ElLoading.service({
+    const loading = loadingTip.service({
         lock: true,
         text: '删除中'
     })
-    return removeRole(ids).then(({success, message}) => {
+    removeRoute(ids).then(({success, message}) => {
         if (!success) {
             messageTip.error(message)
         } else {
             messageTip.success(message)
             record.selected = []
-            loadRoles()
+            loadRoutes()
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.close()
@@ -316,7 +303,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record = reactive<RecordSet<RoleItem>>({
+const record = reactive<RecordSet<RouteItem>>({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -331,7 +318,7 @@ const table = ref<InstanceType<typeof ElTable>>()
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const selectionChange = (records: RoleItem[]) => {
+const selectionChange = (records: RouteItem[]) => {
     record.selected = records
 }
 
@@ -341,33 +328,25 @@ const selectionChange = (records: RoleItem[]) => {
  */
 const pageChange = (page: number) => {
     query.page = page
-    loadRoles()
+    loadRoutes()
 }
 
 /**
- * 加载角色列表
+ * 加载路由列表
  * @return {Promise}
  */
-const loadRoles = () => {
+const loadRoutes = () => {
     const params = buildQuery()
     record.loading = true
-    return fetchPageRoles(params).then((data) => {
+    fetchPageRoutes(params).then((data) => {
         if (data.items.length === 0 && query.page > 1) {
             query.page -= 1
-            loadRoles()
+            loadRoutes()
             return
         }
         record.total = data.total
-        record.items = data.items.map<RoleItem>((item) => {
-            const role = item as RoleModel
-            return {
-                ...role,
-                name: role.name, //角色名称
-                description: role.description, //角色描述
-                ruleName: role.ruleName, //规则名称
-                isBuiltInName: getConfirmName(role.isBuiltIn), //是否内置名称
-                isBuiltInClass: getConfirmClass(role.isBuiltIn) //是否内置样式Class
-            }
+        record.items = data.items.map<RouteItem>((item) => {
+            return modelToRouteItem(item)
         })
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false
@@ -375,21 +354,10 @@ const loadRoles = () => {
 }
 
 onMounted(() => {
-    //载入角色
-    loadRoles()
+    //载入路由
+    loadRoutes()
 })
 
 </script>
 <style lang="scss" scoped>
-/**
- * 是否内置
- */
-.confirm-yes {
-    color: #409EFF;
-}
-
-.confirm-no {
-    color: #F56C6C;
-}
-
 </style>

@@ -69,15 +69,14 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '权限管理'
                 }
-            }
-            /*
+            },
             {
                 path: 'route',
                 component: () => import('@/views/route/RouteList.vue'),
                 meta: {
                     title: '后台路由'
                 }
-            }*/
+            }
         ]
     }
 ]

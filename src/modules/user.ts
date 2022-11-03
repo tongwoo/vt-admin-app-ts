@@ -6,6 +6,7 @@
 import {RoleModel} from "@/modules/role"
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {onMounted, Ref, ref} from "vue"
 
 /**
  * 用户模型
@@ -166,3 +167,26 @@ export function fetchPairUsers(params: object = {}): Promise<Array<NameValue>> {
     })
 }
 
+/**
+ * 使用用户列表
+ * @param params 查询参数
+ */
+export function useUsers(params: Record<string, any> = {}): Ref<UserModel[]> {
+    const users = ref<UserModel[]>([]);
+    onMounted(async () => {
+        users.value = await fetchUsers(params);
+    })
+    return users;
+}
+
+/**
+ * 使用用户名称值列表
+ * @param params 查询参数
+ */
+export function usePairUsers(params: Record<string, any> = {}): Ref<NameValue[]> {
+    const users = ref<NameValue[]>([]);
+    onMounted(async () => {
+        users.value = await fetchPairUsers(params);
+    })
+    return users;
+}

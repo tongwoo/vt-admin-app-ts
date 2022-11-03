@@ -5,6 +5,7 @@
 */
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {onMounted, ref, Ref} from "vue"
 
 /**
  * 权限模型
@@ -179,7 +180,7 @@ export function fetchPairPermissions(params: Record<string, any> = {}): Promise<
     return fetchPermissions(params).then((items) => {
         return items.map((item) => {
             return {
-                name: item.name,
+                name: item.description,
                 value: item.id,
                 origin: item
             }
@@ -210,4 +211,41 @@ export function fetchPermissionTree(params = {}): Promise<PermissionTree[]> {
         }
         return response.data.data.items
     })
+}
+
+/**
+ * 使用权限列表
+ * @param params 查询参数
+ */
+export function usePermissions(params: Record<string, any> = {}): Ref<PermissionModel[]> {
+    const permissions = ref<PermissionModel[]>([])
+    onMounted(async () => {
+        permissions.value = await fetchPermissions(params)
+    })
+    return permissions
+}
+
+/**
+ * 使用权限名称值列表
+ * @param params 查询参数
+ */
+export function usePairPermissions(params: Record<string, any> = {}): Ref<NameValue[]> {
+    const permissions = ref<NameValue[]>([])
+    onMounted(async () => {
+        permissions.value = await fetchPairPermissions(params)
+    })
+    return permissions
+}
+
+/**
+ * 使用权限树
+ */
+export function usePermissionTree() {
+    const tree = ref<PermissionTree[]>([])
+    onMounted(async () => {
+        tree.value = await fetchPermissionTree({
+            root: 1
+        })
+    })
+    return tree
 }

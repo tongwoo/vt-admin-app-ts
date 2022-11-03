@@ -13,6 +13,6 @@ export default {
     //分页相关
     pagination: {
         //每页记录数
-        size: 10
+        size: 14
     }
 }

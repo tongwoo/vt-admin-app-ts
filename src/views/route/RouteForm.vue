@@ -1,27 +1,21 @@
 <!--
-功能：权限表单
+功能：路由表单
 作者：wutong
-日期：2022-10-20
+日期：2022-11-03
 -->
 <template>
     <div class="form-container" v-loading="loading">
-        <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
-            <el-form-item label="父权限" prop="parentId">
-                <el-tree-select node-key="id" v-model="model.parentId" :data="parents" class="el-select-long" :props="{value:'id',label:'description'}" check-strictly :render-after-expand="false"></el-tree-select>
-            </el-form-item>
-            <el-form-item label="权限名称" prop="name">
-                <el-input v-model="model.name" maxlength="32"></el-input>
-            </el-form-item>
-            <el-form-item label="权限描述" prop="description">
-                <el-input v-model="model.description" maxlength="32"></el-input>
-            </el-form-item>
-            <el-form-item label="规则名称" prop="ruleName">
-                <el-select v-model="model.ruleName" class="el-select-long">
-                    <el-option v-for="(item,i) in ruleNames" :key="i" :label="item.name" :value="item.value"></el-option>
+        <el-form ref="form" :model="model" :rules="rules" label-width="60px" size="default" @submit.prevent>
+            <el-form-item label="权限" prop="permissionId">
+                <el-select v-model="model.permissionId" class="el-select-long" filterable>
+                    <el-option v-for="(item,i) in permissions" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="model.id===null">
-                <el-checkbox v-model="model.include">额外创建「增删改查」子权限</el-checkbox>
+            <el-form-item label="名称" prop="name">
+                <el-input v-model="model.name" maxlength="128"></el-input>
+            </el-form-item>
+            <el-form-item label="路径" prop="path">
+                <el-input v-model="model.path" maxlength="256"></el-input>
             </el-form-item>
             <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
@@ -34,12 +28,13 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchRules, useRules} from "@/modules/rbac"
 import {ref, reactive, onMounted} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
 import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {createPermission, updatePermission, fetchPermission, fetchPermissionTree, PermissionTree, usePermissionTree} from "@/modules/permission"
+import moment from "moment"
+import {usePairPermissions} from "@/modules/permission"
+import {createRoute, updateRoute, fetchRoute} from "@/modules/route"
 import {ID, NameValue} from "@/types/built-in"
 
 //属性
@@ -51,6 +46,10 @@ const props = withDefaults(defineProps<{
         return {}
     }
 })
+
+//权限列表
+const permissions = usePairPermissions()
+
 //事件
 const emits = defineEmits(['close'])
 //加载中
@@ -60,100 +59,66 @@ const form = ref<FormInstance>()
 //错误信息
 const tip = ref<string | null>(null)
 
-//模型
+//表单模型
 const model = reactive({
     //主键
     id: null,
-    //父权限
-    parentId: null,
-    //权限名称
+    //权限
+    permissionId: null,
+    //名称
     name: null,
-    //权限描述
-    description: null,
-    //规则名称
-    ruleName: null,
-    //是否包含增删改查子权限
-    include: false
+    //路径
+    path: null
 })
-//规则
+//表单规则
 const rules = {
-    //父权限
-    parentId: [
+    //权限
+    permissionId: [
         {
             type: 'integer',
             required: true,
             trigger: 'blur',
-            message: '父权限必须填写'
+            message: '权限必须选择'
         },
         {
             type: 'integer',
             min: 0,
-            max: 4294967295,
+            max: 9999999999,
             trigger: 'blur',
-            message: '父权限必须介于0-4294967295之间'
+            message: '权限必须介于0-9999999999之间'
         }
     ],
-    //权限名称
+    //名称
     name: [
         {
             type: 'string',
             required: true,
             trigger: 'blur',
-            message: '权限名称必须填写'
+            message: '名称必须填写'
         },
         {
             type: 'string',
-            max: 32,
+            max: 128,
             trigger: 'blur',
-            message: '权限名称最多32个字符'
+            message: '名称最多128个字符'
         }
     ],
-    //权限描述
-    description: [
+    //路径
+    path: [
         {
             type: 'string',
             required: true,
             trigger: 'blur',
-            message: '权限描述必须填写'
+            message: '路径必须填写'
         },
         {
             type: 'string',
-            max: 32,
+            max: 256,
             trigger: 'blur',
-            message: '权限描述最多32个字符'
-        }
-    ],
-    //规则名称
-    ruleName: [
-        {
-            type: 'string',
-            required: false,
-            trigger: 'blur',
-            message: '规则名称必须填写'
-        },
-        {
-            type: 'string',
-            max: 50,
-            trigger: 'blur',
-            message: '规则名称最多50个字符'
+            message: '路径最多256个字符'
         }
     ]
 }
-
-//父权限列表
-const parents = usePermissionTree()
-
-//规则列表
-const ruleNames = useRules()
-
-onMounted(async () => {
-    if (props.payload?.id) {
-        await loadPermission(props.payload.id)
-    } else if (props.payload?.clone) {
-        model.parentId = props.payload.parentId
-    }
-})
-
 
 /**
  * 保存按钮点击
@@ -166,11 +131,9 @@ const saveBtnClick = async () => {
     }
     const data = {
         id: model.id, //ID
-        parentId: model.parentId, //父权限
-        name: model.name, //权限名称
-        description: model.description, //权限描述
-        ruleName: model.ruleName, //规则名称
-        include: model.include
+        permissionId: model.permissionId, //权限
+        name: model.name, //名称
+        path: model.path //路径
     }
     //保存
     if (data?.id) {
@@ -188,12 +151,12 @@ const cancelBtnClick = () => {
 }
 
 /**
- * 权限新增
+ * 路由新增
  * @param data 新增的数据
  */
 const submitCreate = (data: object) => {
     loading.value = true
-    return createPermission(data).then(({success, message}) => {
+    createRoute(data).then(({success, message}) => {
         if (!success) {
             tip.value = message
             return
@@ -206,12 +169,12 @@ const submitCreate = (data: object) => {
 }
 
 /**
- * 权限更新
+ * 路由更新
  * @param data 更新的数据
  */
 const submitUpdate = (data: object) => {
     loading.value = true
-    return updatePermission(data).then(({success, message}) => {
+    updateRoute(data).then(({success, message}) => {
         if (!success) {
             tip.value = message
             return
@@ -224,17 +187,17 @@ const submitUpdate = (data: object) => {
 }
 
 /**
- * 权限载入
+ * 路由载入
  * @param id 主键ID
  */
-const loadPermission = (id: ID) => {
+const loadRoute = (id: ID) => {
     loading.value = true
-    return fetchPermission(id).then((data) => {
+    fetchRoute(id).then((data) => {
         if (!data) {
             messageTip.error('加载失败')
-            return
+        } else {
+            updateObject(model, data)
         }
-        updateObject(model, data)
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
@@ -242,7 +205,7 @@ const loadPermission = (id: ID) => {
 
 onMounted(async () => {
     if (props.payload?.id) {
-        await loadPermission(props.payload.id)
+        await loadRoute(props.payload.id)
     }
 })
 </script>

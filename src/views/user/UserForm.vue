@@ -44,7 +44,7 @@ import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {getUserStates} from "@/constants/user-state"
 import {createUser, updateUser, fetchUser} from "@/modules/user"
-import {fetchPairRoles} from "@/modules/role"
+import {usePairRoles} from "@/modules/role"
 import {ID, NameValue} from "@/types/built-in"
 
 //属性
@@ -65,18 +65,7 @@ const tip = ref<string | null>(null)
 //状态列表
 const states = ref(getUserStates())
 //角色列表
-const roles = ref<NameValue[]>([])
-
-/**
- * 载入角色列表
- */
-const loadRoles = async () => {
-    roles.value = await fetchPairRoles()
-}
-
-onMounted(() => {
-    loadRoles()
-})
+const roles = usePairRoles()
 
 //模型
 const model = reactive({

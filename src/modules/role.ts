@@ -4,13 +4,14 @@
  * 日期：2022-10-19
 */
 import {PermissionModel} from "@/modules/permission"
-import {http,HttpResponse} from '@/utils/http';
+import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {onMounted, ref, Ref} from "vue"
 
 /**
  * 角色模型
  */
-export interface RoleModel extends Model{
+export interface RoleModel extends Model {
     //角色名称
     name: string,
     //角色描述
@@ -26,7 +27,7 @@ export interface RoleModel extends Model{
 /**
  * 角色列表项
  */
-export interface RoleItem extends Model{
+export interface RoleItem extends Model {
     //是否内置名称
     isBuiltInName?: string,
     //是否内置样式
@@ -37,71 +38,71 @@ export interface RoleItem extends Model{
  * 新增角色
  * @param data 数据
  */
-export function createRole(data: object): Promise<HttpResponse>{
+export function createRole(data: object): Promise<HttpResponse> {
     return http.post(
         '/role/create',
         data
     ).then((response) => {
-        const body = response.data;
+        const body = response.data
         return {
             success: response.isOk,
             message: body.message
-        };
-    });
+        }
+    })
 }
 
 /**
  * 更新角色
  * @param data 数据
  */
-export function updateRole(data: object): Promise<HttpResponse>{
+export function updateRole(data: object): Promise<HttpResponse> {
     return http.post(
         '/role/update',
         data
     ).then((response) => {
-        const body = response.data;
+        const body = response.data
         return {
             success: response.isOk,
             message: body.message
-        };
-    });
+        }
+    })
 }
 
 /**
  * 删除角色
  * @param ids 数据ID
  */
-export function removeRole(ids: ID|ID[]): Promise<HttpResponse>{
+export function removeRole(ids: ID | ID[]): Promise<HttpResponse> {
     return http.post(
         '/role/delete',
         {
             ids
         }
     ).then((response) => {
-        const body = response.data;
+        const body = response.data
         return {
             success: response.isOk,
             message: body.message
-        };
-    });
+        }
+    })
 }
 
 /**
  * 获取角色详情
  * @param id 主键ID
  */
-export function fetchRole(id: ID): Promise<HttpResponse>{
+export function fetchRole(id: ID): Promise<HttpResponse> {
     return http.get(
-        '/role/detail?id='+id,
+        '/role/detail?id=' + id
     ).then((response) => {
-        const body = response.data;
-        const success = response.isOk;
+        const body = response.data
+        const success = response.isOk
         return {
             success: success,
             message: body.message,
-            data: success ? body.data.item  : null
-        };
-    });
+            data: success ? body.data.item : null
+        }
+    })
 }
 
 /**
@@ -109,55 +110,55 @@ export function fetchRole(id: ID): Promise<HttpResponse>{
  * @param params 参数
  * @return {Promise<Array>}
  */
-export function fetchRoles(params:object = {}): Promise<Array<RoleModel>>{
+export function fetchRoles(params: object = {}): Promise<Array<RoleModel>> {
     return http.get(
         '/role/items',
         {
             params
         }
     ).then((response) => {
-        return response.data.data.items;
-    });
+        return response.data.data.items
+    })
 }
 
 /**
  * 获取分页之后的角色列表
  * @param params 参数
  */
-export function fetchPageRoles(params:object = {}): Promise<PageResult>{
+export function fetchPageRoles(params: object = {}): Promise<PageResult> {
     return http.get(
         '/role/page-items',
         {
             params
         }
     ).then((response) => {
-        const body = response.data;
+        const body = response.data
         const data = {
             items: [],
             total: 0
-        };
-        if (response.isOk) {
-            data.items = body.data.items;
-            data.total = body.data.total;
         }
-        return data;
-    });
+        if (response.isOk) {
+            data.items = body.data.items
+            data.total = body.data.total
+        }
+        return data
+    })
 }
 
 /**
  * 获取角色键值对列表
  * @param params 参数
  */
-export function fetchPairRoles(params:object = {}): Promise<Array<NameValue>>{
-    return fetchRoles(params).then((items)=>{
+export function fetchPairRoles(params: object = {}): Promise<Array<NameValue>> {
+    return fetchRoles(params).then((items) => {
         return items.map((item) => {
             return {
                 name: item.description,
                 value: item.id,
                 origin: item
-            };
-        });
-    });
+            }
+        })
+    })
 }
 
 /**
@@ -173,4 +174,28 @@ export function fetchRolePermissions(roleId: ID): Promise<Array<PermissionModel>
         }
         return response.data.data.items
     })
+}
+
+/**
+ * 使用角色列表
+ * @param params 查询参数
+ */
+export function useRoles(params: Record<string, any> = {}): Ref<RoleModel[]> {
+    const roles = ref<RoleModel[]>([])
+    onMounted(async () => {
+        roles.value = await fetchRoles(params)
+    })
+    return roles
+}
+
+/**
+ * 使用角色名称值列表
+ * @param params 查询参数
+ */
+export function usePairRoles(params: Record<string, any> = {}): Ref<NameValue[]> {
+    const roles = ref<NameValue[]>([])
+    onMounted(async () => {
+        roles.value = await fetchPairRoles(params)
+    })
+    return roles
 }

@@ -2,7 +2,7 @@
  * 克隆一个对象，这个对象必须是 plain object
  * @param target 待克隆的对象
  */
-function cloneObject(target: any): any {
+export function cloneObject(target: any): any {
     return JSON.parse(JSON.stringify(target))
 }
 
@@ -12,7 +12,7 @@ function cloneObject(target: any): any {
  * @param target 待拷贝属性的对象
  * @returns {*}
  */
-function updateObject(source: Record<any, any>, target: Record<any, any>) {
+export function updateObject(source: Record<any, any>, target: Record<any, any>) {
     Object.keys(target).forEach((key) => {
         if (source.hasOwnProperty!(key)) {
             //如果是 object 且不是数组，则继续更新
@@ -23,9 +23,4 @@ function updateObject(source: Record<any, any>, target: Record<any, any>) {
             }
         }
     })
-}
-
-export {
-    cloneObject,
-    updateObject
 }

@@ -1,8 +1,3 @@
-/*
- * 功能：用户
- * 作者：wutong
- * 日期：2022-10-14
-*/
 import {RoleModel} from "@/modules/role"
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"

@@ -1,8 +1,3 @@
-/*
- * 功能：确认
- * 作者：wutong
- * 日期：2022-10-19
- */
 import {NameValue} from "@/types/built-in"
 
 //是

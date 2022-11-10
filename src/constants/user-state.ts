@@ -1,8 +1,3 @@
-/**
- * 功能：状态
- * 日期：2022-06-14
- */
-
 import {NameValue} from "@/types/built-in"
 
 /**

@@ -1,8 +1,3 @@
-/*
- * 功能：权限
- * 作者：wutong
- * 日期：2022-11-01
-*/
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
 import {onMounted, ref, Ref} from "vue"
@@ -36,7 +31,7 @@ export interface PermissionItem extends Model {
 export function dataToPermissionModel(data: any): PermissionModel {
     return {
         //原始数据
-        _raw: data,
+        _: data,
         //ID
         id: data.id,
         //父权限

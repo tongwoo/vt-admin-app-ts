@@ -15,7 +15,7 @@ const AUTHORIZATION_NAME = 'authorization'
  * @param {string|int} permission 待检测的权限
  * @return {boolean} 有权限=true 无权限=false
  */
-function checkAccess(permission: string) {
+export function checkAccess(permission: string) {
     if (permission === '') {
         return true
     }
@@ -36,7 +36,7 @@ function checkAccess(permission: string) {
  * 从客户端获取授权信息
  * @return {null|string}
  */
-function readAuthorization() {
+export function readAuthorization() {
     let authorization = null
     if (setting.auth.storage === AUTH_STORAGE_LOCAL) {
         authorization = window.localStorage.getItem(AUTHORIZATION_NAME)
@@ -50,7 +50,7 @@ function readAuthorization() {
  * 设置授权信息到客户端存储
  * @param authorization 授权数据
  */
-function writeAuthorization(authorization: string) {
+export function writeAuthorization(authorization: string) {
     //根据配置将授权数据存放到不同的位置
     if (setting.auth.storage === AUTH_STORAGE_LOCAL) {
         window.localStorage.setItem(AUTHORIZATION_NAME, authorization)
@@ -64,16 +64,9 @@ function writeAuthorization(authorization: string) {
 /**
  * 清空授权信息
  */
-function cleanAuthorization() {
+export function cleanAuthorization() {
     window.localStorage.removeItem(AUTHORIZATION_NAME)
     jsCookie.remove(AUTHORIZATION_NAME, {
         path: '/'
     })
-}
-
-export {
-    checkAccess,
-    readAuthorization,
-    writeAuthorization,
-    cleanAuthorization
 }

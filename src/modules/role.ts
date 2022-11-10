@@ -1,8 +1,3 @@
-/*
- * 功能：角色
- * 作者：wutong
- * 日期：2022-10-19
-*/
 import {PermissionModel} from "@/modules/permission"
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"

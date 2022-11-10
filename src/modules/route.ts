@@ -1,6 +1,3 @@
-/*
- * 路由
-*/
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from '@/utils/http'
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
@@ -35,7 +32,7 @@ export interface RouteItem extends Model {
 export function dataToRouteModel(data: any): RouteModel {
     return {
         //原始数据
-        _raw: data,
+        _: data,
         //ID
         id: data.id,
         //权限

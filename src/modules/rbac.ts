@@ -1,7 +1,3 @@
-/**
- * 功能：RBAC
- * 日期：2022-06-14
- */
 import {NameValue} from "@/types/built-in"
 import {http} from "@/utils/http"
 import {onMounted, Ref, ref} from "vue"

@@ -75,13 +75,13 @@ function normalize(response: AxiosResponse): AxiosResponse {
     return response
 }
 
-export interface HttpResponse {
+export interface HttpResponse<T = any> {
     //操作是否成功
     success: boolean,
     //消息
     message: string,
     //数据
-    data?: any
+    data?: T
 }
 
 export {

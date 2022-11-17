@@ -1,6 +1,6 @@
 import {store} from "@/store/index"
 import {GlobalState} from "@/store/types"
-import axios, {AxiosResponse, AxiosInstance} from 'axios'
+import axios, {AxiosResponse, AxiosInstance, AxiosResponseHeaders} from 'axios'
 import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {ResponseCode} from "@/types/built-in"
 import {Store} from "vuex"
@@ -82,6 +82,36 @@ export interface HttpResponse<T = any> {
     message: string,
     //数据
     data?: T
+}
+
+/**
+ * 从响应头中获取附件名称
+ * @param {AxiosResponseHeaders} headers 响应头
+ */
+export function getAttachmentName(headers: AxiosResponseHeaders): string {
+    const disposition = headers['Content-Disposition'] ?? headers['content-disposition']
+    if (!disposition) {
+        return '未命名'
+    }
+    const keyword = "filename*=utf-8''"
+    const offset = disposition.indexOf(keyword)
+    if (offset !== -1) {
+        const name = disposition.substr(offset + keyword.length)
+        return decodeURI(name)
+    }
+    const keyword2 = 'filename="'
+    const offset2 = disposition.indexOf(keyword2)
+    if (offset2 !== -1) {
+        const name2 = disposition.substr(offset2 + keyword2.length, disposition.length - offset2 - keyword2.length - 1)
+        return decodeURI(name2)
+    }
+    const keyword3 = 'filename='
+    const offset3 = disposition.indexOf(keyword3)
+    if (offset3 !== -1) {
+        const name3 = disposition.substr(offset3 + keyword3.length)
+        return decodeURI(name3)
+    }
+    return 'unknown'
 }
 
 export {

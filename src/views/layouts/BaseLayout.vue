@@ -9,10 +9,10 @@
         <!--左侧导航-->
         <base-navigator></base-navigator>
         <!--路由Tab切换，不需要请删除此Div-->
-        <div class="route-tab-bar" :style="navigatorLeftStyle">
+        <div class="route-tab-bar">
             <route-tab-switcher></route-tab-switcher>
         </div>
-        <div class="base-content" :style="navigatorPaddingLeftStyle">
+        <div class="base-content">
             <router-view v-slot="{ Component, route }">
                 <!--<transition name="el-fade-in" mode="out-in">-->
                     <keep-alive :include="keepAliveComponents">
@@ -48,31 +48,6 @@ const viewComponent = ref(null)
  */
 const navigatorShow = computed(() => {
     return !store.state.app.navigator.collapse
-})
-
-/**
- * 侧边栏尺寸
- */
-const navigatorWidth = computed(() => {
-    return store.state.app.navigator.width.current
-})
-
-/**
- * 距离侧边栏间距
- */
-const navigatorPaddingLeftStyle = computed(() => {
-    return navigatorWidth.value ? {
-        paddingLeft: navigatorWidth.value + 'px'
-    } : null
-})
-
-/**
- * 距离侧边栏距离
- */
-const navigatorLeftStyle = computed(() => {
-    return navigatorWidth.value ? {
-        left: navigatorWidth.value + 'px'
-    } : null
 })
 
 /**

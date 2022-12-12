@@ -4,8 +4,8 @@
 -->
 <template>
     <div class="base-header">
-        <!--标题 因设计稿可能头部是独立的位置，此标题没有放在侧边栏-->
-        <div class="header-title" :class="isCollapsed ? 'collapsed' : null" :style="navigatorWidth">
+        <!--标题-->
+        <div class="header-title" :class="isCollapsed ? 'collapsed' : null">
             <transition name="el-fade-in" mode="out-in">
                 <div v-if="isCollapsed" key="image">
                     <img :src="logo" alt="">
@@ -148,21 +148,6 @@ const toggleNavigatorBtnClass = computed(() => {
 const toggleNavigatorBtnClick = () => {
     store.commit('app/toggleNavigator')
 }
-
-/**
- * 导航宽度
- */
-const navigatorWidth = computed(() => {
-    if (
-        store.state.app.navigator.width.current === null ||
-        store.state.app.navigator.collapse
-    ) {
-        return null;
-    }
-    return {
-        flexBasis: store.state.app.navigator.width.current + 'px'
-    }
-})
 
 /**
  * 全屏按钮点击

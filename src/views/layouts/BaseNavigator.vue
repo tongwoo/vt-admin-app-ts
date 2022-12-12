@@ -1,7 +1,6 @@
 <!-- 菜单导航 -->
 <template>
-    <div class="base-navigator" :class="isCollapsed ? 'base-navigator-collapse' : null" :style="navigatorWidth">
-        <virtual-drag v-if="!isCollapsed" :keep="false" class="navigator-drag" @drag-start="dragStart" @drag-move="dragMove" @drag-stop="dragStop"></virtual-drag>
+    <div class="base-navigator" :class="isCollapsed ? 'base-navigator-collapse' : null">
         <!--用户面板-->
         <div class="user-panel">
             <div class="user-logo">
@@ -14,7 +13,7 @@
         <!--菜单-->
         <el-scrollbar>
             <el-menu :router="true" :unique-opened="true" :collapse="isCollapsed" :collapse-transition="false" :default-active="route.path">
-                <menu-item v-for="(menu,i) in menus" :key="menu.name" :item="menu"></menu-item>
+                <menu-item v-for="menu in menus" :key="menu.name" :item="menu"></menu-item>
             </el-menu>
         </el-scrollbar>
         <!--折叠-->
@@ -32,7 +31,6 @@ import {computed, ref} from "vue"
 import {useStore} from "@/store/index"
 import MenuItem from '@/components/MenuItem.vue'
 import {useRoute} from "vue-router"
-import VirtualDrag from "@/components/VirtualDrag.vue"
 import defaultAvatar from "@/assets/images/icons/avatar-default.png"
 import {filterAuthMenus, navigateMenus} from '@/data/menu'
 
@@ -59,56 +57,6 @@ const avatarError = (error) => {
  */
 const toggleNavigatorBtnClick = () => {
     store.commit('app/toggleNavigator')
-}
-
-/**
- * 导航宽度
- */
-const navigatorWidth = computed(() => {
-    if (
-        store.state.app.navigator.width.current === null ||
-        store.state.app.navigator.collapse
-    ) {
-        return null;
-    }
-    return {
-        width: store.state.app.navigator.width.current + 'px'
-    }
-})
-
-//导航尺寸
-const navigatorSize = ref(0)
-
-/**
- * 拖动开始
- */
-const dragStart = () => {
-    const wrapper = document.querySelector('.base-navigator')
-    wrapper.style.transition = 'none'
-    document.querySelector('.header-title').style.transition = 'none'
-    navigatorSize.value = wrapper.offsetWidth
-}
-
-/**
- * 拖动中
- * @param {x:number,y:number} offset 偏移位置
- */
-const dragMove = (offset) => {
-    let newWidth = navigatorSize.value + offset.x
-    if (newWidth >= store.state.app.navigator.width.max) {
-        newWidth = store.state.app.navigator.width.max
-    } else if (newWidth <= store.state.app.navigator.width.min) {
-        newWidth = store.state.app.navigator.width.min
-    }
-    store.commit('app/updateWidth', newWidth)
-}
-
-/**
- * 拖动结束
- */
-const dragStop = () => {
-    document.querySelector('.base-navigator').style.removeProperty('transition')
-    document.querySelector('.header-title').style.removeProperty('transition')
 }
 </script>
 

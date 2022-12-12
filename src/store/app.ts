@@ -15,15 +15,6 @@ const module: Module<AppState, RootState> = {
                 collapse: false,
                 //页面小于多少宽度折叠菜单
                 size: 1366,
-                //导航宽度
-                width: {
-                    //当前宽度
-                    current: null,
-                    //最大宽度
-                    max: 350,
-                    //最小宽度
-                    min: 236
-                }
             }
         }
     },
@@ -39,14 +30,6 @@ const module: Module<AppState, RootState> = {
             } else {
                 state.navigator.collapse = collapse
             }
-        },
-        /**
-         * 更新宽度
-         * @param state
-         * @param width 宽度
-         */
-        updateWidth(state: AppState, width: number) {
-            state.navigator.width.current = width
         },
         /**
          * 更新语言

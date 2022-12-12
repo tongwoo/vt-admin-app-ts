@@ -106,7 +106,7 @@ import {usePairUsers} from "@/modules/user"
 import moment from "moment"
 import {QueryParam, ID, RecordSet, DialogOption} from "@/types/built-in.js"
 import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
-import {ElLoading, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
@@ -296,7 +296,7 @@ const batchRemoveBtnClick = () => {
  * @param ids 要删除的ID
  */
 const submitRemove = (ids: ID | ID[]) => {
-    const loading = ElLoading.service({
+    const loading = loadingTip.service({
         lock: true,
         text: '删除中'
     })

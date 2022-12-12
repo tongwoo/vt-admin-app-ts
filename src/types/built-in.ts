@@ -63,7 +63,7 @@ export interface Model {
     //主键ID
     id: ID,
     //原始数据，调用转换模型的方法会增加此参数
-    _raw?: any
+    _?: any
 }
 
 /**

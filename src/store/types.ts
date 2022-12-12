@@ -27,11 +27,6 @@ export interface AppState {
     navigator: {
         collapse: boolean,
         size: number,
-        width: {
-            current: number | null,
-            max: number,
-            min: number
-        }
     }
 }
 

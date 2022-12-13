@@ -1,8 +1,4 @@
-<!--
-功能：角色表单
-作者：wutong
-日期：2022-10-19
--->
+<!--角色-->
 <template>
     <div class="form-container" v-loading="loading">
         <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
@@ -19,20 +15,15 @@
                 <el-input v-model="model.description" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="规则名称" prop="ruleName">
-                <el-input v-model="model.ruleName" maxlength="50"></el-input>
-            </el-form-item>
-            <!--
-            <el-form-item label="是否内置" prop="isBuiltIn">
-                <el-select v-model="model.isBuiltIn" class="el-select-long">
-                    <el-option v-for="(item,i) in isBuiltIns" :key="i" :label="item.name" :value="item.value"></el-option>
+                <el-select v-model="model.ruleName" class="el-select-long" clearable>
+                    <el-option v-for="(item,i) in ruleList" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
-            -->
             <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button type="default" @click="cancelBtnClick">取消</el-button>
+                <el-button @click="cancelBtnClick">取消</el-button>
                 <el-button type="primary" @click="saveBtnClick" native-type="submit">保存</el-button>
             </div>
         </el-form>
@@ -44,29 +35,36 @@ import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "el
 import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import moment from "moment"
-import {getConfirms} from "@/constants/confirm"
 import {createRole, updateRole, fetchRole} from "@/modules/role"
 import {ID, NameValue} from "@/types/built-in"
+import {useRules} from "@/modules/rbac";
 
 //属性
-const props = defineProps({
-    //传递过来的数据
-    payload: {
-        type: Object
+const props = withDefaults(
+    defineProps<{
+        //传递过来的数据
+        payload: any
+    }>(),
+    {
+        payload: () => {
+            return {}
+        }
     }
-})
+)
+
+//规则列表
+const ruleList = useRules()
+
 //事件
 const emits = defineEmits(['close'])
 //加载中
-const loading = ref(false)
+const loading = ref<boolean>(false)
 //表单
 const form = ref<FormInstance>()
 //错误信息
 const tip = ref<string | null>(null)
-//是否内置列表
-const isBuiltIns = ref(getConfirms())
 
-//模型
+//表单模型
 const model = reactive({
     //主键
     id: null,
@@ -79,7 +77,7 @@ const model = reactive({
     //是否内置
     isBuiltIn: null
 })
-//规则
+//表单规则
 const rules = {
     //角色名称
     name: [
@@ -111,37 +109,6 @@ const rules = {
             message: '角色描述最多32个字符'
         }
     ],
-    //规则名称
-    ruleName: [
-        {
-            type: 'string',
-            required: false,
-            trigger: 'blur',
-            message: '规则名称必须填写'
-        },
-        {
-            type: 'string',
-            max: 50,
-            trigger: 'blur',
-            message: '规则名称最多50个字符'
-        }
-    ],
-    //是否内置
-    isBuiltIn: [
-        {
-            type: 'integer',
-            required: false,
-            trigger: 'blur',
-            message: '是否内置必须填写'
-        },
-        {
-            type: 'integer',
-            min: 0,
-            max: 255,
-            trigger: 'blur',
-            message: '是否内置必须介于0-255之间'
-        }
-    ]
 }
 
 /**
@@ -161,7 +128,7 @@ const saveBtnClick = async () => {
         isBuiltIn: model.isBuiltIn //是否内置
     }
     //保存
-    if (data?.id) {
+    if (model.id) {
         submitUpdate(data)
     } else {
         submitCreate(data)
@@ -181,12 +148,12 @@ const cancelBtnClick = () => {
  */
 const submitCreate = (data: object) => {
     loading.value = true
-    return createRole(data).then(({success, message}) => {
-        if (!success) {
-            tip.value = message
+    createRole(data).then((result) => {
+        if (!result.success) {
+            tip.value = result.message
             return
         }
-        messageTip.success(message)
+        messageTip.success(result.message)
         emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -199,12 +166,12 @@ const submitCreate = (data: object) => {
  */
 const submitUpdate = (data: object) => {
     loading.value = true
-    return updateRole(data).then(({success, message}) => {
-        if (!success) {
-            tip.value = message
+    updateRole(data).then((result) => {
+        if (!result.success) {
+            tip.value = result.message
             return
         }
-        messageTip.success(message)
+        messageTip.success(result.message)
         emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -217,29 +184,20 @@ const submitUpdate = (data: object) => {
  */
 const loadRole = (id: ID) => {
     loading.value = true
-    return fetchRole(id).then((body) => {
-        if (!body.success) {
-            messageTip.error(body.message)
-            return
+    fetchRole(id).then((data) => {
+        if (!data) {
+            messageTip.error('加载数据异常')
+        } else {
+            updateObject(model, data)
         }
-        const data = body.data
-        updateObject(model, data)
-        /*
-        //更新模型
-        model.id = data.id; //ID
-        model.name : data.name, //角色名称
-        model.description : data.description, //角色描述
-        model.ruleName : data.ruleName, //规则名称
-        model.isBuiltIn : data.isBuiltIn, //是否内置
-        */
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
 }
 
-onMounted(async () => {
+onMounted(() => {
     if (props.payload?.id) {
-        await loadRole(props.payload.id)
+        loadRole(props.payload.id)
     }
 })
 </script>

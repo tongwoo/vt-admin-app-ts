@@ -17,14 +17,6 @@ export interface PermissionModel extends Model {
 }
 
 /**
- * 权限列表项
- */
-export interface PermissionItem extends Model {
-    ///....
-}
-
-
-/**
  * 将原始数据转换成权限模型
  * @param data 要转换的数据
  */
@@ -42,16 +34,6 @@ export function dataToPermissionModel(data: any): PermissionModel {
         description: data.description,
         //规则名称
         ruleName: data.ruleName
-    }
-}
-
-/**
- * 将权限模型转换成数据项
- * @param model 权限模型
- */
-export function modelToPermissionItem(model: PermissionModel): PermissionItem {
-    return {
-        ...model
     }
 }
 

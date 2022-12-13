@@ -1,7 +1,10 @@
-import {PermissionModel} from "@/modules/permission"
-import {http, HttpResponse} from '@/utils/http'
+/*
+ * 角色
+*/
+import {onMounted, Ref, ref} from "vue"
+import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
-import {onMounted, ref, Ref} from "vue"
+import {PermissionModel} from './permission'
 
 /**
  * 角色模型
@@ -15,18 +18,29 @@ export interface RoleModel extends Model {
     ruleName: string,
     //是否内置
     isBuiltIn: number,
-    //角色权限
+    //角色权限列表
     permissions?: PermissionModel[]
 }
 
 /**
- * 角色列表项
+ * 将原始数据转换成角色模型
+ * @param data 要转换的数据
  */
-export interface RoleItem extends Model {
-    //是否内置名称
-    isBuiltInName?: string,
-    //是否内置样式
-    isBuiltInClass?: string,
+export function dataToRoleModel(data: any): RoleModel {
+    return {
+        //原数据
+        _: data,
+        //ID
+        id: data.id,
+        //角色名称
+        name: data.name,
+        //角色描述
+        description: data.description,
+        //规则名称
+        ruleName: data.ruleName,
+        //是否内置
+        isBuiltIn: data.isBuiltIn
+    }
 }
 
 /**
@@ -38,10 +52,10 @@ export function createRole(data: object): Promise<HttpResponse> {
         '/role/create',
         data
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -55,10 +69,10 @@ export function updateRole(data: object): Promise<HttpResponse> {
         '/role/update',
         data
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -74,10 +88,10 @@ export function removeRole(ids: ID | ID[]): Promise<HttpResponse> {
             ids
         }
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -86,55 +100,56 @@ export function removeRole(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取角色详情
  * @param id 主键ID
  */
-export function fetchRole(id: ID): Promise<HttpResponse> {
+export function fetchRole(id: ID): Promise<RoleModel | null> {
     return http.get(
         '/role/detail?id=' + id
     ).then((response) => {
-        const body = response.data
-        const success = response.isOk
-        return {
-            success: success,
-            message: body.message,
-            data: success ? body.data.item : null
-        }
+        return response.isOk ? dataToRoleModel(response.data.data.item) : null
     })
 }
 
 /**
  * 获取角色列表
- * @param params 参数
- * @return {Promise<Array>}
+ * @param params 查询参数
  */
-export function fetchRoles(params: object = {}): Promise<Array<RoleModel>> {
+export function fetchRoles(params: Record<string, any> = {}): Promise<RoleModel[]> {
     return http.get(
         '/role/items',
         {
             params
         }
     ).then((response) => {
-        return response.data.data.items
+        const result = response.data
+        if (!response.isOk) {
+            return []
+        }
+        return result.data.items.map((item: any) => {
+            return dataToRoleModel(item)
+        })
     })
 }
 
 /**
  * 获取分页之后的角色列表
- * @param params 参数
+ * @param params 查询参数
  */
-export function fetchPageRoles(params: object = {}): Promise<PageResult> {
+export function fetchPageRoles(params: Record<string, any> = {}): Promise<PageResult<RoleModel>> {
     return http.get(
         '/role/page-items',
         {
             params
         }
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         const data = {
-            items: [],
+            items: [] as RoleModel[],
             total: 0
         }
         if (response.isOk) {
-            data.items = body.data.items
-            data.total = body.data.total
+            data.items = result.data.items.map((item: any) => {
+                return dataToRoleModel(item)
+            })
+            data.total = result.data.total
         }
         return data
     })
@@ -142,34 +157,19 @@ export function fetchPageRoles(params: object = {}): Promise<PageResult> {
 
 /**
  * 获取角色键值对列表
- * @param params 参数
+ * @param params 查询参数
  */
-export function fetchPairRoles(params: object = {}): Promise<Array<NameValue>> {
+export function fetchPairRoles(params: Record<string, any> = {}): Promise<NameValue[]> {
     return fetchRoles(params).then((items) => {
         return items.map((item) => {
             return {
-                name: item.description,
-                value: item.id,
-                origin: item
+                name: item.name,
+                value: item.id
             }
         })
     })
 }
 
-/**
- * 角色权限列表
- * @param roleId 角色ID
- */
-export function fetchRolePermissions(roleId: ID): Promise<Array<PermissionModel>> {
-    return http.get(
-        '/role/permissions?id=' + roleId
-    ).then((response) => {
-        if (!response.isOk) {
-            return []
-        }
-        return response.data.data.items
-    })
-}
 
 /**
  * 使用角色列表
@@ -193,4 +193,19 @@ export function usePairRoles(params: Record<string, any> = {}): Ref<NameValue[]>
         roles.value = await fetchPairRoles(params)
     })
     return roles
+}
+
+/**
+ * 角色权限列表
+ * @param roleId 角色ID
+ */
+export function fetchRolePermissions(roleId: ID): Promise<Array<PermissionModel>> {
+    return http.get(
+        '/role/permissions?id=' + roleId
+    ).then((response) => {
+        if (!response.isOk) {
+            return []
+        }
+        return response.data.data.items
+    })
 }

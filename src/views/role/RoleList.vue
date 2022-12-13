@@ -7,7 +7,7 @@
     <div class="page-container">
         <div class="page-segment">
             <div class="segment-header with-bordered">
-                <div class="header-title">查询 {{users222}}</div>
+                <div class="header-title">查询</div>
             </div>
             <div class="segment-body">
                 <div class="query-container">
@@ -29,30 +29,18 @@
             </div>
         </div>
         <div class="page-segment">
-            <div class="segment-header with-bordered">
-                <div class="header-flex">
-                    <div class="header-title">角色列表</div>
-                    <div class="header-flexible"></div>
-                    <div class="header-buttons">
-                        <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
-                        <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
-                    </div>
+            <div class="segment-header with-bordered with-flex">
+                <div class="header-title">角色列表</div>
+                <div class="header-buttons">
+                    <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
+                    <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
                 </div>
             </div>
             <div class="segment-body">
                 <!--数据列表-->
                 <div class="data-container">
                     <div class="data-table">
-                        <el-table
-                            ref="table"
-                            border
-                            stripe
-                            size="small"
-                            row-key="id"
-                            :data="record.items"
-                            v-loading="record.loading"
-                            @selection-change="selectionChange"
-                        >
+                        <el-table ref="table" border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" selection-change="selectionChange">
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
                             <el-table-column type="index" fixed="left" label="序号" align="center"></el-table-column>
                             <el-table-column prop="name" label="角色名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
@@ -77,13 +65,7 @@
                 </div>
                 <!--数据分页-->
                 <div class="pagination-container">
-                    <el-pagination
-                        v-model:page-size="record.size"
-                        v-model:current-page="query.page"
-                        :total="record.total"
-                        @current-change="pageChange"
-                        background
-                    ></el-pagination>
+                    <el-pagination v-model:page-size="record.size" v-model:current-page="query.page" :total="record.total" @current-change="pageChange" background></el-pagination>
                 </div>
             </div>
         </div>
@@ -102,16 +84,14 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {usePairUsers} from "@/modules/user"
-import moment from "moment"
-import {QueryParam, ID, RecordSet, DialogOption} from "@/types/built-in.js"
-import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
+import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {defineAsyncComponent, onMounted, reactive, ref} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {getConfirms, getConfirmName, getConfirmClass} from "@/constants/confirm"
-import {RoleItem, RoleModel, removeRole, fetchPageRoles} from "@/modules/role"
+import {getConfirmClass, getConfirmName, getConfirms} from "@/constants/confirm"
+import {fetchPageRoles, removeRole, RoleModel} from "@/modules/role"
 
 //角色表单
 const RoleForm = defineAsyncComponent(() => import('@/views/role/RoleForm.vue'))
@@ -147,7 +127,7 @@ type QueryType = keyof typeof query
  * 构建查询参数
  */
 const buildQuery = () => {
-    const params = {
+    return {
         //当前页码
         page: query.page,
         //每页记录数
@@ -157,7 +137,6 @@ const buildQuery = () => {
         //角色描述
         description: query.description,
     }
-    return params
 }
 
 /**
@@ -196,7 +175,7 @@ const permission: DialogOption = {
  * 权限按钮点击
  * @param row 当前行数据
  */
-const permissionBtnClick = (row: RoleItem) => {
+const permissionBtnClick = (row: RoleModel) => {
     permission.data = row
     permission.dialog.show = true
     permission.dialog.title = '权限'
@@ -257,7 +236,7 @@ const modifyBtnClick = (row: object) => {
  * 单个删除按钮点击
  * @param {Object} row 当前行数据
  */
-const removeBtnClick = (row: RoleItem) => {
+const removeBtnClick = (row: RoleModel) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -316,7 +295,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record = reactive<RecordSet<RoleItem>>({
+const record = reactive<RecordSet<RoleModel>>({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -331,7 +310,7 @@ const table = ref<InstanceType<typeof ElTable>>()
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const selectionChange = (records: RoleItem[]) => {
+const selectionChange = (records: RoleModel[]) => {
     record.selected = records
 }
 
@@ -358,17 +337,7 @@ const loadRoles = () => {
             return
         }
         record.total = data.total
-        record.items = data.items.map<RoleItem>((item) => {
-            const role = item as RoleModel
-            return {
-                ...role,
-                name: role.name, //角色名称
-                description: role.description, //角色描述
-                ruleName: role.ruleName, //规则名称
-                isBuiltInName: getConfirmName(role.isBuiltIn), //是否内置名称
-                isBuiltInClass: getConfirmClass(role.isBuiltIn) //是否内置样式Class
-            }
-        })
+        record.items = data.items
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false
     })

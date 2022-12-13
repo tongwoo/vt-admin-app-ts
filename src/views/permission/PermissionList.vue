@@ -96,7 +96,7 @@ import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messag
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {PermissionItem, PermissionModel, removePermission, fetchPagePermissions, modelToPermissionItem} from "@/modules/permission"
+import {PermissionModel, removePermission, fetchPagePermissions} from "@/modules/permission"
 
 //权限表单
 const PermissionForm = defineAsyncComponent(() => import('@/views/permission/PermissionForm.vue'))
@@ -200,7 +200,7 @@ const createBtnClick = () => {
 /**
  * 新增子权限按钮点击
  */
-const newBtnClick = (row: PermissionItem) => {
+const newBtnClick = (row: PermissionModel) => {
     maintain.data = {
         clone: true,
         parentId: row.id
@@ -223,7 +223,7 @@ const modifyBtnClick = (row: object) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const removeBtnClick = (row: PermissionItem) => {
+const removeBtnClick = (row: PermissionModel) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -282,7 +282,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record = reactive<RecordSet<PermissionItem>>({
+const record = reactive<RecordSet<PermissionModel>>({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -297,7 +297,7 @@ const table = ref<InstanceType<typeof ElTable>>()
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const selectionChange = (records: PermissionItem[]) => {
+const selectionChange = (records: PermissionModel[]) => {
     record.selected = records
 }
 
@@ -324,9 +324,7 @@ const loadPermissions = () => {
             return
         }
         record.total = data.total
-        record.items = data.items.map((item) => {
-            return modelToPermissionItem(item)
-        })
+        record.items = data.items
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false
     })

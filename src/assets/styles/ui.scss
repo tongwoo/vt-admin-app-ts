@@ -34,6 +34,11 @@ body, div, ul, li {
                 background-color: white;
             }
 
+            &.with-flex {
+                display: flex;
+                justify-content: space-between;
+            }
+
             //头部标题
             .header-title {
                 font-weight: bold;

@@ -138,21 +138,21 @@ const submitLogin = async () => {
         captcha: model.captcha
     }
     loading.value = true
-    requestLogin(params).then(({success, message, data}) => {
-        if (!success) {
-            tip.value = message ?? '网络错误'
+    requestLogin(params).then((result) => {
+        if (!result.success) {
+            tip.value = result.message ?? '网络错误'
             return false
         }
         //授权数据
-        const authorization = data.token
+        const authorization = result.data.token
         //保存授权数据
         writeAuthorization(authorization)
         //填充用户信息
         store.commit('user/update', {
             authorization: authorization,
-            nickname: data.name,
-            avatar: data.avatar ?? defaultAvatar,
-            permissions: data.permissions
+            nickname: result.data.name,
+            avatar: result.data.avatar ?? defaultAvatar,
+            permissions: result.data.permissions
         })
         //加载用户数据（如果需要额外调用接口的话）
         //loadProfile();
@@ -172,13 +172,13 @@ const loadProfile = () => {
         lock: true,
         text: '初始化中'
     })
-    fetchProfile().then(({success, message, data}) => {
-        if (!success) {
-            tip.value = message
+    fetchProfile().then((result) => {
+        if (!result.success) {
+            tip.value = result.message
             return false
         }
         store.commit('user/update', {
-            nickname: data.name,
+            nickname: result.data.name,
             avatar: defaultAvatar,
             permissions: []
         })

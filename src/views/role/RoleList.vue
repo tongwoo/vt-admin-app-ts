@@ -330,7 +330,7 @@ const pageChange = (page: number) => {
 const loadRoles = () => {
     const params = buildQuery()
     record.loading = true
-    return fetchPageRoles(params).then((data) => {
+    fetchPageRoles(params).then((data) => {
         if (data.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadRoles()

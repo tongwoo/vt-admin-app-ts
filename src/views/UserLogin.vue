@@ -32,7 +32,7 @@
                         </el-form-item>
                         -->
                         <el-collapse-transition>
-                            <div class="error-container" v-if="tip!==null">
+                            <div class="error-container" v-if="tip">
                                 <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
                             </div>
                         </el-collapse-transition>

@@ -15,8 +15,8 @@ const AUTHORIZATION_NAME = 'authorization'
  * @param {string|int} permission 待检测的权限
  * @return {boolean} 有权限=true 无权限=false
  */
-export function checkAccess(permission: string) {
-    if (permission === '') {
+export function checkAccess(permission: string | null) {
+    if (permission === '' || permission === null) {
         return true
     }
     //本地保存的权限

@@ -99,8 +99,8 @@ export interface DialogOption {
 export interface MenuItem {
     name: string,
     path: string,
-    icon?: string,
+    icon?: string|null,
     show: boolean,
-    permission?: string,
+    permission?: string|null,
     children?: Array<MenuItem>
 }

@@ -37,23 +37,39 @@ http.interceptors.request.use(
 //响应拦截器
 http.interceptors.response.use(
     function (response) {
-        return normalize(response)
-    },
-    function (error) {
-        if (error?.response === undefined) {
-            throw error
-        }
-        //需要提示处理的状态码，其他类型错误交给业务层处理
+        const normalized = normalize(response)
         const codes = [
             ResponseCode.UNAUTHORIZED,
             ResponseCode.FORBIDDEN,
             ResponseCode.NOT_FOUND
         ]
         if (
-            codes.indexOf(error.response?.status) !== -1 ||
+            //根据实际需要使用 status 或者 code 来判断状态码
+            //codes.indexOf(normalized?.status) !== -1 ||
+            codes.indexOf(normalized.data?.code) !== -1
+        ) {
+            return Promise.reject({
+                response: normalized
+            })
+        }
+        return normalized
+    },
+    function (error) {
+        if (error?.response === undefined) {
+            return Promise.reject(error.message)
+        }
+        //需要继续抛异常的相关状态码，其他类型错误交给业务层处理
+        const codes = [
+            ResponseCode.UNAUTHORIZED,
+            ResponseCode.FORBIDDEN,
+            ResponseCode.NOT_FOUND
+        ]
+        if (
+            //根据实际需要使用 status 或者 code 来判断状态码
+            //codes.indexOf(error.response?.status) !== -1 ||
             codes.indexOf(error.response?.data?.code) !== -1
         ) {
-            throw error
+            return Promise.reject(error)
         }
         return normalize(error.response)
     }
@@ -64,7 +80,7 @@ http.interceptors.response.use(
  */
 function normalize(response: AxiosResponse): AxiosResponse {
     response.isOk = response.status == 200
-    //将响应体转换成ResponseData结构
+    //将响应体转换成HttpResponse结构
     if (typeof response.data === 'object') {
         if (response.data?.msg !== undefined) {
             response.data.message = response.data.msg

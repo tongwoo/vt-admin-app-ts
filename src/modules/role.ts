@@ -163,7 +163,7 @@ export function fetchPairRoles(params: Record<string, any> = {}): Promise<NameVa
     return fetchRoles(params).then((items) => {
         return items.map((item) => {
             return {
-                name: item.name,
+                name: item.description,
                 value: item.id
             }
         })

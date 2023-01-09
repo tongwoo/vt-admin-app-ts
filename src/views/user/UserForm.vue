@@ -1,32 +1,26 @@
-<!--
-功能：用户表单
-作者：tongwoo
-日期：2022-06-14
--->
+<!--用户-->
 <template>
     <div class="form-container" v-loading="loading">
-        <el-form ref="form" :model="model" :rules="rules" label-width="70px" size="default" @submit.prevent>
-            <el-form-item label="姓名" prop="name">
-                <el-input v-model="model.name" maxlength="32"></el-input>
+        <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="model.username" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
                     <el-option v-for="(item,i) in roles" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="用户名" prop="username">
-                <el-input v-model="model.username" maxlength="32"></el-input>
+            <el-form-item v-if="model.id===null" label="登录密码" prop="password">
+                <el-input v-model="model.password" maxlength="64"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="password" v-if="model.id===null">
-                <el-input v-model="model.password" maxlength="64" type="password" autocomplete="new-password" show-password></el-input>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="model.name" maxlength="32"></el-input>
             </el-form-item>
-            <!--
             <el-form-item label="状态" prop="state">
-                <el-select v-model="model.state" class="el-select-long">
-                    <el-option v-for="(item,i) in states" :key="i" :label="item.name" :value="item.value"></el-option>
-                </el-select>
+                <el-radio-group v-model="model.state">
+                    <el-radio v-for="(item,i) in states" :key="i" :label="item.value">{{ item.name }}</el-radio>
+                </el-radio-group>
             </el-form-item>
-            -->
             <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
@@ -38,36 +32,44 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {RoleModel, usePairRoles} from "@/modules/role"
 import {ref, reactive, onMounted} from "vue"
-import {ElMessage as messageTip, FormInstance} from "element-plus"
-import {updateObject} from "@/utils/object"
+import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
+import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {getUserStates} from "@/constants/user-state"
+import moment from "moment"
+import {getUserStates, USER_STATE_ENABLED} from "@/constants/user-state"
 import {createUser, updateUser, fetchUser} from "@/modules/user"
-import {usePairRoles} from "@/modules/role"
 import {ID, NameValue} from "@/types/built-in"
 
 //属性
-const props = defineProps({
-    //传递过来的数据
-    payload: {
-        type: Object
+const props = withDefaults(
+    defineProps<{
+        //传递过来的数据
+        payload: any
+    }>(),
+    {
+        payload: () => {
+            return {}
+        }
     }
-})
-//事件
-const emits = defineEmits(['close'])
-//加载中
-const loading = ref(false)
-//表单
-const form = ref<FormInstance>()
-//错误信息
-const tip = ref<string | null>(null)
+)
+
 //状态列表
 const states = ref(getUserStates())
 //角色列表
 const roles = usePairRoles()
 
-//模型
+//事件
+const emits = defineEmits(['close'])
+//加载中
+const loading = ref<boolean>(false)
+//表单
+const form = ref<FormInstance>()
+//错误信息
+const tip = ref<string | null>(null)
+
+//表单模型
 const model = reactive({
     //主键
     id: null,
@@ -80,13 +82,13 @@ const model = reactive({
     //头像
     avatar: null,
     //状态
-    state: null,
+    state: USER_STATE_ENABLED,
     //上次登录时间
     loginTime: null,
     //角色ID列表
-    roleIds: []
+    roleIds: [] as ID[]
 })
-//规则
+//表单规则
 const rules = {
     //用户名
     username: [
@@ -101,6 +103,15 @@ const rules = {
             max: 32,
             trigger: 'blur',
             message: '用户名最多32个字符'
+        }
+    ],
+    //角色
+    roleIds: [
+        {
+            type: 'array',
+            required: true,
+            trigger: 'blur',
+            message: '角色必须选择'
         }
     ],
     //登录密码
@@ -133,29 +144,44 @@ const rules = {
             message: '姓名最多32个字符'
         }
     ],
+    //头像
+    avatar: [
+        {
+            type: 'string',
+            required: true,
+            trigger: 'blur',
+            message: '头像必须填写'
+        },
+        {
+            type: 'string',
+            max: 100,
+            trigger: 'blur',
+            message: '头像最多100个字符'
+        }
+    ],
     //状态
     state: [
         {
             type: 'integer',
-            required: false,
+            required: true,
             trigger: 'blur',
             message: '状态必须填写'
         },
         {
             type: 'integer',
             min: 0,
-            max: 255,
+            max: 9,
             trigger: 'blur',
-            message: '状态必须介于0-255之间'
+            message: '状态必须介于0-9之间'
         }
     ],
-    //角色
-    roleIds: [
+    //上次登录时间
+    loginTime: [
         {
-            type: 'array',
+            type: 'object',
             required: true,
             trigger: 'blur',
-            message: '角色必须选择'
+            message: '上次登录时间必须选择'
         }
     ]
 }
@@ -165,22 +191,21 @@ const rules = {
  */
 const saveBtnClick = async () => {
     tip.value = null
-    if (!form.value) {
-        return
-    }
-    const success = await form.value.validate().catch(() => false)
+    const success = await form.value!.validate().catch(() => false)
     if (!success) {
         return
     }
-    const data = {
+    const data: Record<string, any> = {
         id: model.id, //ID
         username: model.username, //用户名
         password: model.password, //登录密码
         name: model.name, //姓名
-        roleIds: model.roleIds //角色
+        state: model.state, //状态
+        roleIds: model.roleIds
     }
     //保存
-    if (data?.id) {
+    if (model.id) {
+        delete data.password
         submitUpdate(data)
     } else {
         submitCreate(data)
@@ -197,16 +222,15 @@ const cancelBtnClick = () => {
 /**
  * 用户新增
  * @param data 新增的数据
- * @return {Promise}
  */
 const submitCreate = (data: object) => {
     loading.value = true
-    return createUser(data).then(({success, message}) => {
-        if (!success) {
-            tip.value = message
+    createUser(data).then((result) => {
+        if (!result.success) {
+            tip.value = result.message
             return
         }
-        messageTip.success(message)
+        messageTip.success(result.message)
         emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -216,16 +240,15 @@ const submitCreate = (data: object) => {
 /**
  * 用户更新
  * @param data 更新的数据
- * @return {Promise}
  */
 const submitUpdate = (data: object) => {
     loading.value = true
-    return updateUser(data).then(({success, message}) => {
-        if (!success) {
-            tip.value = message
+    updateUser(data).then((result) => {
+        if (!result.success) {
+            tip.value = result.message
             return
         }
-        messageTip.success(message)
+        messageTip.success(result.message)
         emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -235,26 +258,24 @@ const submitUpdate = (data: object) => {
 /**
  * 用户载入
  * @param id 主键ID
- * @return {Promise}
  */
 const loadUser = (id: ID) => {
     loading.value = true
-    return fetchUser(id).then((body) => {
-        if (!body.success) {
-            messageTip.error(body.message)
-            return
+    fetchUser(id).then((data) => {
+        if (!data) {
+            messageTip.error('加载数据异常')
+        } else {
+            updateObject(model, data)
+            model.roleIds = data.roles!.map(item => item.id)
         }
-        const data = body.data
-        updateObject(model, data)
-        model.roleIds = data.roles.map((item: { id: ID }) => item.id)
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
 }
 
-onMounted(async () => {
+onMounted(() => {
     if (props.payload?.id) {
-        await loadUser(props.payload.id)
+        loadUser(props.payload.id)
     }
 })
 </script>

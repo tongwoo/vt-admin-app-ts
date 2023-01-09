@@ -1,18 +1,16 @@
 import {NameValue} from "@/types/built-in"
 
-/**
- * 启用
- */
-const USER_STATE_ENABLED = 1
-/**
- * 禁用
- */
-const USER_STATE_DISABLED = 0
+//状态 - 启用
+export const USER_STATE_ENABLED = 1
+
+//状态 - 禁用
+export const USER_STATE_DISABLED = 0
 
 /**
- * 状态数据项列表
+ * 状态列表
+ * @param ignore 需要忽略的项
  */
-function getUserStates(): Array<NameValue<number>> {
+export function getUserStates(...ignore: number[]): NameValue[] {
     return [
         {
             name: '启用',
@@ -22,33 +20,29 @@ function getUserStates(): Array<NameValue<number>> {
             name: '禁用',
             value: USER_STATE_DISABLED
         }
-    ]
+    ].filter((item) => {
+        return ignore.indexOf(item.value) === -1
+    })
 }
 
 /**
  * 获取状态名称
  * @param value 值
  */
-function getUserStateName(value: number): string | undefined {
-    return getUserStates().find(item => item.value === value)?.name
+export function getUserStateName(value: number): string | null {
+    return getUserStates().find(item => item.value === value)?.name ?? null
 }
 
 /**
- * 获取状态使用的样式Class
+ * 获取状态样式Class
  * @param value 值
  */
-function getUserStateClass(value: number): string | undefined {
+export function getUserStateClass(value: number): string | null {
     if (value === USER_STATE_ENABLED) {
         return 'state-enabled'
     } else if (value === USER_STATE_DISABLED) {
         return 'state-disabled'
+    } else {
+        return null
     }
-}
-
-export {
-    USER_STATE_ENABLED,
-    USER_STATE_DISABLED,
-    getUserStates,
-    getUserStateName,
-    getUserStateClass
 }

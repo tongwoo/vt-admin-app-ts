@@ -7,6 +7,12 @@ module.exports = defineConfig({
     transpileDependencies: true,
     lintOnSave: false,
     chainWebpack(config) {
+        //不对图片进行转base64处理
+        config.module.rule('images').set('parser', {
+            dataUrlCondition: {
+                maxSize: 0,
+            },
+        })
         //在index.html中嵌入打包时间
         config.plugin('html').tap((options) => {
             options[0].publishTime = moment().format('YYYY-MM-DD HH:mm:ss')

@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import {store, storeKey} from './store'
 import elementPlus from 'element-plus'
+import 'moment/locale/zh-cn.js'
 
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/styles/element.scss'

@@ -70,6 +70,7 @@ export interface Model {
  * 记录集
  */
 export interface RecordSet<T> {
+    [key: string]: any,
     //总数
     total: number,
     //是否加载中

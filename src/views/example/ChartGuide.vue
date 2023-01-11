@@ -18,28 +18,22 @@
             <div class="segment-body">
                 <ul class="chart-items">
                     <li class="chart-item">
-                        <easy-chart :option="BaseLine" :show-table="show"></easy-chart>
+                        <easy-chart :option="baseLine" :show-table="show"></easy-chart>
                     </li>
                     <li class="chart-item">
-                        <easy-chart :option="BaseBar" :show-table="show"></easy-chart>
+                        <easy-chart :option="baseBar" :show-table="show"></easy-chart>
                     </li>
                     <li class="chart-item">
-                        <easy-chart :option="BasePie" :show-table="show"></easy-chart>
+                        <easy-chart :option="basePie" :show-table="show"></easy-chart>
                     </li>
                     <li class="chart-item">
-                        <easy-chart :option="BaseRadar"></easy-chart>
+                        <easy-chart :option="baseRadar"></easy-chart>
                     </li>
                     <li class="chart-item">
-                        <easy-chart :option="BaseLinearBar" :show-table="show"></easy-chart>
+                        <easy-chart :option="baseScatter"></easy-chart>
                     </li>
                     <li class="chart-item">
-                        <easy-chart :option="BaseComplexPie" :show-table="show"></easy-chart>
-                    </li>
-                    <li class="chart-item">
-                        <easy-chart :option="BaseScatter"></easy-chart>
-                    </li>
-                    <li class="chart-item">
-                        <easy-chart :option="BaseComplexLine" :show-table="show"></easy-chart>
+                        <easy-chart :option="baseLine" :show-table="show"></easy-chart>
                     </li>
                 </ul>
             </div>
@@ -48,23 +42,22 @@
 </template>
 <script lang="ts" setup>
 import EasyChart from "@/components/EasyChart.vue"
-import BaseLine from "@/charts/examples/BaseLine.js"
-import BaseBar from "@/charts/examples/BaseBar.js"
-import BasePie from "@/charts/examples/BasePie.js"
-import BaseLinearBar from "@/charts/examples/BaseLinearBar.js"
-import BaseComplexPie from "@/charts/examples/BaseComplexPie.js"
-import BaseRadar from "@/charts/examples/BaseRadar.js"
-import BaseScatter from "@/charts/examples/BaseScatter.js"
-import BaseComplexLine from "@/charts/examples/BaseComplexLine.js"
-import {ref} from "vue"
+import {reactive, ref} from "vue"
+import {buildBaseBarOption, buildBaseLineOption, buildBasePieOption, buildBaseRadarOption, buildBaseScatterOption} from "@/charts/examples/demo";
 
 const show = ref(false)
+
+const baseLine = (buildBaseLineOption())
+const baseBar = (buildBaseBarOption())
+const basePie = (buildBasePieOption())
+const baseRadar = (buildBaseRadarOption())
+const baseScatter = (buildBaseScatterOption())
 </script>
 <style lang="scss" scoped>
 .chart-items {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     grid-gap: 10px;
     height: calc(100vh - 200px);
     list-style: none;
@@ -74,10 +67,6 @@ const show = ref(false)
     .chart-item {
         border: 1px solid #eee;
         padding: 5px;
-
-        &:last-child {
-            grid-column: 2/4;
-        }
     }
 }
 </style>

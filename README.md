@@ -1,12 +1,14 @@
 <p align="center">
     <a href="http://vt-admin.duckpear.com" target="_blank" rel="noopener noreferrer"><img height="100" src="src/assets/logo.svg"></a>
-    <h1 align="center">VT-Admin 管理后台前端模板</h1>
+    <h1 align="center">VT-Admin 管理后台前端模板(TS版)</h1>
     <br>
 </p>
 
 ## 介绍
 
 vt-admin 即 vue template for admin，一个用于管理后台的 vue3 模板，或者说是个脚手架，仅提供基础功能，如果你想快速开始一个项目且不喜欢各种臃肿功能绑定在一起的话，那么这个脚手架可能适合你。
+
+[查看文档](http://vt-admin.vuecode.net)
 
 ## 安装依赖
 
@@ -47,25 +49,6 @@ npm run serve
 | Cookie        | js-cookie      | -                       |
 | 编辑器           | CKEditor5      | -                       |
 
-## 目录说明
-
-```
-├── assets                               资源目录
-│   ├── images                           图片
-│   └── styles                           样式
-├── charts                               图表配置
-│── constants                            常量
-│── data                                 静态数据
-│── utils                                常用功能方法集合
-├── components                           公用组件
-├── directives                           指令
-├── main.js                              入口文件
-├── modules                              业务模块
-├── routes                               路由
-├── setting.js                           相关设置
-├── store                                状态存储
-└── views                                视图
-```
 
 ## Issues
 

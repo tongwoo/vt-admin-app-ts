@@ -119,7 +119,7 @@
                     </li>
                 </ul>
                 <div style="height: 250px">
-                    <easy-chart :option="DashboardUserLine"></easy-chart>
+                    <easy-chart :option="userLine"></easy-chart>
                 </div>
             </div>
         </div>
@@ -141,7 +141,7 @@
                     </li>
                 </ul>
                 <div style="height: 250px">
-                    <easy-chart :option="DashboardSeasonLine"></easy-chart>
+                    <easy-chart :option="seasonLine"></easy-chart>
                 </div>
             </div>
         </div>
@@ -249,7 +249,7 @@
             </div>
             <div class="segment-body">
                 <div style="height: 330px">
-                    <easy-chart :option="DashboardUserWherePie"></easy-chart>
+                    <easy-chart :option="userWherePie"></easy-chart>
                 </div>
             </div>
         </div>
@@ -258,18 +258,19 @@
 
 <script lang="ts" setup>
 import EasyChart from "@/components/EasyChart"
-import DashboardUserLine from "@/charts/examples/DashboardUserLine.js"
-import DashboardSeasonLine from "@/charts/examples/DashboardSeasonLine.js"
-import DashboardUserWherePie from "@/charts/examples/DashboardUserWherePie.js"
 import {getUserStateName} from "@/constants/user-state"
 import {useStore} from "@/store/index"
 import moment from "moment"
 import CountUp from '@/components/CountUp.vue'
 import {onMounted} from "vue"
+import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard";
 
 const store = useStore()
+const seasonLine = buildSeasonLineOption()
+const userLine = buildUserLineOption()
+const userWherePie = buildUserWherePieOption()
 
-onMounted(()=>{
+onMounted(() => {
     console.info(getUserStateName(2143))
 })
 

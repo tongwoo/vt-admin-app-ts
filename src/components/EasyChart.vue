@@ -120,6 +120,7 @@ const renderChart = () => {
  * 渲染表格
  */
 const renderTable = () => {
+    table.rows.splice(0)
     const option = props.option
     if (option.xAxis) {
         const xAxis = (Array.isArray(option.xAxis) && option.xAxis.length > 0 ? option.xAxis[0] : option.xAxis) as CategoryAxisBaseOption
@@ -129,8 +130,8 @@ const renderTable = () => {
         if (series.type === 'pie') {
             table.columns = ['类型', '值']
             const items = series.data as PieDataItemOption[]
-            items.map((item) => {
-                return [item.name, item.value]
+            items.forEach((item) => {
+                table.rows.push([item.name, item.value])
             })
         } else if (series.type === 'line' || series.type === 'bar') {
             const items = series.data as BarDataItemOption[] | LineDataItemOption[]

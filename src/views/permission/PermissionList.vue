@@ -43,16 +43,7 @@
                 <!--数据列表-->
                 <div class="data-container">
                     <div class="data-table">
-                        <el-table
-                            ref="table"
-                            border
-                            stripe
-                            size="small"
-                            row-key="id"
-                            :data="record.items"
-                            v-loading="record.loading"
-                            @selection-change="selectionChange"
-                        >
+                        <el-table border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="selectionChange">
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
                             <el-table-column prop="description" label="权限描述" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="name" label="权限名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>

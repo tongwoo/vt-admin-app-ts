@@ -1,16 +1,10 @@
 import {http, HttpResponse} from "@/utils/http"
 
-export interface LoginModel {
-    username: string | null,
-    password: string | null,
-    captcha?: string | null
-}
-
 /**
  * 提交登录
  * @param model 登录信息模型
  */
-export function requestLogin(model: LoginModel): Promise<HttpResponse> {
+export function requestLogin(model: Record<string, any>): Promise<HttpResponse> {
     return http.post(
         '/login',
         model

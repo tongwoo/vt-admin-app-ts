@@ -8,7 +8,7 @@
             <img src="@/assets/logo.svg" alt=""> {{ name }}
         </div>
         <div class="login-box">
-            <!--登录界面宣传图，可以直接删除此div只显示登录框-->
+            <!--登录界面宣传图-->
             <div class="login-welcome">
                 <h1>前端儿脚手架管理系统</h1>
             </div>
@@ -37,10 +37,8 @@
                             </div>
                         </el-collapse-transition>
                         <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
-                        <!--
                         <div class="separator"><span class="text">或者</span></div>
                         <el-button type="default" round>找回密码</el-button>
-                        -->
                     </el-form>
                 </div>
             </div>
@@ -57,7 +55,7 @@ import {cleanAuthorization, writeAuthorization} from "@/utils/authorize"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
 import {API_PATH_DEFAULT} from "@/constants/api-path"
-import {fetchProfile, LoginModel, requestLogin} from '@/modules/authorization'
+import {fetchProfile, requestLogin} from '@/modules/authorization'
 
 const store = useStore()
 const router = useRouter()
@@ -72,8 +70,8 @@ const captcha = ref<HTMLImageElement>()
 const tip = ref<string | null>(null)
 //加载中
 const loading = ref(false)
-//模型
-const model = reactive<LoginModel>({
+//登录模型
+const model = reactive({
     //用户名
     username: null,
     //密码
@@ -120,6 +118,14 @@ const rules = {
 const refreshCaptcha = () => {
     captcha.value!.src = API_PATH_DEFAULT + '/login/captcha?v=' + Math.random()
 }
+
+/**
+ * 清除相关数据
+ */
+const clean = () => {
+    store.commit('cleanup')
+    cleanAuthorization()
+};
 
 /**
  * 提交登录
@@ -191,7 +197,7 @@ const loadProfile = () => {
 }
 
 /**
- * 模拟成功登录
+ * 模拟登录
  */
 const mockLogin = () => {
     loading.value = true
@@ -215,8 +221,7 @@ const mockLogin = () => {
 }
 
 onMounted(() => {
-    store.commit('cleanup')
-    cleanAuthorization()
+    clean()
     //refreshCaptcha();
 })
 </script>

@@ -12,7 +12,9 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('@/views/Dashboard.vue'),
                 meta: {
                     title: '仪表盘',
-                    cache: true
+                    cache: true,
+                    auth: false,
+                    permission: null
                 }
             }
         ]
@@ -53,28 +55,36 @@ const routes: RouteRecordRaw[] = [
                 path: 'user',
                 component: () => import('@/views/user/UserList.vue'),
                 meta: {
-                    title: '用户管理'
+                    title: '用户管理',
+                    auth: true,
+                    permission: null
                 }
             },
             {
                 path: 'role',
                 component: () => import('@/views/role/RoleList.vue'),
                 meta: {
-                    title: '角色管理'
+                    title: '角色管理',
+                    auth: true,
+                    permission: null
                 }
             },
             {
                 path: 'permission',
                 component: () => import('@/views/permission/PermissionList.vue'),
                 meta: {
-                    title: '权限管理'
+                    title: '权限管理',
+                    auth: true,
+                    permission: null
                 }
             },
             {
                 path: 'route',
                 component: () => import('@/views/route/RouteList.vue'),
                 meta: {
-                    title: '后台路由'
+                    title: '后台路由',
+                    auth: true,
+                    permission: null
                 }
             }
         ]

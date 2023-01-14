@@ -72,7 +72,7 @@
                 </div>
                 <template v-slot:dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item command="avatar"><i class="bi bi-image"></i>修改头像</el-dropdown-item>
+                        <!--<el-dropdown-item command="avatar"><i class="bi bi-image"></i>修改头像</el-dropdown-item>-->
                         <el-dropdown-item command="change-password"><i class="bi bi-shield-lock"></i>修改密码</el-dropdown-item>
                         <el-dropdown-item command="exit" divided><i class="bi bi-power"></i>退出系统</el-dropdown-item>
                     </el-dropdown-menu>

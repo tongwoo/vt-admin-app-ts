@@ -93,7 +93,6 @@ export function dateDays(date: Date | string) {
  * 获得日期天数集合
  * @param date 日期,可为Date实例、日期字符串,不传则使用当前时间
  * @param zero 是否补充前缀0
- * @return {Array}
  */
 export function dateDayItems(date: Date | string = new Date(), zero: boolean = true) {
     const days = dateDays(date)
@@ -131,7 +130,6 @@ export function hourItems(interval: number = 3600) {
  * 月数集合
  * @param {boolean} zero 是否填充0
  * @param {string} suffix 后缀，比如 “月”
- * @return {Array}
  */
 export function monthItems(zero = true, suffix = '') {
     const records = []

@@ -41,7 +41,7 @@
                 <!--数据列表-->
                 <div class="data-container">
                     <div class="data-table">
-                        <el-table ref="table" border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="selectionChange">
+                        <el-table ref="table" stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="selectionChange">
                             <el-table-column label="序号" type="index" fixed="left" align="center"></el-table-column>
                             <el-table-column label="用户名" prop="username" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column label="姓名" prop="name" align="center" min-width="100" show-overflow-tooltip></el-table-column>

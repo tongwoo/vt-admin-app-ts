@@ -56,3 +56,13 @@ export function loop(executor: () => Promise<void>, interval = 1000, now = true)
         id = null
     }
 }
+
+/**
+ * 睡眠
+ * @param millisecond 毫秒数
+ */
+export function sleep(millisecond: number = 1000) {
+    return new Promise((resolve) => {
+        window.setTimeout(resolve, millisecond)
+    })
+}

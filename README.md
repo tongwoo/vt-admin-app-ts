@@ -13,13 +13,13 @@ vt-admin 即 vue template for admin，一个用于管理后台的 vue3 模板，
 ## 安装依赖
 
 ```bash
-npm install
+pnpm install
 ````
 
 ## 启动预览
 
 ```bash
-npm run serve
+pnpm serve
 ```
 
 ## 内置功能

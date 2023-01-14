@@ -38,7 +38,7 @@
                         </el-collapse-transition>
                         <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
                         <div class="separator"><span class="text">或者</span></div>
-                        <el-button type="default" round>找回密码</el-button>
+                        <el-button round>找回密码</el-button>
                     </el-form>
                 </div>
             </div>
@@ -226,4 +226,4 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" src="../assets/styles/user-login.scss" scoped></style>
+<style lang="scss" src="../assets/styles/login.scss" scoped></style>

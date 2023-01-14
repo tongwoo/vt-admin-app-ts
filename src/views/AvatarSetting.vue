@@ -42,15 +42,14 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import 'vue-cropper/dist/index.css'
 import {VueCropper} from "vue-cropper";
 import {ref, reactive, computed} from "vue";
 import {useStore} from "vuex";
 import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus";
-import http from "@/common/utils/http.js";
-import {httpErrorHandler} from "@/common/utils/error.js";
+import http from "@/utils/http";
+import {httpErrorHandler} from "@/utils/error";
 
 const store = useStore();
 

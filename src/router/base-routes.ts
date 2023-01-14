@@ -4,7 +4,7 @@ import {RouteRecordRaw} from "vue-router"
 const routes: RouteRecordRaw[] = [
     {
         path: '/login',
-        component: () => import('@/views/UserLogin.vue'),
+        component: () => import('@/views/Login.vue'),
         meta: {
             title: '登录'
         }

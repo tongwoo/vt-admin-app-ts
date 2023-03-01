@@ -3,7 +3,7 @@
  */
 export class ResponseCode {
     //正常
-    public static readonly OK = 200
+    public static readonly OK = 0
     //未授权
     public static readonly UNAUTHORIZED = 401
     //无权限
@@ -61,7 +61,7 @@ export interface Model {
     [key: string]: any,
 
     //主键ID
-    id: ID,
+    id: ID | null,
     //原始数据，调用转换模型的方法会增加此参数
     _?: any
 }
@@ -71,6 +71,7 @@ export interface Model {
  */
 export interface RecordSet<T> {
     [key: string]: any,
+
     //总数
     total: number,
     //是否加载中
@@ -87,11 +88,8 @@ export interface RecordSet<T> {
  * 弹框选项
  */
 export interface DialogOption {
-    data: any,
-    dialog: {
-        show: boolean,
-        title: string | null
-    }
+    show: boolean,
+    title: string | null
 }
 
 /**
@@ -100,8 +98,15 @@ export interface DialogOption {
 export interface MenuItem {
     name: string,
     path: string,
-    icon?: string|null,
+    icon?: string | null,
     show: boolean,
-    permission?: string|null,
+    permission?: string | null,
     children?: Array<MenuItem>
+}
+
+/**
+ * 允许T的值为null
+ */
+export type AllowNull<T> = {
+    [P in keyof T]: T[P] | null
 }

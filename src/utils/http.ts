@@ -37,59 +37,46 @@ http.interceptors.request.use(
 //响应拦截器
 http.interceptors.response.use(
     function (response) {
-        const normalized = normalize(response)
-        const codes = [
-            ResponseCode.UNAUTHORIZED,
-            ResponseCode.FORBIDDEN,
-            ResponseCode.NOT_FOUND
-        ]
-        if (
-            //根据实际需要使用 status 或者 code 来判断状态码
-            //codes.indexOf(normalized?.status) !== -1 ||
-            codes.indexOf(normalized.data?.code) !== -1
-        ) {
-            return Promise.reject({
-                response: normalized
-            })
+        response.isOk = true
+        if (response.headers['content-type'].includes('application/json')) {
+            if (!ResponseCode.isOk(response.data?.code)) {
+                //未授权、未登录、404 直接抛异常交由 catch 处理
+                const codes = [
+                    ResponseCode.UNAUTHORIZED,
+                    ResponseCode.FORBIDDEN,
+                    ResponseCode.NOT_FOUND
+                ]
+                if (codes.indexOf(response.data.code) !== -1) {
+                    return Promise.reject(response)
+                }
+                response.isOk = false
+            }
+            //重命名 msg 为 message
+            if (response.data.hasOwnProperty('msg')) {
+                response.data.message = response.data.msg
+                delete response.data.msg
+            }
         }
-        return normalized
+        return response
     },
     function (error) {
-        if (error?.response === undefined) {
-            return Promise.reject(error.message)
+        const response = error.response
+        response.isOk = false
+        //未授权、未登录、404 直接抛异常交由 catch 处理
+        const codes = [401, 403, 404]
+        if (codes.indexOf(response.status) !== -1) {
+            return Promise.reject(error.response)
         }
-        //需要继续抛异常的相关状态码，其他类型错误交给业务层处理
-        const codes = [
-            ResponseCode.UNAUTHORIZED,
-            ResponseCode.FORBIDDEN,
-            ResponseCode.NOT_FOUND
-        ]
-        if (
-            //根据实际需要使用 status 或者 code 来判断状态码
-            //codes.indexOf(error.response?.status) !== -1 ||
-            codes.indexOf(error.response?.data?.code) !== -1
-        ) {
-            return Promise.reject(error)
+        if (response.headers['content-type'].includes('application/json')) {
+            //重命名 msg 为 message
+            if (response.data.hasOwnProperty('msg')) {
+                response.data.message = response.data.msg
+                delete response.data.msg
+            }
         }
-        return normalize(error.response)
+        return error.response
     }
 )
-
-/**
- * 对AxiosResponse进行包装
- */
-function normalize(response: AxiosResponse): AxiosResponse {
-    response.isOk = response.status == 200
-    //将响应体转换成HttpResponse结构
-    if (typeof response.data === 'object') {
-        if (response.data?.msg !== undefined) {
-            response.data.message = response.data.msg
-            delete response.data.msg
-        }
-        response.isOk = ResponseCode.isOk(Number(response.data?.code))
-    }
-    return response
-}
 
 export interface HttpResponse<T = any> {
     //操作是否成功

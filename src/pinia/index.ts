@@ -5,24 +5,18 @@ import i18n from '@/languages'
 export const pinia = createPinia()
 
 /**
- * 持久化保存store到localStorage
+ * 持久化保存store到localStorage以及自动恢复
  */
-export function permanentStore(context: PiniaPluginContext) {
-    debugger
+pinia.use((context: PiniaPluginContext) => {
+    const backup = localStorage.getItem(context.store.$id)
+    const data = backup ? JSON.parse(backup) : {}
     context.store.$subscribe((mutation, state) => {
         localStorage.setItem(mutation.storeId, JSON.stringify(state))
     })
-
-    const restore = () => {
-
-    }
-
     return {
-        restore,
+        ...data
     }
-}
-
-pinia.use(permanentStore)
+})
 
 /**
  * 应用store
@@ -35,16 +29,14 @@ export const useAppStore = defineStore('app', () => {
         //是否折叠
         collapse: false,
         //页面小于多少宽度折叠菜单
-        size: 1366,
+        size: 1366
     })
-    //本地数据是否已经同步
-    const synced = ref(false)
     //消息
     const message = reactive({
         //未读数
         unread: 0,
         //总数
-        total: 0,
+        total: 0
     })
     //缓存组件名列表
     const components: Ref<string[]> = ref([])
@@ -57,9 +49,8 @@ export const useAppStore = defineStore('app', () => {
     return {
         language,
         navigator,
-        synced,
         message,
-        components,
+        components
     }
 })
 
@@ -80,6 +71,6 @@ export const useUserStore = defineStore('user', () => {
         authorization,
         nickname,
         avatar,
-        permissions,
+        permissions
     }
 })

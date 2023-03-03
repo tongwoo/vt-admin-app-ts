@@ -3,11 +3,11 @@
     <div class="base-navigator" :class="isCollapsed ? 'base-navigator-collapse' : null">
         <!--用户面板-->
         <div class="user-panel">
-            <div class="user-logo">
-                <img :src="store.state.user.avatar" @error="avatarError">
+            <div v-if="userStore.avatar" class="user-logo">
+                <img :src="userStore.avatar" @error="avatarError">
             </div>
             <div class="user-name" v-show="!isCollapsed">
-                {{ store.state.user.nickname }}
+                {{ userStore.nickname }}
             </div>
         </div>
         <!--菜单-->
@@ -27,14 +27,15 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue"
-import {useStore} from "@/store/index"
+import {computed, ref} from 'vue'
 import MenuItem from '@/components/MenuItem.vue'
-import {useRoute} from "vue-router"
-import defaultAvatar from "@/assets/images/icons/avatar-default.png"
+import {useRoute} from 'vue-router'
+import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {filterAuthMenus, navigateMenus} from '@/data/menu'
+import {useAppStore, useUserStore} from '@/pinia'
 
-const store = useStore()
+const appStore = useAppStore()
+const userStore = useUserStore()
 const route = useRoute()
 
 //菜单列表
@@ -42,7 +43,7 @@ const menus = filterAuthMenus(navigateMenus)
 
 //菜单是否折叠
 const isCollapsed = computed(() => {
-    return store.state.app.navigator.collapse
+    return appStore.navigator.collapse
 })
 
 /**
@@ -56,7 +57,9 @@ const avatarError = (error) => {
  * 导航切换按钮点击
  */
 const toggleNavigatorBtnClick = () => {
-    store.commit('app/toggleNavigator')
+    appStore.$patch((state) => {
+        state.navigator.collapse = !state.navigator.collapse
+    })
 }
 </script>
 

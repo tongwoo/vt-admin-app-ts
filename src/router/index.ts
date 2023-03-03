@@ -1,18 +1,19 @@
-import baseRoutes from "@/router/base-routes"
-import businessRoutes from "@/router/business-routes"
-import {store} from "@/store/index"
-import {checkAccess} from "@/utils/authorize"
+import baseRoutes from '@/router/base-routes'
+import businessRoutes from '@/router/business-routes'
+import {store} from '@/store/index'
+import {checkAccess} from '@/utils/authorize'
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
-import setting from "@/setting"
+import setting from '@/setting'
 import {Store} from 'vuex'
-import {GlobalState} from "@/store/types"
+import {GlobalState} from '@/store/types'
+import {useAppStore, useUserStore} from '@/pinia'
 
 /**
  * 路由列表
  */
 const routes: Array<RouteRecordRaw> = [
     ...baseRoutes,
-    ...businessRoutes
+    ...businessRoutes,
 ]
 
 /**
@@ -20,17 +21,17 @@ const routes: Array<RouteRecordRaw> = [
  */
 const router = createRouter({
     history: createWebHashHistory(),
-    routes
+    routes,
 })
 
 /**
  * 前置守卫 - 恢复本地数据
  */
 router.beforeEach(() => {
-    const global: Store<GlobalState> = store as Store<GlobalState>
-    if (global.state.synced) {
-        return true
-    }
+    //const global: Store<GlobalState> = store as Store<GlobalState>
+    //if (global.state.synced) {
+    //    return true
+    //}
     store.commit('localSync')
     return true
 })
@@ -41,7 +42,7 @@ router.beforeEach(() => {
 router.beforeEach((to) => {
     if (to.matched.length === 0) {
         return {
-            path: '/error/not-found'
+            path: '/error/not-found',
         }
     }
     return true
@@ -60,17 +61,16 @@ router.beforeEach((to) => {
         return true
     }
     //如果本地没有认证信息则跳转到登录页面
-    const global: Store<GlobalState> = store as Store<GlobalState>
-    if (global.state.user.authorization === null) {
+    if (useUserStore().authorization === null) {
         return {
-            path: '/login'
+            path: '/login',
         }
     }
     //访问的路由是否需要权限监测，如需要则检查本地是否有匹配的权限
     if (to.meta?.permission !== undefined) {
         if (!checkAccess(to.meta.permission)) {
             return {
-                path: '/error/forbidden'
+                path: '/error/forbidden',
             }
         }
     }
@@ -79,12 +79,15 @@ router.beforeEach((to) => {
 
 //后置守卫 - 缓存组件，检查路由meta是否有cache属性，如果有且为true则进行缓存
 router.afterEach((to) => {
-    const cache = to.meta?.cache
-    if (cache) {
+    if (to.meta?.cache) {
         const component = to.matched[to.matched.length - 1].components
-        const name = (component?.default as Record<string, string>).__name
-        if (name) {
-            store.commit('keepalive/add', name)
+        if (component) {
+            const name = component.default.name ?? (component.default as Record<string, string>).__name
+            if (name) {
+                useAppStore().$patch((state) => {
+                    state.components.push(<string>name)
+                })
+            }
         }
     }
     return true

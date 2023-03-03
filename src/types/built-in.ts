@@ -3,7 +3,7 @@
  */
 export class ResponseCode {
     //正常
-    public static readonly OK = 0
+    public static readonly OK = 200
     //未授权
     public static readonly UNAUTHORIZED = 401
     //无权限

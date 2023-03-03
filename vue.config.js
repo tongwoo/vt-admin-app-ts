@@ -21,7 +21,7 @@ module.exports = defineConfig({
     },
     devServer: {
         open: true,
-        host: 'localhost',
+        host: '0.0.0.0',
         allowedHosts: ['*'],
         proxy: {
             //接口路径和映射地址，不要修改此处，酌情修改 .env.development 文件

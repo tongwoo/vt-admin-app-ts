@@ -14,30 +14,32 @@
         </div>
         <div class="base-content">
             <router-view v-slot="{ Component, route }">
-                <!--<transition name="el-fade-in" mode="out-in">-->
+                <transition name="el-fade-in" mode="out-in">
                     <keep-alive :include="keepAliveComponents">
-                        <component ref="viewComponent" v-if="!reload" :is="Component" :key="route.fullPath"></component>
+                        <component ref="viewComponent" v-if="!reload" :is="Component" :key="route.path"></component>
                     </keep-alive>
-                <!--</transition>-->
+                </transition>
             </router-view>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from "vue"
-import {useStore} from "@/store/index"
-import {useRoute} from "vue-router"
-import mitter from "@/utils/mitter"
+import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from 'vue'
+import {useStore} from '@/store/index'
+import {useRoute} from 'vue-router'
+import mitter from '@/utils/mitter'
 
-import RouteTabSwitcher from "@/components/RouteTabSwitcher.vue"
+import RouteTabSwitcher from '@/components/RouteTabSwitcher.vue'
+import {useAppStore, useUserStore} from '@/pinia'
 
 //顶栏
 const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))
 //侧边栏导航
 const BaseNavigator = defineAsyncComponent(() => import('./BaseNavigator.vue'))
 
-const store = useStore()
+const appStore = useAppStore()
+const userStore = useUserStore()
 const route = useRoute()
 
 //当前路由对应的组件
@@ -47,14 +49,17 @@ const viewComponent = ref(null)
  * 导航菜单是否显示
  */
 const navigatorShow = computed(() => {
-    return !store.state.app.navigator.collapse
+    return !appStore.navigator.collapse
 })
 
 /**
  * 要缓存的组件名称列表，前提是路由 meta 中存在 cache
  */
 const keepAliveComponents = computed(() => {
-    return store.state.keepalive.componentNames
+    if (process.env.NODE_ENV === 'development') {
+        return []
+    }
+    return appStore.components
 })
 
 //检测布局大小设置菜单的显示
@@ -62,8 +67,10 @@ const baseLayout: Ref = ref(null)
 let observer: ResizeObserver
 onMounted(() => {
     observer = new ResizeObserver(() => {
-        if (baseLayout.value.clientWidth <= store.state.app.navigator.size) {
-            store.commit('app/toggleNavigator', true)
+        if (baseLayout.value.clientWidth <= appStore.navigator.size) {
+            appStore.$patch((state) => {
+                state.navigator.collapse = true
+            })
         }
     })
     observer.observe(baseLayout.value)
@@ -77,13 +84,23 @@ const reload: Ref = ref(false)
 onMounted(() => {
     mitter.on('page-refresh', () => {
         if (route.matched.length > 0) {
-            const matchedName = ((route.matched[route.matched.length - 1].components?.default) as any).__name
-            store.commit('keepalive/remove', matchedName)
+            const name = ((route.matched[route.matched.length - 1].components?.default) as any).__name
+            appStore.$patch((state) => {
+                const index = state.components.indexOf(name)
+                if (index !== -1) {
+                    state.components.splice(index, 1)
+                }
+            })
             reload.value = true
             nextTick(() => {
                 reload.value = false
                 if (route?.meta?.cache) {
-                    store.commit('keepalive/add', matchedName)
+                    appStore.$patch((state) => {
+                        const index = state.components.indexOf(name)
+                        if (index === -1) {
+                            state.components.push(name)
+                        }
+                    })
                 }
             })
         }

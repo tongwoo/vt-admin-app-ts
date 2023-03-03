@@ -21,7 +21,7 @@
             <div class="preview">
                 <div>当前头像</div>
                 <div class="preview-image">
-                    <img :src="store.state.user.avatar">
+                    <img :src="userStore.avatar">
                 </div>
                 <div>新头像</div>
                 <div v-if="preview.style!==null && preview.data!==null" class="preview-image">
@@ -46,12 +46,13 @@
 import 'vue-cropper/dist/index.css'
 import {VueCropper} from "vue-cropper";
 import {ref, reactive, computed} from "vue";
-import {useStore} from "vuex";
 import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus";
-import http from "@/utils/http";
+import {http} from '@/utils/http'
 import {httpErrorHandler} from "@/utils/error";
+import {useAppStore, useUserStore} from '@/pinia'
 
-const store = useStore();
+const appStore = useAppStore()
+const userStore = useUserStore()
 
 //加载中
 const loading = ref(false);

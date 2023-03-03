@@ -20,9 +20,7 @@
         <!--面包屑-->
         <div class="header-col">
             <el-breadcrumb separator="/">
-                <transition-group name="el-fade-in" mode="out-in">
-                    <el-breadcrumb-item v-for="(item,i) in breadcrumbs" :key="i">{{ item.meta.title }}</el-breadcrumb-item>
-                </transition-group>
+                <el-breadcrumb-item v-for="(item,i) in breadcrumbs" :key="i">{{ item.meta.title }}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <!--自动填充剩余空间-->
@@ -66,8 +64,8 @@
         <div class="header-col header-col-btn">
             <el-dropdown @command="userDropdownCommand">
                 <div class="user-panel">
-                    <img :src="store.state.user.avatar" @error="avatarError"/>
-                    <div class="nickname">{{ store.state.user.nickname }}</div>
+                    <img v-if="userStore.avatar" :src="userStore.avatar" @error="avatarError"/>
+                    <div class="nickname">{{ userStore.nickname }}</div>
                     <i class="bi bi-caret-down-fill"></i>
                 </div>
                 <template v-slot:dropdown>
@@ -88,25 +86,27 @@
         <!--用户头像表单-->
         <!--<el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">-->
         <!--    <transition name="el-fade-in" mode="out-in">-->
-                <!--<avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>-->
-            <!--</transition>-->
+        <!--<avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>-->
+        <!--</transition>-->
         <!--</el-dialog>-->
     </div>
 </template>
 <script lang="ts" setup>
-import {useStore} from "@/store/index"
-import {computed, reactive, ref} from "vue"
-import {useRouter, useRoute} from "vue-router"
-import {ElLoading, ElMessage} from "element-plus"
-import {http} from "@/utils/http"
-import logo from "@/assets/logo.svg"
-import setting from "@/setting"
-import ChangePassword from "@/views/ChangePassword.vue"
+import {useStore} from '@/store/index'
+import {computed, reactive, ref} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {ElLoading, ElMessage} from 'element-plus'
+import {http} from '@/utils/http'
+import logo from '@/assets/logo.svg'
+import setting from '@/setting'
+import ChangePassword from '@/views/ChangePassword.vue'
 //import AvatarSetting from "@/views/AvatarSetting.vue";
-import mitter from "@/utils/mitter"
-import defaultAvatar from "@/assets/images/icons/avatar-default.png"
+import mitter from '@/utils/mitter'
+import defaultAvatar from '@/assets/images/icons/avatar-default.png'
+import {useAppStore, useUserStore} from '@/pinia'
 
-const store = useStore()
+const appStore = useAppStore()
+const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -116,11 +116,11 @@ const title = ref(setting.name)
 const isFullScreen = ref(false)
 //菜单是否折叠
 const isCollapsed = computed(() => {
-    return store.state.app.navigator.collapse
+    return appStore.navigator.collapse
 })
 //消息未读数
 const messageUnread = computed(() => {
-    return store.state.message.unread
+    return appStore.message.unread
 })
 /**
  * 面包屑列表
@@ -139,14 +139,16 @@ const breadcrumbs = computed(() => {
  * 导航切换按钮class样式
  */
 const toggleNavigatorBtnClass = computed(() => {
-    return store.state.app.navigator.collapse ? 'bi-text-indent-left' : 'bi-text-indent-right'
+    return appStore.navigator.collapse ? 'bi-text-indent-left' : 'bi-text-indent-right'
 })
 
 /**
  * 导航切换按钮点击
  */
 const toggleNavigatorBtnClick = () => {
-    store.commit('app/toggleNavigator')
+    appStore.$patch((state) => {
+        state.navigator.collapse = !state.navigator.collapse
+    })
 }
 
 /**
@@ -192,8 +194,8 @@ const userDropdownCommand = (command: string) => {
 //密码配置
 const password = reactive({
     dialog: {
-        show: false
-    }
+        show: false,
+    },
 })
 
 /**
@@ -202,14 +204,14 @@ const password = reactive({
 const exitSystem = () => {
     const loading = ElLoading.service({
         lock: true,
-        text: '退出中'
+        text: '退出中',
     })
     //调用失败也退出
     http.post(
-        '/system/logout'
+        '/system/logout',
     ).finally(() => {
         loading.close()
-        store.commit('cleanup')
+        appStore.$reset()
         router.replace('/login')
     })
 }
@@ -223,8 +225,8 @@ const avatar = {
     //弹框
     dialog: reactive({
         show: false,
-        title: null
-    })
+        title: null,
+    }),
 }
 
 /**
@@ -238,7 +240,9 @@ const avatarError = (event: Event) => {
  * 语言改变
  */
 const languageChange = (lang: string) => {
-    store.commit('app/updateLanguage', lang)
+    appStore.$patch((state) => {
+        state.language = lang
+    })
 }
 </script>
 <style lang="scss" scoped>

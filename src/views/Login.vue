@@ -8,7 +8,7 @@
             <img src="@/assets/logo.svg" alt=""> {{ name }}
         </div>
         <div class="login-box">
-            <!--登录界面宣传图-->
+            <!--登录界面图-->
             <div class="login-welcome">
                 <h1>前端儿脚手架管理系统</h1>
             </div>
@@ -46,18 +46,19 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {useStore} from "@/store/index"
-import {ref, reactive, onMounted} from "vue"
-import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
-import {useRouter} from "vue-router"
-import defaultAvatar from "@/assets/images/icons/avatar-default.png"
-import {cleanAuthorization, writeAuthorization} from "@/utils/authorize"
-import {httpErrorHandler} from "@/utils/error"
-import setting from "@/setting"
-import {API_PATH_DEFAULT} from "@/constants/api-path"
+import {ref, reactive, onMounted} from 'vue'
+import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from 'element-plus'
+import {useRouter} from 'vue-router'
+import defaultAvatar from '@/assets/images/icons/avatar-default.png'
+import {cleanAuthorization, writeAuthorization} from '@/utils/authorize'
+import {httpErrorHandler} from '@/utils/error'
+import setting from '@/setting'
+import {API_PATH_DEFAULT} from '@/constants/api-path'
 import {fetchProfile, requestLogin} from '@/modules/authorization'
+import {useAppStore, useUserStore} from '@/pinia'
 
-const store = useStore()
+const appStore = useAppStore()
+const userStore = useUserStore()
 const router = useRouter()
 
 //系统名
@@ -77,7 +78,7 @@ const model = reactive({
     //密码
     password: null,
     //验证码
-    captcha: null
+    captcha: null,
 })
 //规则
 const rules = {
@@ -86,30 +87,30 @@ const rules = {
         {
             type: 'string',
             required: true,
-            message: ''
-        }
+            message: '',
+        },
     ],
     //密码
     password: [
         {
             type: 'string',
             required: true,
-            message: ''
-        }
+            message: '',
+        },
     ],
     //验证码
     captcha: [
         {
             type: 'string',
             required: false,
-            message: '验证码必须填写'
+            message: '验证码必须填写',
         },
         {
             type: 'string',
             len: 4,
-            message: '验证码必须是4位'
-        }
-    ]
+            message: '验证码必须是4位',
+        },
+    ],
 }
 
 /**
@@ -123,9 +124,8 @@ const refreshCaptcha = () => {
  * 清除相关数据
  */
 const clean = () => {
-    store.commit('cleanup')
     cleanAuthorization()
-};
+}
 
 /**
  * 提交登录
@@ -141,10 +141,11 @@ const submitLogin = async () => {
     const params = {
         username: model.username,
         password: model.password,
-        captcha: model.captcha
+        captcha: model.captcha,
     }
     loading.value = true
     requestLogin(params).then((result) => {
+        debugger
         if (!result.success) {
             tip.value = result.message ?? '网络错误'
             return false
@@ -154,11 +155,11 @@ const submitLogin = async () => {
         //保存授权数据
         writeAuthorization(authorization)
         //填充用户信息
-        store.commit('user/update', {
-            authorization: authorization,
-            nickname: result.data.name,
-            avatar: result.data.avatar ?? defaultAvatar,
-            permissions: result.data.permissions
+        userStore.$patch((state) => {
+            state.authorization = authorization
+            state.nickname = result.data.name
+            state.avatar = result.data.avatar ?? defaultAvatar
+            state.permissions = result.data.permissions
         })
         //加载用户数据（如果需要额外调用接口的话）
         //loadProfile();
@@ -176,17 +177,17 @@ const submitLogin = async () => {
 const loadProfile = () => {
     const loading = loadingTip.service({
         lock: true,
-        text: '初始化中'
+        text: '初始化中',
     })
     fetchProfile().then((result) => {
         if (!result.success) {
             tip.value = result.message
             return false
         }
-        store.commit('user/update', {
-            nickname: result.data.name,
-            avatar: defaultAvatar,
-            permissions: []
+        userStore.$patch((state) => {
+            state.nickname = result.data.name
+            state.avatar = defaultAvatar
+            state.permissions = result.data.permissions
         })
         router.push('/').catch((err) => {
             console.error('跳转出现异常：', err)
@@ -194,30 +195,6 @@ const loadProfile = () => {
     }).catch(httpErrorHandler).finally(() => {
         loading.close()
     })
-}
-
-/**
- * 模拟登录
- */
-const mockLogin = () => {
-    loading.value = true
-    window.setTimeout(() => {
-        loading.value = false
-        //授权数据
-        const authorization = 'token-data'
-        //保存授权数据
-        writeAuthorization(authorization)
-        //填充用户信息
-        store.commit('user/UPDATE', {
-            authorization: authorization,
-            nickname: '超级管理员',
-            avatar: defaultAvatar,
-            permissions: []
-        })
-        router.push('/').catch((err) => {
-            console.error('跳转出现异常：', err)
-        })
-    }, 1000)
 }
 
 onMounted(() => {

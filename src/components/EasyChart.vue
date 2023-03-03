@@ -8,24 +8,26 @@
      2022-09-30 重构部分代码
 -->
 <template>
-    <div v-show="!showTable" ref="dom" :style="style" class="chart-container"></div>
-    <div v-show="showTable" :style="style" class="chart-table">
-        <el-table :data="table.rows" :max-height="table.height" :size="table.size" border row-key="id">
-            <el-table-column v-for="(column,i) in table.columns" :key="column+'-'+i" :fixed="i===0" :label="column" align="center" show-overflow-tooltip>
-                <template v-slot="{row}">{{ row[i] }}</template>
-            </el-table-column>
-        </el-table>
+    <div ref="chartContainer" :style="style" class="chart-container">
+        <div ref="chartInstance" class="chart-instance"></div>
+        <div v-show="showTable" class="chart-table">
+            <el-table :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
+                <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
+                    <template v-slot="{row}">{{ row[i] }}</template>
+                </el-table-column>
+            </el-table>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {EChartsOption, EChartsType, SeriesOption} from "echarts"
-import {BarDataItemOption} from "echarts/types/src/chart/bar/BarSeries"
-import {LineDataItemOption} from "echarts/types/src/chart/line/LineSeries"
-import {PieDataItemOption} from "echarts/types/src/chart/pie/PieSeries"
-import {CategoryAxisBaseOption} from "echarts/types/src/coord/axisCommonTypes"
-import {ref, reactive, onMounted, watch, onUnmounted, nextTick, computed} from "vue"
-import * as echarts from "echarts"
+import {EChartsOption, EChartsType, SeriesOption} from 'echarts'
+import {BarDataItemOption} from 'echarts/types/src/chart/bar/BarSeries'
+import {LineDataItemOption} from 'echarts/types/src/chart/line/LineSeries'
+import {PieDataItemOption} from 'echarts/types/src/chart/pie/PieSeries'
+import {CategoryAxisBaseOption} from 'echarts/types/src/coord/axisCommonTypes'
+import {ref, reactive, onMounted, watch, onUnmounted, nextTick, computed, Ref} from 'vue'
+import * as echarts from 'echarts'
 
 //图表实例
 let instance: EChartsType | null = null
@@ -35,8 +37,10 @@ let container: HTMLElement | null = null
 let observer: ResizeObserver | null = null
 //是否已经初始化了
 let initialized = false
+//图表父容器
+const chartContainer: Ref<HTMLElement | null> = ref(null)
 //图表挂载的DOM
-const dom = ref<HTMLElement | null>()
+const chartInstance: Ref<HTMLElement | null> = ref(null)
 
 //属性
 const props = withDefaults(defineProps<{
@@ -47,8 +51,8 @@ const props = withDefaults(defineProps<{
     //是否显示表格
     showTable?: boolean
 }>(), {
-    resizeAnimation: false,
-    showTable: false
+    resizeAnimation: true,
+    showTable: false,
 })
 
 //样式
@@ -57,7 +61,7 @@ const style = computed(() => {
         top: position.top + 'px',
         right: position.right + 'px',
         bottom: position.bottom + 'px',
-        left: position.left + 'px'
+        left: position.left + 'px',
     }
 })
 
@@ -66,97 +70,79 @@ const position = reactive({
     top: 0,
     right: 0,
     bottom: 0,
-    left: 0
+    left: 0,
 })
 
 //表格
-const table = reactive<{ size: string, columns: any[], rows: any[], height: string | undefined }>({
+const table: {
+    size: string,
+    height: number | undefined
+} = reactive({
     size: 'small',
-    columns: [],
-    rows: [],
-    height: undefined
+    height: undefined,
 })
 
 //在图表选项变化的时候更新图表
 watch(
     () => props.option,
     () => {
-        render()
+        instance!.setOption(props.option, true)
     },
     {
-        deep: true
-    }
-)
-
-//显示表格监测
-watch(
-    () => props.showTable,
-    () => {
-        nextTick(render)
-    }
+        deep: true,
+    },
 )
 
 /**
- * 渲染
+ * 表格列集合
  */
-const render = () => {
-    props.showTable ? renderTable() : renderChart()
-}
-
-/**
- * 渲染图表
- */
-const renderChart = () => {
-    if (!initialized) {
-        //初始化图表
-        instance = echarts.init(dom.value!)
-        initialized = true
-    }
-    instance!.setOption(props.option, true)
-    chartResize()
-}
-
-/**
- * 渲染表格
- */
-const renderTable = () => {
-    table.rows.splice(0)
+const tableColumns = computed(() => {
     const option = props.option
     if (option.xAxis) {
         const xAxis = (Array.isArray(option.xAxis) && option.xAxis.length > 0 ? option.xAxis[0] : option.xAxis) as CategoryAxisBaseOption
-        table.columns = ['类型', ...xAxis.data!]
+        if (Array.isArray(xAxis.data)) {
+            return ['类型', ...xAxis.data!]
+        }
     }
-    (option.series! as SeriesOption[]).forEach((series) => {
+    //如果序列里有饼图则最终以饼图出现的为最终列
+    for (let series of <SeriesOption[]>option.series!) {
         if (series.type === 'pie') {
-            table.columns = ['类型', '值']
+            return ['类型', '值']
+        }
+    }
+    return []
+})
+
+
+/**
+ * 表格行集合
+ */
+const tableRows = computed(() => {
+    const option = props.option
+    const rows = []
+    for (let series of <SeriesOption[]>option.series!) {
+        if (series.type === 'pie') {
             const items = series.data as PieDataItemOption[]
             items.forEach((item) => {
-                table.rows.push([item.name, item.value])
+                rows.push([item.name, item.value])
             })
         } else if (series.type === 'line' || series.type === 'bar') {
             const items = series.data as BarDataItemOption[] | LineDataItemOption[]
-            table.rows.push([series.name, ...items])
+            rows.push([series.name, ...items])
         }
-    })
-    tableResize()
-}
-
-/**
- * 重置尺寸
- */
-const resize = () => {
-    props.showTable ? tableResize() : chartResize()
-}
+    }
+    return rows
+})
 
 /**
  * 图表重置尺寸
  */
-const chartResize = () => {
+const resizeChart = () => {
     if (props.resizeAnimation) {
         instance!.resize({
             animation: {
-                duration: 1000
-            }
+                duration: 1000,
+            },
         })
     } else {
         instance!.resize()
@@ -167,7 +153,7 @@ const chartResize = () => {
  * 表格重置尺寸
  */
 const tableResize = () => {
-    table.height = container!.clientHeight - position.top - position.bottom + 'px'
+    table.height = container!.clientHeight - position.top - position.bottom
 }
 
 /**
@@ -177,7 +163,7 @@ const tableResize = () => {
 const downloadAsImage = (name = '图表') => {
     const dataUrl = instance!.getDataURL({
         type: 'png',
-        excludeComponents: ['toolbox']
+        excludeComponents: ['toolbox'],
     })
     const a = document.createElement('a')
     a.href = dataUrl
@@ -187,14 +173,22 @@ const downloadAsImage = (name = '图表') => {
     document.body.removeChild(a)
 }
 
+/**
+ * 尺寸调整
+ */
+const observerResize = () => {
+    resizeChart()
+    tableResize()
+}
+
 defineExpose({
     instance,
     container,
-    downloadAsImage
+    downloadAsImage,
 })
 
 onMounted(() => {
-    container = dom.value!.parentElement
+    container = <HTMLElement>chartContainer.value!.parentElement
     if (!container) {
         throw new Error('没有找到父元素')
     }
@@ -209,30 +203,40 @@ onMounted(() => {
     position.bottom = parseInt(style.paddingBottom)
     position.left = parseInt(style.paddingLeft)
     nextTick(() => {
-        render()
-        observer = new ResizeObserver(resize)
-        if (container instanceof HTMLElement) {
-            observer.observe(container)
-        }
+        //初始化图表
+        instance = echarts.init(chartInstance.value!)
+        instance!.setOption(props.option, true)
+        //监听尺寸变化以便重置图表尺寸
+        observer = new ResizeObserver(observerResize)
+        observer.observe(container!)
     })
 })
 
 onUnmounted(() => {
-    observer!.disconnect()
+    observer?.disconnect()
+    instance?.dispose()
 })
 </script>
 
 <style lang="scss" scoped>
 .chart-container {
-    position: absolute !important;
+    position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
+
+    .chart-instance {
+        position: absolute !important;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
 }
 
 .chart-table {
-    position: absolute !important;
+    position: absolute;
     top: 0;
     right: 0;
     bottom: 0;

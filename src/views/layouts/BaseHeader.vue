@@ -15,7 +15,7 @@
         </div>
         <!--侧边栏开关按钮-->
         <div class="header-col header-col-btn" @click="toggleNavigatorBtnClick">
-            <el-button type="text"><i class="bi btn-icon-text" :class="toggleNavigatorBtnClass"></i></el-button>
+            <i class="bi btn-icon-text" :class="toggleNavigatorBtnClass"></i>
         </div>
         <!--面包屑-->
         <div class="header-col">

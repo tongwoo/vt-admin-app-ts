@@ -15,7 +15,7 @@
         <div class="base-content">
             <router-view v-slot="{ Component, route }">
                 <transition name="el-fade-in" mode="out-in">
-                    <keep-alive :include="keepAliveComponents">
+                    <keep-alive :include="appStore.components">
                         <component ref="viewComponent" v-if="!reload" :is="Component" :key="route.path"></component>
                     </keep-alive>
                 </transition>
@@ -26,12 +26,10 @@
 
 <script lang="ts" setup>
 import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from 'vue'
-import {useStore} from '@/store/index'
 import {useRoute} from 'vue-router'
 import mitter from '@/utils/mitter'
-
 import RouteTabSwitcher from '@/components/RouteTabSwitcher.vue'
-import {useAppStore, useUserStore} from '@/pinia'
+import {useAppStore} from '@/pinia'
 
 //顶栏
 const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))
@@ -39,7 +37,6 @@ const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))
 const BaseNavigator = defineAsyncComponent(() => import('./BaseNavigator.vue'))
 
 const appStore = useAppStore()
-const userStore = useUserStore()
 const route = useRoute()
 
 //当前路由对应的组件
@@ -56,9 +53,6 @@ const navigatorShow = computed(() => {
  * 要缓存的组件名称列表，前提是路由 meta 中存在 cache
  */
 const keepAliveComponents = computed(() => {
-    if (process.env.NODE_ENV === 'development') {
-        return []
-    }
     return appStore.components
 })
 

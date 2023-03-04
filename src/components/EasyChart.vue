@@ -10,13 +10,15 @@
 <template>
     <div ref="chartContainer" :style="style" class="chart-container">
         <div ref="chartInstance" class="chart-instance"></div>
-        <div v-show="showTable" class="chart-table">
-            <el-table :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
-                <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
-                    <template v-slot="{row}">{{ row[i] }}</template>
-                </el-table-column>
-            </el-table>
-        </div>
+        <transition name="el-fade-in" mode="out-in">
+            <div v-show="showTable" class="chart-table">
+                <el-table :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
+                    <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
+                        <template v-slot="{row}">{{ row[i] }}</template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -35,8 +37,6 @@ let instance: EChartsType | null = null
 let container: HTMLElement | null = null
 //父容器观察器
 let observer: ResizeObserver | null = null
-//是否已经初始化了
-let initialized = false
 //图表父容器
 const chartContainer: Ref<HTMLElement | null> = ref(null)
 //图表挂载的DOM
@@ -52,7 +52,7 @@ const props = withDefaults(defineProps<{
     showTable?: boolean
 }>(), {
     resizeAnimation: true,
-    showTable: false,
+    showTable: false
 })
 
 //样式
@@ -61,7 +61,7 @@ const style = computed(() => {
         top: position.top + 'px',
         right: position.right + 'px',
         bottom: position.bottom + 'px',
-        left: position.left + 'px',
+        left: position.left + 'px'
     }
 })
 
@@ -70,7 +70,7 @@ const position = reactive({
     top: 0,
     right: 0,
     bottom: 0,
-    left: 0,
+    left: 0
 })
 
 //表格
@@ -79,7 +79,7 @@ const table: {
     height: number | undefined
 } = reactive({
     size: 'small',
-    height: undefined,
+    height: undefined
 })
 
 //在图表选项变化的时候更新图表
@@ -89,8 +89,8 @@ watch(
         instance!.setOption(props.option, true)
     },
     {
-        deep: true,
-    },
+        deep: true
+    }
 )
 
 /**
@@ -141,8 +141,8 @@ const resizeChart = () => {
     if (props.resizeAnimation) {
         instance!.resize({
             animation: {
-                duration: 1000,
-            },
+                duration: 1000
+            }
         })
     } else {
         instance!.resize()
@@ -163,7 +163,7 @@ const tableResize = () => {
 const downloadAsImage = (name = '图表') => {
     const dataUrl = instance!.getDataURL({
         type: 'png',
-        excludeComponents: ['toolbox'],
+        excludeComponents: ['toolbox']
     })
     const a = document.createElement('a')
     a.href = dataUrl
@@ -184,7 +184,7 @@ const observerResize = () => {
 defineExpose({
     instance,
     container,
-    downloadAsImage,
+    downloadAsImage
 })
 
 onMounted(() => {

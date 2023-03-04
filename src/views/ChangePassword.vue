@@ -19,7 +19,7 @@
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button type="default" @click="cancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
+                <el-button @click="cancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
                 <el-button type="primary" @click="saveBtnClick" :loading="loading" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
             </div>
         </el-form>

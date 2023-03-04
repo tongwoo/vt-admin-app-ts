@@ -31,11 +31,9 @@
                             </div>
                         </el-form-item>
                         -->
-                        <el-collapse-transition>
-                            <div class="error-container" v-if="tip">
-                                <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
-                            </div>
-                        </el-collapse-transition>
+                        <div class="error-container" v-if="tip">
+                            <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
+                        </div>
                         <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
                         <div class="separator"><span class="text">或者</span></div>
                         <el-button round>找回密码</el-button>
@@ -55,9 +53,8 @@ import {httpErrorHandler} from '@/utils/error'
 import setting from '@/setting'
 import {API_PATH_DEFAULT} from '@/constants/api-path'
 import {fetchProfile, requestLogin} from '@/modules/authorization'
-import {useAppStore, useUserStore} from '@/pinia'
+import {useUserStore} from '@/pinia'
 
-const appStore = useAppStore()
 const userStore = useUserStore()
 const router = useRouter()
 
@@ -78,7 +75,7 @@ const model = reactive({
     //密码
     password: null,
     //验证码
-    captcha: null,
+    captcha: null
 })
 //规则
 const rules = {
@@ -87,30 +84,30 @@ const rules = {
         {
             type: 'string',
             required: true,
-            message: '',
-        },
+            message: ''
+        }
     ],
     //密码
     password: [
         {
             type: 'string',
             required: true,
-            message: '',
-        },
+            message: ''
+        }
     ],
     //验证码
     captcha: [
         {
             type: 'string',
             required: false,
-            message: '验证码必须填写',
+            message: '验证码必须填写'
         },
         {
             type: 'string',
             len: 4,
-            message: '验证码必须是4位',
-        },
-    ],
+            message: '验证码必须是4位'
+        }
+    ]
 }
 
 /**
@@ -141,7 +138,7 @@ const submitLogin = async () => {
     const params = {
         username: model.username,
         password: model.password,
-        captcha: model.captcha,
+        captcha: model.captcha
     }
     loading.value = true
     requestLogin(params).then((result) => {
@@ -177,7 +174,7 @@ const submitLogin = async () => {
 const loadProfile = () => {
     const loading = loadingTip.service({
         lock: true,
-        text: '初始化中',
+        text: '初始化中'
     })
     fetchProfile().then((result) => {
         if (!result.success) {

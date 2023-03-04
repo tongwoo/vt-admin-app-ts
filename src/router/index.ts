@@ -1,11 +1,8 @@
 import baseRoutes from '@/router/base-routes'
 import businessRoutes from '@/router/business-routes'
-import {store} from '@/store/index'
 import {checkAccess} from '@/utils/authorize'
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import setting from '@/setting'
-import {Store} from 'vuex'
-import {GlobalState} from '@/store/types'
 import {useAppStore, useUserStore} from '@/pinia'
 
 /**
@@ -13,7 +10,7 @@ import {useAppStore, useUserStore} from '@/pinia'
  */
 const routes: Array<RouteRecordRaw> = [
     ...baseRoutes,
-    ...businessRoutes,
+    ...businessRoutes
 ]
 
 /**
@@ -21,19 +18,7 @@ const routes: Array<RouteRecordRaw> = [
  */
 const router = createRouter({
     history: createWebHashHistory(),
-    routes,
-})
-
-/**
- * 前置守卫 - 恢复本地数据
- */
-router.beforeEach(() => {
-    //const global: Store<GlobalState> = store as Store<GlobalState>
-    //if (global.state.synced) {
-    //    return true
-    //}
-    store.commit('localSync')
-    return true
+    routes
 })
 
 /**
@@ -42,7 +27,7 @@ router.beforeEach(() => {
 router.beforeEach((to) => {
     if (to.matched.length === 0) {
         return {
-            path: '/error/not-found',
+            path: '/error/not-found'
         }
     }
     return true
@@ -63,14 +48,14 @@ router.beforeEach((to) => {
     //如果本地没有认证信息则跳转到登录页面
     if (useUserStore().authorization === null) {
         return {
-            path: '/login',
+            path: '/login'
         }
     }
     //访问的路由是否需要权限监测，如需要则检查本地是否有匹配的权限
     if (to.meta?.permission !== undefined) {
         if (!checkAccess(to.meta.permission)) {
             return {
-                path: '/error/forbidden',
+                path: '/error/forbidden'
             }
         }
     }
@@ -84,9 +69,12 @@ router.afterEach((to) => {
         if (component) {
             const name = component.default.name ?? (component.default as Record<string, string>).__name
             if (name) {
-                useAppStore().$patch((state) => {
-                    state.components.push(<string>name)
-                })
+                const store = useAppStore()
+                if (store.components.indexOf(name) === -1) {
+                    store.$patch((state) => {
+                        state.components.push(name)
+                    })
+                }
             }
         }
     }

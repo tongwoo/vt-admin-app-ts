@@ -5,7 +5,7 @@ import i18n from '@/languages'
 export const pinia = createPinia()
 
 /**
- * 持久化保存store到localStorage以及自动恢复
+ * 持久化保存store到localStorage以及自动恢复插件
  */
 pinia.use((context: PiniaPluginContext) => {
     const backup = localStorage.getItem(context.store.$id)

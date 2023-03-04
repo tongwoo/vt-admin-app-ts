@@ -4,7 +4,6 @@
 -->
 <template>
     <div class="page-container">
-        {{appStore.language}}
         <div class="page-segment summary-head mb-0">
             <div class="segment-body">
                 <ul class="total-items">
@@ -259,19 +258,15 @@
 <script lang="ts" setup>
 import EasyChart from "@/components/EasyChart"
 import {getUserStateName} from "@/constants/user-state"
-import {useStore} from "@/store/index"
 import moment from "moment"
 import CountUp from '@/components/CountUp.vue'
 import {onMounted} from "vue"
-import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard";
-import {useAppStore} from '@/pinia'
+import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard"
 
-const store = useStore()
 const seasonLine = buildSeasonLineOption()
 const userLine = buildUserLineOption()
 const userWherePie = buildUserWherePieOption()
 
-const appStore = useAppStore()
 
 onMounted(() => {
     console.info(getUserStateName(2143))

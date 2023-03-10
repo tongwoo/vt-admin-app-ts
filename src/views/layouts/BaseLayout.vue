@@ -90,8 +90,7 @@ onMounted(() => {
                 reload.value = false
                 if (route?.meta?.cache) {
                     appStore.$patch((state) => {
-                        const index = state.components.indexOf(name)
-                        if (index === -1) {
+                        if (state.components.indexOf(name) === -1) {
                             state.components.push(name)
                         }
                     })

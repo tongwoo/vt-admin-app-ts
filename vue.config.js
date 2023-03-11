@@ -20,7 +20,6 @@ module.exports = defineConfig({
         })
     },
     devServer: {
-        open: true,
         host: '0.0.0.0',
         allowedHosts: ['*'],
         proxy: {

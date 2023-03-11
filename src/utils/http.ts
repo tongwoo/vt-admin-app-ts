@@ -1,6 +1,7 @@
+import {useUserStore} from "@/pinia/index"
 import {store} from "@/store/index"
 import {GlobalState} from "@/store/types"
-import axios, {AxiosResponse, AxiosInstance, AxiosResponseHeaders} from 'axios'
+import axios, {AxiosInstance, AxiosResponseHeaders} from 'axios'
 import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {ResponseCode} from "@/types/built-in"
 import {Store} from "vuex"
@@ -26,8 +27,9 @@ const http: AxiosInstance = axios.create({
 //请求拦截器
 http.interceptors.request.use(
     function (request) {
-        const token = (store as Store<GlobalState>).state.user.authorization
-        if (request.headers !== undefined && token) {
+        //添加授权头
+        const token = useUserStore().authorization
+        if (request.headers !== undefined && request.headers.authorization !== undefined && token) {
             request.headers.authorization = token
         }
         return request
@@ -52,7 +54,7 @@ http.interceptors.response.use(
                 response.isOk = false
             }
             //重命名 msg 为 message
-            if (response.data.hasOwnProperty('msg')) {
+            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
                 response.data.message = response.data.msg
                 delete response.data.msg
             }
@@ -69,7 +71,7 @@ http.interceptors.response.use(
         }
         if (response.headers['content-type'].includes('application/json')) {
             //重命名 msg 为 message
-            if (response.data.hasOwnProperty('msg')) {
+            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
                 response.data.message = response.data.msg
                 delete response.data.msg
             }
@@ -78,7 +80,12 @@ http.interceptors.response.use(
     }
 )
 
+/**
+ * HTTP常规响应结构
+ */
 export interface HttpResponse<T = any> {
+    [key: string]: any,
+
     //操作是否成功
     success: boolean,
     //消息

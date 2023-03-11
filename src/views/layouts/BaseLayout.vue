@@ -10,7 +10,7 @@
         <base-navigator></base-navigator>
         <!--路由Tab切换，不需要请删除此Div-->
         <div class="route-tab-bar">
-            <route-tab-switcher></route-tab-switcher>
+            <route-switcher></route-switcher>
         </div>
         <div class="base-content">
             <router-view v-slot="{ Component, route }">
@@ -28,7 +28,7 @@
 import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import mitter from '@/utils/mitter'
-import RouteTabSwitcher from '@/components/RouteTabSwitcher.vue'
+import RouteSwitcher from '@/components/RouteSwitcher.vue'
 import {useAppStore} from '@/pinia'
 
 //顶栏

@@ -33,16 +33,24 @@ const props = withDefaults(defineProps<{
 }>(), {
     percent: 1,
     allowDrag: false,
-    allowZoom: false,
+    allowZoom: false
 })
 
+//当前缩放率
 const scale = ref(1)
 
+//动态样式
 const style = computed(() => {
-    const properties = {
+    const properties: Record<string, any> = {
         left: position.x + 'px',
         top: position.y + 'px',
-        transform: 'scale(1)',
+        transform: 'scale(1)'
+    }
+    if (props.allowDrag) {
+        properties.position = 'relative'
+    }
+    if (props.allowZoom) {
+        properties.cursor = 'zoom'
     }
     if (scale.value < 1) {
         properties.transform = `scale(${scale.value})`
@@ -50,18 +58,23 @@ const style = computed(() => {
     return properties
 })
 
+//重新调整大小
+const resize = () => {
+    console.log('resize')
+    const parent = container.value!.parentElement!
+    const width = parent.clientWidth / props.width
+    const height = parent.clientHeight / props.height
+    scale.value = Math.min(width, height) * props.percent
+    position.x = 0
+    position.y = 0
+}
+
 onMounted(() => {
     const parent = container.value!.parentElement
     if (!parent) {
         return
     }
-    observer = new ResizeObserver(() => {
-        const width = parent.clientWidth / props.width
-        const height = parent.clientHeight / props.height
-        scale.value = Math.min(width, height) * props.percent
-        position.x = 0
-        position.y = 0
-    })
+    observer = new ResizeObserver(resize)
     observer.observe(parent)
 })
 
@@ -76,6 +89,7 @@ onUnmounted(() => {
  */
 const wheel = (e: WheelEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!props.allowZoom) {
         return
     }
@@ -94,13 +108,13 @@ const wheel = (e: WheelEvent) => {
 //位置
 const position = reactive({
     x: 0,
-    y: 0,
+    y: 0
 })
 
 //拖动距离
 const distance = reactive({
     x: 0,
-    y: 0,
+    y: 0
 })
 
 /**
@@ -108,6 +122,7 @@ const distance = reactive({
  */
 const mouseDown = (e: MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!props.allowDrag) {
         return
     }
@@ -122,6 +137,7 @@ const mouseDown = (e: MouseEvent) => {
  * 鼠标移动
  */
 const documentMouseMove = (e: MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
     position.x = e.pageX - distance.x
     position.y = e.pageY - distance.y
@@ -131,6 +147,7 @@ const documentMouseMove = (e: MouseEvent) => {
  * 鼠标松开
  */
 const documentMouseUp = (e: MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
     document.body.style.removeProperty('user-select')
     document.removeEventListener('mousemove', documentMouseMove)

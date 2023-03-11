@@ -94,7 +94,7 @@ export function dateDays(date: Date | string) {
  * @param date 日期,可为Date实例、日期字符串,不传则使用当前时间
  * @param zero 是否补充前缀0
  */
-export function dateDayItems(date: Date | string = new Date(), zero: boolean = true) {
+export function dateDayItems(date: Date | string = new Date(), zero = true) {
     const days = dateDays(date)
     const items = []
     for (let i = 1; i <= days; i++) {

@@ -5,38 +5,38 @@ import "moment/locale/zh-cn"
  * 一分钟的秒数
  * @type {number}
  */
-export const ONE_MINUTE = 60
+export const ONE_MINUTE_SECONDS = 60
 
 /**
  * 一小时的秒数
  * @type {number}
  */
-export const ONE_HOUR = 3600
+export const ONE_HOUR_SECONDS = 3600
 
 /**
  * 一天的秒数
  * @type {number}
  */
-export const ONE_DAY = 86400
+export const ONE_DAY_SECONDS = 86400
 
 /**
  * 一个星期的秒数
  * @type {number}
  */
-export const ONE_WEEK = 604800
+export const ONE_WEEK_SECONDS = 604800
 
 /**
  * 一个月的秒数
  * @type {number}
  */
-export const ONE_MONTH = 2592000
+export const ONE_MONTH_SECONDS = 2592000
 
 /**
  * 当前格式化好的日期时间
  * @return {string}
  */
 export function currentDateText() {
-    return moment().format('YYYY年MM月DD日 HH点mm分ss秒 dddd')
+    return moment().format('YYYY年MM月DD日 HH:mm:ss dddd')
 }
 
 /**
@@ -51,7 +51,7 @@ export function currentTimeText() {
  * 获得给定日期所在月的天数
  * @param date 日期,可为Date实例、日期字符串,不传则使用当前时间
  */
-export function dateDays(date: Date | string) {
+export function getDays(date: Date | string = new Date()): number {
     if (date === undefined) {
         date = new Date()
     } else {
@@ -90,80 +90,85 @@ export function dateDays(date: Date | string) {
 }
 
 /**
- * 获得日期天数集合
+ * 获得指定日期的天集合
  * @param date 日期,可为Date实例、日期字符串,不传则使用当前时间
  * @param zero 是否补充前缀0
  */
-export function dateDayItems(date: Date | string = new Date(), zero = true) {
-    const days = dateDays(date)
+export function getDayItems(date: Date | string = new Date(), zero: boolean = true): string[] {
+    const days = getDays(date)
     const items = []
     for (let i = 1; i <= days; i++) {
-        items.push(i < 10 ? '0' + i : String(i))
+        let day = String(i)
+        if (zero) {
+            day = i < 10 ? '0' + day : day
+        }
+        items.push(day)
     }
     return items
 }
 
 /**
- * 根据间隔分钟数来生成0点-24点的分钟段
+ * 根据间隔秒数来生成0点-24点的分钟段
  * @param interval 间隔秒数,默认为1小时
  */
-export function hourItems(interval: number = 3600) {
-    const day = 86400
+export function getMinuteSegments(interval: number = 3600, zero: boolean = true) {
+    const daySeconds = 86400
     const items = []
-    let current = 0
-    while (current < day) {
-        let hours: string | number = Math.floor(current / 3600)
-        let minutes: string | number = Math.floor((current - hours * 3600) / 60)
-        if (hours < 10) {
-            hours = '0' + hours
+    let currentSeconds = 0
+    while (currentSeconds < daySeconds) {
+        const hours = Math.floor(currentSeconds / 3600)
+        const minutes = Math.floor((currentSeconds - hours * 3600) / 60)
+        let hour = String(hours)
+        let minute = String(minutes)
+        if (zero && hours < 10) {
+            hour = '0' + hours
         }
-        if (minutes < 10) {
-            minutes = '0' + minutes
+        if (zero && minutes < 10) {
+            minute = '0' + minutes
         }
-        items.push(hours + ':' + minutes)
-        current += interval
+        items.push(hour + ':' + minute)
+        currentSeconds += interval
     }
     return items
 }
 
 /**
- * 月数集合
+ * 获取月数集合
  * @param {boolean} zero 是否填充0
  * @param {string} suffix 后缀，比如 “月”
  */
-export function monthItems(zero = true, suffix = '') {
-    const records = []
+export function getMonthItems(zero = true, suffix = '') {
+    const items = []
     for (let i = 1; i <= 12; i++) {
-        let record: string | number = i
+        let item = String(i)
         if (zero && i < 10) {
-            record = '0' + i
+            item = '0' + item
         }
         if (suffix) {
-            record = `${record}${suffix}`
+            item = `${item}${suffix}`
         }
-        records.push(record)
+        items.push(item)
     }
-    return records
+    return items
 }
 
 /**
  * 生成以前指定的年份到现在的年份集合
- * @param {number} begin 起始年份
- * @param {number|undefined} end 结束年份，默认为当前年
- * @param {boolean} pair 是否键值对
- * @return {[number]}
+ * @param begin 起始年份
+ * @param end 结束年份，默认为当前年
+ * @param pair 是否键值对
  */
-export function yearRangeItems(begin = 2016, end = undefined, pair = true) {
+export function yearRangeItems(begin: number, end: number | undefined, pair = true) {
     const current = end === undefined ? (new Date()).getFullYear() : end
     const items = []
     for (let year = begin; year <= current; year++) {
         if (pair) {
             items.push({
-                label: year,
-                value: year.toString()
+                label: year.toString(),
+                value: year
             })
         } else {
-            items.push(year.toString())
+            items.push(year)
         }
     }
     return items

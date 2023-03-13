@@ -1,10 +1,7 @@
 import {useUserStore} from "@/pinia/index"
-import {store} from "@/store/index"
-import {GlobalState} from "@/store/types"
 import axios, {AxiosInstance, AxiosResponseHeaders} from 'axios'
 import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {ResponseCode} from "@/types/built-in"
-import {Store} from "vuex"
 
 declare module 'axios' {
     interface AxiosResponse {

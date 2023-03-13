@@ -1,7 +1,7 @@
 import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus"
 import router from "../router/index"
 import {ResponseCode} from "@/types/built-in"
-import {AxiosError, AxiosResponse} from "axios"
+import {AxiosResponse} from "axios"
 
 /**
  * HTTP错误处理

@@ -12,10 +12,10 @@ const AUTHORIZATION_NAME = 'authorization'
 
 /**
  * 检测访问权限
- * @param {string|int} permission 待检测的权限
- * @return {boolean} 有权限=true 无权限=false
+ * @param permission 待检测的权限
+ * @return 有权限=true 无权限=false
  */
-export function checkAccess(permission: string | null) {
+export function checkAccess(permission: string | null): boolean {
     if (permission === '' || permission === null) {
         return true
     }
@@ -34,9 +34,8 @@ export function checkAccess(permission: string | null) {
 
 /**
  * 从客户端获取授权信息
- * @return {null|string}
  */
-export function readAuthorization() {
+export function readAuthorization(): null | string {
     let authorization = null
     if (setting.auth.storage === AUTH_STORAGE_LOCAL) {
         authorization = window.localStorage.getItem(AUTHORIZATION_NAME)

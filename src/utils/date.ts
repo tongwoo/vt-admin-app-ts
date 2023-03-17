@@ -134,8 +134,8 @@ export function getMinuteSegments(interval: number = 3600, zero: boolean = true)
 
 /**
  * 获取月数集合
- * @param {boolean} zero 是否填充0
- * @param {string} suffix 后缀，比如 “月”
+ * @param zero 是否填充0
+ * @param suffix 后缀，比如 “月”
  */
 export function getMonthItems(zero = true, suffix = '') {
     const items = []
@@ -158,7 +158,7 @@ export function getMonthItems(zero = true, suffix = '') {
  * @param end 结束年份，默认为当前年
  * @param pair 是否键值对
  */
-export function yearRangeItems(begin: number, end: number | undefined, pair = true) {
+export function getYearRangeItems(begin: number, end: number | undefined, pair = true) {
     const current = end === undefined ? (new Date()).getFullYear() : end
     const items = []
     for (let year = begin; year <= current; year++) {

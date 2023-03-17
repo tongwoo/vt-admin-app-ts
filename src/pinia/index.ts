@@ -25,14 +25,14 @@ export const useAppStore = defineStore('app', () => {
     //语言
     const language = ref('zh-CN')
     //导航
-    const navigator = reactive({
+    const navigator = ref({
         //是否折叠
         collapse: false,
         //页面小于多少宽度折叠菜单
         size: 1366
     })
     //消息
-    const message = reactive({
+    const message = ref({
         //未读数
         unread: 0,
         //总数

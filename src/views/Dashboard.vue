@@ -6,11 +6,6 @@
     <div class="page-container">
         <div class="page-segment summary-head mb-0">
             <div class="segment-body">
-                <div style="display: flex;align-items: center;justify-content: center">
-                    <scale-container allow-drag allow-zoom :width="400" :height="300" style="background-color: #5F6364">
-                        <div style="background-color: #8FA8BC;width:400px;height: 300px"></div>
-                    </scale-container>
-                </div>
                 <ul class="total-items">
                     <li class="total-item">
                         <div class="label">总用户数</div>
@@ -263,20 +258,14 @@
 <script lang="ts" setup>
 import EasyChart from "@/components/EasyChart"
 import ScaleContainer from "@/components/ScaleContainer.vue"
-import {getUserStateName} from "@/constants/user-state"
 import moment from "moment"
 import CountUp from '@/components/CountUp.vue'
-import {onMounted} from "vue"
 import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard"
 
 const seasonLine = buildSeasonLineOption()
 const userLine = buildUserLineOption()
 const userWherePie = buildUserWherePieOption()
 
-
-onMounted(() => {
-    console.info(getUserStateName(2143))
-})
 
 /**
  * 百分比格式化

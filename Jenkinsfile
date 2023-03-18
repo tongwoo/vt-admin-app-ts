@@ -8,7 +8,7 @@ pipeline{
     stages{
         stage('build'){
             steps{
-                sh "npm install --registry=https://registry.npmmirror.com --loglevel=verbose"
+                sh "npm install"
                 sh "npm run build"
             }
         }

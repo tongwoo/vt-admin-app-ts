@@ -1,6 +1,6 @@
 import {AUTH_STORAGE_COOKIE} from "@/constants/auth-storage"
 import {AUTH_STORAGE_LOCAL} from "@/constants/auth-storage"
-import {useStore} from "@/store/index"
+import {useUserStore} from "@/pinia/index"
 import setting from "@/setting"
 import jsCookie from "js-cookie"
 
@@ -20,7 +20,7 @@ export function checkAccess(permission: string | null): boolean {
         return true
     }
     //本地保存的权限
-    const permissions = useStore().state.user.permissions
+    const permissions = useUserStore().permissions
     //如果本地没有则返回无权限
     if (permissions.length === 0) {
         return false

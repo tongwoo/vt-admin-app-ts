@@ -4,7 +4,7 @@
         <!--用户面板-->
         <div class="user-panel">
             <div v-if="userStore.avatar" class="user-logo">
-                <img :src="userStore.avatar" @error="avatarError">
+                <img :src="userStore.avatar" @error="onAvatarError">
             </div>
             <div class="user-name" v-show="!isCollapsed">
                 {{ userStore.nickname }}
@@ -17,7 +17,7 @@
             </el-menu>
         </el-scrollbar>
         <!--折叠-->
-        <div class="collapse-button" @click="toggleNavigatorBtnClick">
+        <div class="collapse-button" @click="onNavigatorBtnClick">
             <transition name="el-fade-in" mode="out-in">
                 <span v-if="isCollapsed"><i class="bi bi-chevron-double-right"></i></span>
                 <span v-else><i class="bi bi-chevron-double-left"></i>收起侧边栏</span>
@@ -49,17 +49,15 @@ const isCollapsed = computed(() => {
 /**
  * 头像加载失败
  */
-const avatarError = (error) => {
+const onAvatarError = (error) => {
     error.target.src = defaultAvatar
 }
 
 /**
  * 导航切换按钮点击
  */
-const toggleNavigatorBtnClick = () => {
-    appStore.$patch((state) => {
-        state.navigator.collapse = !state.navigator.collapse
-    })
+const onNavigatorBtnClick = () => {
+    appStore.navigator.collapse = !appStore.navigator.collapse
 }
 </script>
 

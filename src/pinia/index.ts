@@ -1,11 +1,11 @@
 import {createPinia, defineStore, PiniaPluginContext} from 'pinia'
-import {reactive, Ref, ref, watch} from 'vue'
+import {Ref, ref, toRaw, watch} from 'vue'
 import i18n from '@/languages'
 
 export const pinia = createPinia()
 
 /**
- * 持久化保存store到localStorage以及自动恢复插件
+ * Pinia插件 - 持久化保存store到localStorage以及自动恢复
  */
 pinia.use((context: PiniaPluginContext) => {
     const backup = localStorage.getItem(context.store.$id)
@@ -19,24 +19,43 @@ pinia.use((context: PiniaPluginContext) => {
 })
 
 /**
+ * 导航
+ */
+interface Navigator {
+    //是否折叠
+    collapse: boolean,
+    //页面小于多少宽度折叠菜单
+    size: number
+}
+
+/**
+ * 消息
+ */
+interface Message {
+    //未读数
+    unread: number,
+    //总数
+    total: number,
+    //消息列表
+    items: Array<{ id: string | number, title: string, time: string }>
+}
+
+/**
  * 应用store
  */
 export const useAppStore = defineStore('app', () => {
     //语言
     const language = ref('zh-CN')
     //导航
-    const navigator = ref({
-        //是否折叠
+    const navigator: Ref<Navigator> = ref({
         collapse: false,
-        //页面小于多少宽度折叠菜单
         size: 1366
     })
     //消息
-    const message = ref({
-        //未读数
+    const message: Ref<Message> = ref({
         unread: 0,
-        //总数
-        total: 0
+        total: 0,
+        items: []
     })
     //缓存组件名列表
     const components: Ref<string[]> = ref([])

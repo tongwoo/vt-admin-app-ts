@@ -103,19 +103,19 @@ export function getAttachmentName(headers: AxiosResponseHeaders): string {
     const keyword = "filename*=utf-8''"
     const offset = disposition.indexOf(keyword)
     if (offset !== -1) {
-        const name = disposition.substr(offset + keyword.length)
+        const name = disposition.substring(offset + keyword.length)
         return decodeURI(name)
     }
     const keyword2 = 'filename="'
     const offset2 = disposition.indexOf(keyword2)
     if (offset2 !== -1) {
-        const name2 = disposition.substr(offset2 + keyword2.length, disposition.length - offset2 - keyword2.length - 1)
+        const name2 = disposition.substring(offset2 + keyword2.length, disposition.length - offset2 - keyword2.length - 1)
         return decodeURI(name2)
     }
     const keyword3 = 'filename='
     const offset3 = disposition.indexOf(keyword3)
     if (offset3 !== -1) {
-        const name3 = disposition.substr(offset3 + keyword3.length)
+        const name3 = disposition.substring(offset3 + keyword3.length)
         return decodeURI(name3)
     }
     return 'unknown'

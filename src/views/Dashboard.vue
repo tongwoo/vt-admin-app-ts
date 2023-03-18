@@ -257,7 +257,6 @@
 </template>
 <script lang="ts" setup>
 import EasyChart from "@/components/EasyChart"
-import ScaleContainer from "@/components/ScaleContainer.vue"
 import moment from "moment"
 import CountUp from '@/components/CountUp.vue'
 import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard"
@@ -265,7 +264,6 @@ import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} fro
 const seasonLine = buildSeasonLineOption()
 const userLine = buildUserLineOption()
 const userWherePie = buildUserWherePieOption()
-
 
 /**
  * 百分比格式化

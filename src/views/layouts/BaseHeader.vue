@@ -14,7 +14,7 @@
             </transition>
         </div>
         <!--侧边栏开关按钮-->
-        <div class="header-col header-col-btn" @click="toggleNavigatorBtnClick">
+        <div class="header-col header-col-btn" @click="onNavigatorBtnClick">
             <i class="bi btn-icon-text" :class="toggleNavigatorBtnClass"></i>
         </div>
         <!--面包屑-->
@@ -27,7 +27,7 @@
         <div class="header-flexible"></div>
         <!--去看文档-->
         <div class="header-col">
-            <el-button type="primary" size="default" @click="docBtnClick"><i class="bi bi-filetype-doc el-icon--left"></i>去看文档</el-button>
+            <el-button type="primary" size="default" @click="onDocBtnClick"><i class="bi bi-filetype-doc el-icon--left"></i>去看文档</el-button>
         </div>
         <!--刷新-->
         <div class="header-col header-col-btn" @click="refreshPage">
@@ -37,7 +37,7 @@
         </div>
         <!--多语言-->
         <div class="header-col header-col-btn">
-            <el-dropdown @command="languageChange">
+            <el-dropdown @command="onLanguageChange">
                 <i class="bi bi-translate btn-icon-text"></i>
                 <template v-slot:dropdown>
                     <el-dropdown-menu>
@@ -55,16 +55,16 @@
             <i v-else class="bi bi-chat-dots btn-icon-text"></i>
         </div>
         <!--全屏-->
-        <div class="header-col header-col-btn" @click="toggleFullScreenBtnClick">
+        <div class="header-col header-col-btn" @click="onFullScreenBtnClick">
             <el-tooltip :content="isFullScreen ? '退出全屏' : '全屏'">
                 <i class="bi  btn-icon-text" :class="isFullScreen ? 'bi-fullscreen-exit' : 'bi-fullscreen'"></i>
             </el-tooltip>
         </div>
         <!--用户面板-->
         <div class="header-col header-col-btn">
-            <el-dropdown @command="userDropdownCommand">
+            <el-dropdown @command="onUserDropdownCommand">
                 <div class="user-panel">
-                    <img v-if="userStore.avatar" :src="userStore.avatar" @error="avatarError"/>
+                    <img v-if="userStore.avatar" :src="userStore.avatar" @error="onAvatarError"/>
                     <div class="nickname">{{ userStore.nickname }}</div>
                     <i class="bi bi-caret-down-fill"></i>
                 </div>
@@ -92,7 +92,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {useStore} from '@/store/index'
 import {computed, reactive, ref} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {ElLoading, ElMessage} from 'element-plus'
@@ -145,7 +144,7 @@ const toggleNavigatorBtnClass = computed(() => {
 /**
  * 导航切换按钮点击
  */
-const toggleNavigatorBtnClick = () => {
+const onNavigatorBtnClick = () => {
     appStore.$patch((state) => {
         state.navigator.collapse = !state.navigator.collapse
     })
@@ -154,7 +153,7 @@ const toggleNavigatorBtnClick = () => {
 /**
  * 全屏按钮点击
  */
-const toggleFullScreenBtnClick = () => {
+const onFullScreenBtnClick = () => {
     if (isFullScreen.value) {
         document.exitFullscreen()
     } else {
@@ -166,7 +165,7 @@ const toggleFullScreenBtnClick = () => {
 /**
  * 文档按钮点击
  */
-const docBtnClick = () => {
+const onDocBtnClick = () => {
     window.location.href = 'https://doc.duckpear.com/guide/index.html'
 }
 
@@ -181,7 +180,7 @@ const refreshPage = () => {
  * 用户下拉菜单点击
  * @param {string} command 菜单命令
  */
-const userDropdownCommand = (command: string) => {
+const onUserDropdownCommand = (command: string) => {
     if (command === 'change-password') {
         password.dialog.show = true
     } else if (command === 'avatar') {
@@ -232,14 +231,14 @@ const avatar = {
 /**
  * 头像加载失败
  */
-const avatarError = (event: Event) => {
+const onAvatarError = (event: Event) => {
     (event.target as HTMLImageElement).src = defaultAvatar
 }
 
 /**
  * 语言改变
  */
-const languageChange = (lang: string) => {
+const onLanguageChange = (lang: string) => {
     appStore.$patch((state) => {
         state.language = lang
     })

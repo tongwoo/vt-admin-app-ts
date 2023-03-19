@@ -14,8 +14,8 @@
             </transition>
         </div>
         <!--侧边栏开关按钮-->
-        <div class="header-col header-col-btn" @click="onNavigatorBtnClick">
-            <i class="bi btn-icon-text" :class="toggleNavigatorBtnClass"></i>
+        <div class="header-col header-col-btn" @click="onNavBtnClick">
+            <i class="bi btn-icon-text" :class="navBtnClass"></i>
         </div>
         <!--面包屑-->
         <div class="header-col">
@@ -102,7 +102,7 @@ import ChangePassword from '@/views/ChangePassword.vue'
 //import AvatarSetting from "@/views/AvatarSetting.vue";
 import mitter from '@/utils/mitter'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
-import {useAppStore, useUserStore} from '@/pinia'
+import {useAppStore, useUserStore} from '@/pinia/index'
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -137,14 +137,14 @@ const breadcrumbs = computed(() => {
 /**
  * 导航切换按钮class样式
  */
-const toggleNavigatorBtnClass = computed(() => {
+const navBtnClass = computed(() => {
     return appStore.navigator.collapse ? 'bi-text-indent-left' : 'bi-text-indent-right'
 })
 
 /**
  * 导航切换按钮点击
  */
-const onNavigatorBtnClick = () => {
+const onNavBtnClick = () => {
     appStore.$patch((state) => {
         state.navigator.collapse = !state.navigator.collapse
     })
@@ -166,7 +166,7 @@ const onFullScreenBtnClick = () => {
  * 文档按钮点击
  */
 const onDocBtnClick = () => {
-    window.location.href = 'https://doc.duckpear.com/guide/index.html'
+    window.location.href = '../../../../public/index.html'
 }
 
 /**

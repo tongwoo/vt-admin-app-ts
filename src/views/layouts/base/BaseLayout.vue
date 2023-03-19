@@ -8,7 +8,7 @@
         <base-header></base-header>
         <!--左侧导航-->
         <base-navigator></base-navigator>
-        <!--路由Tab切换，不需要请删除此Div-->
+        <!--路由Tab切换-->
         <div class="route-tab-bar">
             <route-switcher></route-switcher>
         </div>
@@ -29,7 +29,7 @@ import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, r
 import {useRoute} from 'vue-router'
 import mitter from '@/utils/mitter'
 import RouteSwitcher from '@/components/RouteSwitcher.vue'
-import {useAppStore} from '@/pinia'
+import {useAppStore} from '@/pinia/index'
 
 //顶栏
 const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))

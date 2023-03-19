@@ -1,4 +1,4 @@
-import {AUTH_STORAGE_COOKIE, AUTH_STORAGE_LOCAL} from "@/constants/auth-storage"
+import {AUTH_STORAGE_COOKIE} from "@/constants/auth-storage"
 
 export default {
     //系统名称

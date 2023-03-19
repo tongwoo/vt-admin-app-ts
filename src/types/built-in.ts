@@ -77,11 +77,11 @@ export interface RecordSet<T> {
     //是否加载中
     loading: boolean,
     //每页记录数
-    size: number,
+    size?: number,
     //记录集列表
     items: T[],
     //已选中的记录项列表
-    selected: T[],
+    selected?: T[],
 }
 
 /**

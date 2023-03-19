@@ -14,7 +14,9 @@
             <el-icon v-if="props.item.icon" :class="props.item.icon"></el-icon>
             <span>{{ props.item.name }}</span>
         </template>
-        <menu-item v-for="(menu) in props.item.children" :key="menu.name" :item="menu"></menu-item>
+        <template v-for="menu in props.item.children" :key="menu.name">
+            <menu-item v-if="menu.show" :item="menu"></menu-item>
+        </template>
     </el-sub-menu>
 </template>
 

@@ -13,7 +13,9 @@
         <!--菜单-->
         <el-scrollbar>
             <el-menu :router="true" :unique-opened="true" :collapse="isCollapsed" :collapse-transition="false" :default-active="route.path">
-                <menu-item v-for="menu in menus" :key="menu.name" :item="menu"></menu-item>
+                <template v-for="menu in menus" :key="menu.name">
+                    <menu-item v-if="menu.show" :item="menu"></menu-item>
+                </template>
             </el-menu>
         </el-scrollbar>
         <!--折叠-->
@@ -32,7 +34,7 @@ import MenuItem from '@/components/MenuItem.vue'
 import {useRoute} from 'vue-router'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {filterAuthMenus, navigateMenus} from '@/data/menu'
-import {useAppStore, useUserStore} from '@/pinia'
+import {useAppStore, useUserStore} from '@/pinia/index'
 
 const appStore = useAppStore()
 const userStore = useUserStore()

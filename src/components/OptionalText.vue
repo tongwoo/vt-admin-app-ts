@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{
 
 //数据是否数值
 const isNumber = computed(() => {
-    return /^[\d\.]+$/g.test(String(props.modelValue))
+    return /^[\d\\.]+$/g.test(String(props.modelValue))
 })
 
 //非跳动显示的内容

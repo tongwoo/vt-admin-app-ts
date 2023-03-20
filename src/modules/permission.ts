@@ -1,6 +1,9 @@
-import {http, HttpResponse} from '@/utils/http'
+/*
+ * 权限
+*/
+import {onMounted, Ref, ref} from "vue"
+import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
-import {onMounted, ref, Ref} from "vue"
 
 /**
  * 权限模型
@@ -22,7 +25,7 @@ export interface PermissionModel extends Model {
  */
 export function dataToPermissionModel(data: any): PermissionModel {
     return {
-        //原始数据
+        //原数据
         _: data,
         //ID
         id: data.id,
@@ -41,15 +44,15 @@ export function dataToPermissionModel(data: any): PermissionModel {
  * 新增权限
  * @param data 数据
  */
-export function createPermission(data: object): Promise<HttpResponse> {
+export function createPermission(data: any): Promise<HttpResponse> {
     return http.post(
         '/permission/create',
         data
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -58,15 +61,15 @@ export function createPermission(data: object): Promise<HttpResponse> {
  * 更新权限
  * @param data 数据
  */
-export function updatePermission(data: object): Promise<HttpResponse> {
-    return http.post(
+export function updatePermission(data: any): Promise<HttpResponse> {
+    return http.put(
         '/permission/update',
         data
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -76,16 +79,18 @@ export function updatePermission(data: object): Promise<HttpResponse> {
  * @param ids 数据ID
  */
 export function removePermission(ids: ID | ID[]): Promise<HttpResponse> {
-    return http.post(
+    return http.delete(
         '/permission/delete',
         {
-            ids
+            data: {
+                id: ids
+            }
         }
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         return {
             success: response.isOk,
-            message: body.message
+            message: result.message
         }
     })
 }
@@ -98,7 +103,11 @@ export function fetchPermission(id: ID): Promise<PermissionModel | null> {
     return http.get(
         '/permission/detail?id=' + id
     ).then((response) => {
-        return response.isOk ? dataToPermissionModel(response.data.data.item) : null
+        if (!response.isOk) {
+            return null
+        }
+        const data = response.data.data
+        return dataToPermissionModel(data.item)
     })
 }
 
@@ -113,11 +122,11 @@ export function fetchPermissions(params: Record<string, any> = {}): Promise<Perm
             params
         }
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         if (!response.isOk) {
             return []
         }
-        return body.data.items.map((item: any) => {
+        return result.data.items.map((item: any) => {
             return dataToPermissionModel(item)
         })
     })
@@ -134,16 +143,16 @@ export function fetchPagePermissions(params: Record<string, any> = {}): Promise<
             params
         }
     ).then((response) => {
-        const body = response.data
+        const result = response.data
         const data = {
             items: [] as PermissionModel[],
             total: 0
         }
         if (response.isOk) {
-            data.items = body.data.items.map((item: any) => {
+            data.items = result.data.items.map((item: any) => {
                 return dataToPermissionModel(item)
             })
-            data.total = body.data.total
+            data.total = result.data.total
         }
         return data
     })
@@ -157,12 +166,44 @@ export function fetchPairPermissions(params: Record<string, any> = {}): Promise<
     return fetchPermissions(params).then((items) => {
         return items.map((item) => {
             return {
-                name: item.description,
-                value: item.id,
-                origin: item
+                name: item.name,
+                value: item.id
             }
         })
     })
+}
+
+
+/**
+ * 使用权限列表
+ * @param params 查询参数
+ * @param callback 加载完成后的回调
+ */
+export function usePermissions(params: Record<string, any> = {}, callback?: () => void): Ref<PermissionModel[]> {
+    const permissions = ref<PermissionModel[]>([])
+    onMounted(async () => {
+        permissions.value = await fetchPermissions(params)
+        if (callback !== undefined) {
+            callback()
+        }
+    })
+    return permissions
+}
+
+/**
+ * 使用权限名称值列表
+ * @param params 查询参数
+ * @param callback 加载完成后的回调
+ */
+export function usePairPermissions(params: Record<string, any> = {}, callback?: () => void): Ref<NameValue[]> {
+    const permissions = ref<NameValue[]>([])
+    onMounted(async () => {
+        permissions.value = await fetchPairPermissions(params)
+        if (callback !== undefined) {
+            callback()
+        }
+    })
+    return permissions
 }
 
 /**
@@ -188,30 +229,6 @@ export function fetchPermissionTree(params = {}): Promise<PermissionTree[]> {
         }
         return response.data.data.items
     })
-}
-
-/**
- * 使用权限列表
- * @param params 查询参数
- */
-export function usePermissions(params: Record<string, any> = {}): Ref<PermissionModel[]> {
-    const permissions = ref<PermissionModel[]>([])
-    onMounted(async () => {
-        permissions.value = await fetchPermissions(params)
-    })
-    return permissions
-}
-
-/**
- * 使用权限名称值列表
- * @param params 查询参数
- */
-export function usePairPermissions(params: Record<string, any> = {}): Ref<NameValue[]> {
-    const permissions = ref<NameValue[]>([])
-    onMounted(async () => {
-        permissions.value = await fetchPairPermissions(params)
-    })
-    return permissions
 }
 
 /**

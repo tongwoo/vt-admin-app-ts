@@ -4,6 +4,7 @@
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {getConfirmName, getConfirmClass} from "@/constants/confirm"
 import {PermissionModel} from './permission'
 
 /**
@@ -18,6 +19,10 @@ export interface RoleModel extends Model {
     ruleName: string,
     //是否内置
     isBuiltIn: number,
+    //是否内置名称
+    isBuiltInName?: string | null,
+    //是否内置样式Class
+    isBuiltInClass?: string | null,
     //角色权限列表
     permissions?: PermissionModel[]
 }
@@ -39,7 +44,11 @@ export function dataToRoleModel(data: any): RoleModel {
         //规则名称
         ruleName: data.ruleName,
         //是否内置
-        isBuiltIn: data.isBuiltIn
+        isBuiltIn: data.isBuiltIn,
+        //是否内置名称
+        isBuiltInName: getConfirmName(data.isBuiltIn),
+        //是否内置样式Class
+        isBuiltInClass: getConfirmClass(data.isBuiltIn)
     }
 }
 
@@ -47,7 +56,7 @@ export function dataToRoleModel(data: any): RoleModel {
  * 新增角色
  * @param data 数据
  */
-export function createRole(data: object): Promise<HttpResponse> {
+export function createRole(data: any): Promise<HttpResponse> {
     return http.post(
         '/role/create',
         data
@@ -64,8 +73,8 @@ export function createRole(data: object): Promise<HttpResponse> {
  * 更新角色
  * @param data 数据
  */
-export function updateRole(data: object): Promise<HttpResponse> {
-    return http.post(
+export function updateRole(data: any): Promise<HttpResponse> {
+    return http.put(
         '/role/update',
         data
     ).then((response) => {
@@ -82,10 +91,12 @@ export function updateRole(data: object): Promise<HttpResponse> {
  * @param ids 数据ID
  */
 export function removeRole(ids: ID | ID[]): Promise<HttpResponse> {
-    return http.post(
+    return http.delete(
         '/role/delete',
         {
-            ids
+            data: {
+                id: ids
+            }
         }
     ).then((response) => {
         const result = response.data
@@ -104,7 +115,11 @@ export function fetchRole(id: ID): Promise<RoleModel | null> {
     return http.get(
         '/role/detail?id=' + id
     ).then((response) => {
-        return response.isOk ? dataToRoleModel(response.data.data.item) : null
+        if (!response.isOk) {
+            return null
+        }
+        const data = response.data.data
+        return dataToRoleModel(data.item)
     })
 }
 
@@ -174,11 +189,15 @@ export function fetchPairRoles(params: Record<string, any> = {}): Promise<NameVa
 /**
  * 使用角色列表
  * @param params 查询参数
+ * @param callback 加载完成后的回调
  */
-export function useRoles(params: Record<string, any> = {}): Ref<RoleModel[]> {
+export function useRoles(params: Record<string, any> = {}, callback?: () => void): Ref<RoleModel[]> {
     const roles = ref<RoleModel[]>([])
     onMounted(async () => {
         roles.value = await fetchRoles(params)
+        if (callback !== undefined) {
+            callback()
+        }
     })
     return roles
 }
@@ -186,11 +205,15 @@ export function useRoles(params: Record<string, any> = {}): Ref<RoleModel[]> {
 /**
  * 使用角色名称值列表
  * @param params 查询参数
+ * @param callback 加载完成后的回调
  */
-export function usePairRoles(params: Record<string, any> = {}): Ref<NameValue[]> {
+export function usePairRoles(params: Record<string, any> = {}, callback?: () => void): Ref<NameValue[]> {
     const roles = ref<NameValue[]>([])
     onMounted(async () => {
         roles.value = await fetchPairRoles(params)
+        if (callback !== undefined) {
+            callback()
+        }
     })
     return roles
 }

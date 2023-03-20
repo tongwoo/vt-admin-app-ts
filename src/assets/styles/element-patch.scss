@@ -4,6 +4,11 @@
 .el-dialog__header {
     padding-bottom: var(--el-dialog-padding-primary);
     border-bottom: 1px solid #ededed;
+    margin-right: 0;
+}
+
+.el-dialog__body {
+    padding: 15px;
 }
 
 /**

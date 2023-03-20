@@ -1,11 +1,11 @@
 /*
  * 用户
 */
-import {RoleModel} from "@/modules/role"
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PageResult, Model} from "@/types/built-in"
-import {getUserStateName, getUserStateClass} from "@/constants/user-state"
+import {getUserStateName, getUserStateClass} from "@/enums/user-state"
+import {RoleModel} from "@/modules/role"
 
 /**
  * 用户模型
@@ -22,9 +22,9 @@ export interface UserModel extends Model {
     //状态
     state: number,
     //状态名称
-    stateName: string | null,
+    stateName?: string | null,
     //状态样式Class
-    stateClass: string | null,
+    stateClass?: string | null,
     //上次登录时间
     loginTime: string,
     //用户角色
@@ -66,7 +66,7 @@ export function dataToUserModel(data: any): UserModel {
  * 新增用户
  * @param data 数据
  */
-export function createUser(data: object): Promise<HttpResponse> {
+export function createUser(data: any): Promise<HttpResponse> {
     return http.post(
         '/user/create',
         data
@@ -83,8 +83,8 @@ export function createUser(data: object): Promise<HttpResponse> {
  * 更新用户
  * @param data 数据
  */
-export function updateUser(data: object): Promise<HttpResponse> {
-    return http.post(
+export function updateUser(data: any): Promise<HttpResponse> {
+    return http.put(
         '/user/update',
         data
     ).then((response) => {
@@ -101,10 +101,12 @@ export function updateUser(data: object): Promise<HttpResponse> {
  * @param ids 数据ID
  */
 export function removeUser(ids: ID | ID[]): Promise<HttpResponse> {
-    return http.post(
+    return http.delete(
         '/user/delete',
         {
-            ids
+            data: {
+                id: ids
+            }
         }
     ).then((response) => {
         const result = response.data
@@ -123,7 +125,11 @@ export function fetchUser(id: ID): Promise<UserModel | null> {
     return http.get(
         '/user/detail?id=' + id
     ).then((response) => {
-        return response.isOk ? dataToUserModel(response.data.data.item) : null
+        if (!response.isOk) {
+            return null
+        }
+        const data = response.data.data
+        return dataToUserModel(data.item)
     })
 }
 

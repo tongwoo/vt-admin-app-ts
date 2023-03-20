@@ -1,8 +1,4 @@
-<!--
-功能：路由
-作者：wutong
-日期：2022-11-03
--->
+<!--路由-->
 <template>
     <div class="page-container">
         <div class="page-segment">
@@ -16,9 +12,12 @@
                             <el-form-item label="名称">
                                 <el-input v-model="query.name" clearable></el-input>
                             </el-form-item>
+                            <el-form-item label="路径">
+                                <el-input v-model="query.path" clearable></el-input>
+                            </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="submitQuery" native-type="submit"><i class="bi bi-search el-icon--left"></i>查询</el-button>
-                                <el-button type="default" @click="resetQuery"><i class="bi bi-arrow-clockwise el-icon--left"></i>重置</el-button>
+                                <el-button @click="resetQuery"><i class="bi bi-arrow-clockwise el-icon--left"></i>重置</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -26,42 +25,30 @@
             </div>
         </div>
         <div class="page-segment">
-            <div class="segment-header with-bordered">
-                <div class="header-flex">
-                    <div class="header-title">路由列表</div>
-                    <div class="header-flexible"></div>
-                    <div class="header-buttons">
-                        <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
-                        <el-button type="primary" size="default" @click="generateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>内置生成</el-button>
-                        <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
-                        <el-button type="danger" size="default" @click="truncateBtnClick"><i class="bi bi-trash el-icon--left"></i>清空</el-button>
-                    </div>
+            <div class="segment-header with-bordered with-flex">
+                <div class="header-title">路由列表</div>
+                <div class="header-buttons">
+                    <el-button type="primary" size="default" @click="onCreateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
+                    <el-button type="primary" size="default" @click="onGenerateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>内置生成</el-button>
+                    <el-button type="danger" size="default" @click="onTruncateBtnClick"><i class="bi bi-trash el-icon--left"></i>清空</el-button>
+                    <el-button type="danger" size="default" @click="onBatchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
                 </div>
             </div>
             <div class="segment-body">
                 <!--数据列表-->
                 <div class="data-container">
                     <div class="data-table">
-                        <el-table
-                            ref="table"
-                            border
-                            stripe
-                            size="small"
-                            row-key="id"
-                            :data="record.items"
-                            v-loading="record.loading"
-                            @selection-change="selectionChange"
-                        >
+                        <el-table ref="table" border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="onSelectionChange">
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
-                            <el-table-column type="index" fixed="left" label="序号" align="center"></el-table-column>
-                            <el-table-column prop="name" label="名称" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="path" label="路径" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="permissionDescription" label="权限" align="center" min-width="100" show-overflow-tooltip></el-table-column>
-                            <el-table-column fixed="right" label="操作" width="140" align="center">
+                            <!--<el-table-column label="序号" type="index" fixed="left" align="center" width="80"></el-table-column>-->
+                            <el-table-column label="路径" prop="path" align="left" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column label="名称" prop="name" align="left" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column label="权限" prop="permissionName" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column label="操作" fixed="right" width="140" align="center">
                                 <template v-slot="{row}">
                                     <div class="table-operation">
-                                        <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改</el-button>
-                                        <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除</el-button>
+                                        <el-button type="primary" size="small" @click="onModifyBtnClick(row)">修改</el-button>
+                                        <el-button type="danger" size="small" @click="onRemoveBtnClick(row)">删除</el-button>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -70,36 +57,33 @@
                 </div>
                 <!--数据分页-->
                 <div class="pagination-container">
-                    <el-pagination
-                        v-model:page-size="record.size"
-                        v-model:current-page="query.page"
-                        :total="record.total"
-                        @current-change="pageChange"
-                        background
-                    ></el-pagination>
+                    <el-pagination v-model:page-size="record.size" v-model:current-page="query.page" :total="record.total" @current-change="onPageChange" background></el-pagination>
                 </div>
             </div>
         </div>
         <!--维护表单弹框-->
-        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="maintainDialogClose" append-to-body width="500px">
+        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="onMaintainDialogClose" append-to-body width="500px">
             <transition name="el-fade-in" mode="out-in">
-                <route-form v-if="maintain.dialog.show" :payload="maintain.data" @close="maintainDialogClose"></route-form>
+                <route-form v-if="maintain.dialog.show" :payload="maintain.data" @close="onMaintainDialogClose"></route-form>
             </transition>
         </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
-import moment from "moment"
-import {QueryParam, ID, RecordSet, NameValue, DialogOption} from "@/types/built-in.js"
-import {ref, reactive, onMounted, defineAsyncComponent} from "vue"
-import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
-import {cloneObject} from "@/utils/object"
-import {httpErrorHandler} from "@/utils/error"
+import {usePairPermissions} from "@/modules/permission"
+import {fetchPageRoutes, generateRoutes, removeRoute, RouteModel, truncateRoutes} from "@/modules/route"
 import setting from "@/setting"
-import {RouteItem, RouteModel, modelToRouteItem, removeRoute, fetchPageRoutes, generateRoutes, truncateRoutes} from "@/modules/route"
+import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {httpErrorHandler} from "@/utils/error"
+import {cloneObject} from "@/utils/object"
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
 
 //路由表单
-const RouteForm = defineAsyncComponent(() => import('@/views/route/RouteForm.vue'))
+const RouteForm = defineAsyncComponent(() => import('./RouteForm.vue'))
+
+//权限列表
+const permissions = usePairPermissions()
 
 onMounted(() => {
     //载入路由
@@ -109,36 +93,34 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query = reactive({
+const query: {
+    [index: string]: any,
     //页码
-    page: 1,
-    //权限
-    permissionId: null,
+    page: number,
     //名称
-    name: null,
+    name: string | null,
     //路径
+    path: string | null,
+} = reactive({
+    page: 1,
+    name: null,
     path: null
 })
-
-type QueryType = keyof typeof query
 
 /**
  * 构建查询参数
  */
 const buildQuery = () => {
-    const params = {
+    return {
         //当前页码
         page: query.page,
         //每页记录数
         pageSize: record.size,
-        //权限
-        permissionId: query.permissionId,
         //名称
         name: query.name,
         //路径
         path: query.path
     }
-    return params
 }
 
 /**
@@ -154,7 +136,7 @@ const submitQuery = () => {
  */
 const resetQuery = () => {
     Object.keys(query).forEach((key) => {
-        query[key as Exclude<QueryType, 'page'>] = null
+        query[key] = null
     })
     query.page = 1
     loadRoutes()
@@ -163,10 +145,13 @@ const resetQuery = () => {
 /**
  * 维护
  */
-const maintain = reactive<DialogOption>({
+const maintain: {
     //传递给表单的数据
-    data: null,
+    data: any,
     //弹框
+    dialog: DialogOption
+} = reactive({
+    data: null,
     dialog: {
         show: false,
         title: ''
@@ -177,7 +162,7 @@ const maintain = reactive<DialogOption>({
  * 弹框关闭
  * @param payload 返回的数据
  */
-const maintainDialogClose = (payload: any) => {
+const onMaintainDialogClose = (payload: any) => {
     maintain.dialog.show = false
     if (payload === 'save') {
         loadRoutes()
@@ -187,16 +172,87 @@ const maintainDialogClose = (payload: any) => {
 /**
  * 新增按钮点击
  */
-const createBtnClick = () => {
+const onCreateBtnClick = () => {
     maintain.data = null
     maintain.dialog.show = true
     maintain.dialog.title = '新增路由'
 }
 
 /**
+ * 修改按钮点击
+ * @param row 当前行数据
+ */
+const onModifyBtnClick = (row: RouteModel) => {
+    maintain.data = cloneObject(row)
+    maintain.dialog.show = true
+    maintain.dialog.title = '修改路由'
+}
+
+/**
+ * 单个删除按钮点击
+ * @param row 当前行数据
+ */
+const onRemoveBtnClick = (row: RouteModel) => {
+    messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+    }).then(() => {
+        submitRemove(row.id)
+    }).catch(() => {
+        //...
+    })
+}
+
+/**
+ * 批量删除按钮点击
+ */
+const onBatchRemoveBtnClick = () => {
+    if (record.selected!.length === 0) {
+        messageTip.error('请选择要删除的数据')
+        return
+    }
+    messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+    }).then(() => {
+        const ids = record.selected!.map((item) => {
+            return item.id
+        }).join(',')
+        submitRemove(ids)
+    }).catch(() => {
+        //...
+    })
+}
+
+/**
+ * 提交删除
+ * @param ids 要删除的ID
+ */
+const submitRemove = (ids: ID | ID[]) => {
+    const loading = loadingTip.service({
+        lock: true,
+        text: '删除中'
+    })
+    removeRoute(ids).then((result) => {
+        if (!result.success) {
+            messageTip.error(result.message)
+        } else {
+            messageTip.success(result.message)
+            record.selected = []
+            loadRoutes()
+        }
+    }).catch(httpErrorHandler).finally(() => {
+        loading.close()
+    })
+}
+
+
+/**
  * 生成路由按钮点击
  */
-const generateBtnClick = () => {
+const onGenerateBtnClick = () => {
     messageBox.confirm('确定生成所有路由吗？已经生成的则忽略', '提示', {
         type: 'warning'
     }).then(() => {
@@ -215,7 +271,7 @@ const generateBtnClick = () => {
 /**
  * 清空路由按钮点击
  */
-const truncateBtnClick = () => {
+const onTruncateBtnClick = () => {
     messageBox.confirm('确定清空吗？', '提示', {
         type: 'warning'
     }).then(() => {
@@ -231,79 +287,9 @@ const truncateBtnClick = () => {
 }
 
 /**
- * 编辑按钮点击
- * @param row 当前行数据
- */
-const modifyBtnClick = (row: object) => {
-    maintain.data = cloneObject(row)
-    maintain.dialog.show = true
-    maintain.dialog.title = '修改路由'
-}
-
-/**
- * 单个删除按钮点击
- * @param row 当前行数据
- */
-const removeBtnClick = (row: RouteItem) => {
-    messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-    }).then(() => {
-        submitRemove(row.id)
-    }).catch(() => {
-        //...
-    })
-}
-
-/**
- * 批量删除按钮点击
- */
-const batchRemoveBtnClick = () => {
-    if (record.selected.length === 0) {
-        messageTip.error('请选择要删除的数据')
-        return
-    }
-    messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-    }).then(() => {
-        const ids = record.selected.map((item) => {
-            return item.id
-        }).join(',')
-        submitRemove(ids)
-    }).catch(() => {
-        //...
-    })
-}
-
-/**
- * 提交删除
- * @param ids 要删除的ID
- */
-const submitRemove = (ids: ID | ID[]) => {
-    const loading = loadingTip.service({
-        lock: true,
-        text: '删除中'
-    })
-    removeRoute(ids).then(({success, message}) => {
-        if (!success) {
-            messageTip.error(message)
-        } else {
-            messageTip.success(message)
-            record.selected = []
-            loadRoutes()
-        }
-    }).catch(httpErrorHandler).finally(() => {
-        loading.close()
-    })
-}
-
-/**
  * 记录集
  */
-const record = reactive<RecordSet<RouteItem>>({
+const record: RecordSet<RouteModel> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -312,13 +298,13 @@ const record = reactive<RecordSet<RouteItem>>({
 })
 
 //表格ref
-const table = ref<InstanceType<typeof ElTable>>()
+const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
 
 /**
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const selectionChange = (records: RouteItem[]) => {
+const onSelectionChange = (records: RouteModel[]) => {
     record.selected = records
 }
 
@@ -326,37 +312,29 @@ const selectionChange = (records: RouteItem[]) => {
  * 分页变更
  * @param page 改变后的页码
  */
-const pageChange = (page: number) => {
+const onPageChange = (page: number) => {
     query.page = page
     loadRoutes()
 }
 
 /**
  * 加载路由列表
- * @return {Promise}
  */
 const loadRoutes = () => {
     const params = buildQuery()
     record.loading = true
-    fetchPageRoutes(params).then((data) => {
-        if (data.items.length === 0 && query.page > 1) {
+    fetchPageRoutes(params).then((result) => {
+        if (result.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadRoutes()
-            return
+        } else {
+            record.total = result.total
+            record.items = result.items
         }
-        record.total = data.total
-        record.items = data.items.map<RouteItem>((item) => {
-            return modelToRouteItem(item)
-        })
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false
     })
 }
-
-onMounted(() => {
-    //载入路由
-    loadRoutes()
-})
 
 </script>
 <style lang="scss" scoped>

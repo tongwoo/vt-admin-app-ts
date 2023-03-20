@@ -6,8 +6,8 @@
             <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
         </div>
         <div class="footer-container" v-if="permissions.length>0">
-            <el-button type="default" @click="cancelBtnClick">取消</el-button>
-            <el-button type="primary" @click="saveBtnClick" native-type="submit">保存</el-button>
+            <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
+            <el-button type="primary" @click="onSaveBtnClick" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
         </div>
     </div>
 </template>
@@ -27,8 +27,10 @@ const props = defineProps({
         type: Object
     }
 })
+
 //事件
 const emits = defineEmits(['close'])
+
 //加载中
 const loading = ref(false)
 //权限树
@@ -106,7 +108,7 @@ const submitSave = (data: object) => {
 /**
  * 保存按钮点击
  */
-const saveBtnClick = () => {
+const onSaveBtnClick = () => {
     //选中的
     const keys = tree.value!.getCheckedKeys()
     //半选中的（服务端如不要则移除）
@@ -123,7 +125,7 @@ const saveBtnClick = () => {
 /**
  * 取消保存按钮点击
  */
-const cancelBtnClick = () => {
+const onCancelBtnClick = () => {
     emits('close')
 }
 </script>

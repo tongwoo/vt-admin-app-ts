@@ -4,6 +4,7 @@ node_modules
 /app
 /package-lock.json
 /pnpm-lock.yaml
+/.pnpm-store
 
 
 

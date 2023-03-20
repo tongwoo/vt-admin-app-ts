@@ -61,7 +61,7 @@ export interface Model {
     [key: string]: any,
 
     //主键ID
-    id: ID | null,
+    id: ID,
     //原始数据，调用转换模型的方法会增加此参数
     _?: any
 }

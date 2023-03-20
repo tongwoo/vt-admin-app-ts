@@ -15,11 +15,6 @@
                             <el-form-item label="姓名">
                                 <el-input v-model="query.name" clearable></el-input>
                             </el-form-item>
-                            <el-form-item label="状态">
-                                <el-select v-model="query.state" class="el-select-short">
-                                    <el-option v-for="(item,i) in states" :key="i" :label="item.name" :value="item.value"></el-option>
-                                </el-select>
-                            </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="submitQuery" native-type="submit"><i class="bi bi-search el-icon--left"></i>查询</el-button>
                                 <el-button type="default" @click="resetQuery"><i class="bi bi-arrow-clockwise el-icon--left"></i>重置</el-button>
@@ -33,16 +28,17 @@
             <div class="segment-header with-bordered with-flex">
                 <div class="header-title">用户列表</div>
                 <div class="header-buttons">
-                    <el-button type="primary" size="default" @click="createBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
-                    <el-button type="danger" size="default" @click="batchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
+                    <el-button type="primary" size="default" @click="onCreateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
+                    <el-button type="danger" size="default" @click="onBatchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
                 </div>
             </div>
             <div class="segment-body">
                 <!--数据列表-->
                 <div class="data-container">
                     <div class="data-table">
-                        <el-table ref="table" stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="selectionChange">
-                            <el-table-column label="序号" type="index" fixed="left" align="center"></el-table-column>
+                        <el-table ref="table" border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="onSelectionChange">
+                            <el-table-column type="selection" fixed="left" align="center"></el-table-column>
+                            <el-table-column label="序号" type="index" fixed="left" align="center" width="80"></el-table-column>
                             <el-table-column label="用户名" prop="username" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column label="姓名" prop="name" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column label="角色" prop="roles" align="center" min-width="100" show-overflow-tooltip>
@@ -59,8 +55,8 @@
                             <el-table-column label="操作" fixed="right" width="140" align="center">
                                 <template v-slot="{row}">
                                     <div class="table-operation">
-                                        <el-button type="primary" size="small" text bg @click="modifyBtnClick(row)">修改</el-button>
-                                        <el-button type="danger" size="small" text bg @click="removeBtnClick(row)">删除</el-button>
+                                        <el-button type="primary" size="small" @click="onModifyBtnClick(row)">修改</el-button>
+                                        <el-button type="danger" size="small" @click="onRemoveBtnClick(row)">删除</el-button>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -69,30 +65,30 @@
                 </div>
                 <!--数据分页-->
                 <div class="pagination-container">
-                    <el-pagination v-model:page-size="record.size" v-model:current-page="query.page" :total="record.total" @current-change="pageChange" background></el-pagination>
+                    <el-pagination v-model:page-size="record.size" v-model:current-page="query.page" :total="record.total" @current-change="onPageChange" background></el-pagination>
                 </div>
             </div>
         </div>
         <!--维护表单弹框-->
-        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="maintainDialogClose" append-to-body width="500px">
+        <el-dialog :title="maintain.dialog.title" v-model="maintain.dialog.show" :close-on-click-modal="false" @close="onMaintainDialogClose" append-to-body width="500px">
             <transition name="el-fade-in" mode="out-in">
-                <user-form v-if="maintain.dialog.show" :payload="maintain.data" @close="maintainDialogClose"></user-form>
+                <user-form v-if="maintain.dialog.show" :payload="maintain.data" @close="onMaintainDialogClose"></user-form>
             </transition>
         </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
-import {getUserStates} from "@/constants/user-state"
+import {getUserStates} from "@/enums/user-state"
 import {fetchPageUsers, removeUser, UserModel} from "@/modules/user"
 import setting from "@/setting"
-import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {AllowNull, DialogOption, ID, RecordSet} from "@/types/built-in.js"
 import {httpErrorHandler} from "@/utils/error"
 import {cloneObject} from "@/utils/object"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
-import {defineAsyncComponent, onMounted, reactive, ref} from "vue"
+import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
 
 //用户表单
-const UserForm = defineAsyncComponent(() => import('@/views/user/UserForm.vue'))
+const UserForm = defineAsyncComponent(() => import('./UserForm.vue'));
 
 //状态列表
 const states = ref(getUserStates())
@@ -105,18 +101,19 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query = reactive({
+const query: {
+    [index: string]: any,
     //页码
-    page: 1,
+    page: number,
     //用户名
-    username: null,
+    username: string | null,
     //姓名
-    name: null,
-    //状态
-    state: null
+    name: string | null,
+} = reactive({
+    page: 1,
+    username: null,
+    name: null
 })
-
-type QueryType = keyof typeof query
 
 /**
  * 构建查询参数
@@ -130,9 +127,7 @@ const buildQuery = () => {
         //用户名
         username: query.username,
         //姓名
-        name: query.name,
-        //状态
-        state: query.state
+        name: query.name
     }
 }
 
@@ -149,7 +144,7 @@ const submitQuery = () => {
  */
 const resetQuery = () => {
     Object.keys(query).forEach((key) => {
-        query[key as Exclude<QueryType, 'page'>] = null
+        query[key] = null
     })
     query.page = 1
     loadUsers()
@@ -158,10 +153,13 @@ const resetQuery = () => {
 /**
  * 维护
  */
-const maintain = reactive<DialogOption>({
+const maintain: {
     //传递给表单的数据
-    data: null,
+    data: any,
     //弹框
+    dialog: DialogOption
+} = reactive({
+    data: null,
     dialog: {
         show: false,
         title: ''
@@ -172,7 +170,7 @@ const maintain = reactive<DialogOption>({
  * 弹框关闭
  * @param payload 返回的数据
  */
-const maintainDialogClose = (payload: any) => {
+const onMaintainDialogClose = (payload: any) => {
     maintain.dialog.show = false
     if (payload === 'save') {
         loadUsers()
@@ -182,7 +180,7 @@ const maintainDialogClose = (payload: any) => {
 /**
  * 新增按钮点击
  */
-const createBtnClick = () => {
+const onCreateBtnClick = () => {
     maintain.data = null
     maintain.dialog.show = true
     maintain.dialog.title = '新增用户'
@@ -192,7 +190,7 @@ const createBtnClick = () => {
  * 修改按钮点击
  * @param row 当前行数据
  */
-const modifyBtnClick = (row: object) => {
+const onModifyBtnClick = (row: UserModel) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
     maintain.dialog.title = '修改用户'
@@ -202,7 +200,7 @@ const modifyBtnClick = (row: object) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const removeBtnClick = (row: UserModel) => {
+const onRemoveBtnClick = (row: UserModel) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -217,8 +215,8 @@ const removeBtnClick = (row: UserModel) => {
 /**
  * 批量删除按钮点击
  */
-const batchRemoveBtnClick = () => {
-    if (record.selected.length === 0) {
+const onBatchRemoveBtnClick = () => {
+    if (record.selected!.length === 0) {
         messageTip.error('请选择要删除的数据')
         return
     }
@@ -227,7 +225,7 @@ const batchRemoveBtnClick = () => {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
     }).then(() => {
-        const ids = record.selected.map((item) => {
+        const ids = record.selected!.map((item) => {
             return item.id
         }).join(',')
         submitRemove(ids)
@@ -261,7 +259,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record = reactive<RecordSet<UserModel>>({
+const record: RecordSet<UserModel> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -270,13 +268,13 @@ const record = reactive<RecordSet<UserModel>>({
 })
 
 //表格ref
-const table = ref<InstanceType<typeof ElTable>>()
+const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
 
 /**
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const selectionChange = (records: UserModel[]) => {
+const onSelectionChange = (records: UserModel[]) => {
     record.selected = records
 }
 
@@ -284,14 +282,13 @@ const selectionChange = (records: UserModel[]) => {
  * 分页变更
  * @param page 改变后的页码
  */
-const pageChange = (page: number) => {
+const onPageChange = (page: number) => {
     query.page = page
     loadUsers()
 }
 
 /**
  * 加载用户列表
- * @return {Promise}
  */
 const loadUsers = () => {
     const params = buildQuery()
@@ -300,20 +297,14 @@ const loadUsers = () => {
         if (result.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadUsers()
-            return
+        }else{
+            record.total = result.total
+            record.items = result.items
         }
-        record.total = result.total
-        record.items = result.items
     }).catch(httpErrorHandler).finally(() => {
         record.loading = false
     })
 }
-
-onMounted(() => {
-    //载入用户
-    loadUsers()
-})
-
 </script>
 <style lang="scss" scoped>
 /**

@@ -60,6 +60,7 @@ http.interceptors.response.use(
     },
     function (error) {
         const response = error.response
+        debugger
         response.isOk = false
         //未授权、未登录、404 直接抛异常交由 catch 处理
         const codes = [401, 403, 404]

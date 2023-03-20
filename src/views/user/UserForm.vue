@@ -2,13 +2,13 @@
 <template>
     <div class="form-container" v-loading="loading">
         <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
-            <el-form-item label="用户名" prop="username">
-                <el-input v-model="model.username" maxlength="32"></el-input>
-            </el-form-item>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
                     <el-option v-for="(item,i) in roles" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
+            </el-form-item>
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="model.username" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item v-if="model.id===null" label="登录密码" prop="password">
                 <el-input v-model="model.password" maxlength="64"></el-input>
@@ -17,30 +17,35 @@
                 <el-input v-model="model.name" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="状态" prop="state">
-                <el-radio-group v-model="model.state">
-                    <el-radio v-for="(item,i) in states" :key="i" :label="item.value">{{ item.name }}</el-radio>
-                </el-radio-group>
+                <div class="form-item-auto">
+                    <el-radio-group v-model="model.state">
+                        <el-radio v-for="(item,i) in states" :key="i" :label="item.value">{{ item.name }}</el-radio>
+                    </el-radio-group>
+                </div>
             </el-form-item>
             <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button type="default" @click="cancelBtnClick">取消</el-button>
-                <el-button type="primary" @click="saveBtnClick" native-type="submit">保存</el-button>
+                <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
+                <el-button type="primary" @click="onSaveBtnClick" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
             </div>
         </el-form>
     </div>
 </template>
 <script lang="ts" setup>
-import {RoleModel, usePairRoles} from "@/modules/role"
-import {ref, reactive, onMounted} from "vue"
-import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from "element-plus"
+import {ref, reactive, onMounted, Ref, defineAsyncComponent} from "vue"
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, FormInstance, FormRules} from "element-plus"
 import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import moment from "moment"
-import {getUserStates, USER_STATE_ENABLED} from "@/constants/user-state"
-import {createUser, updateUser, fetchUser} from "@/modules/user"
-import {ID, NameValue} from "@/types/built-in"
+import {getUserStates} from "@/enums/user-state"
+import {createUser, updateUser, fetchUser, UserModel} from "@/modules/user"
+import {AllowNull, ID, NameValue} from "@/types/built-in"
+import {usePairRoles} from "@/modules/role"
+
+//事件
+const emits = defineEmits(['close'])
 
 //属性
 const props = withDefaults(
@@ -48,30 +53,23 @@ const props = withDefaults(
         //传递过来的数据
         payload: any
     }>(),
-    {
-        payload: () => {
-            return {}
-        }
-    }
+    {}
 )
 
 //状态列表
-const states = ref(getUserStates())
+const states: Ref<NameValue[]> = ref(getUserStates())
 //角色列表
 const roles = usePairRoles()
 
-//事件
-const emits = defineEmits(['close'])
 //加载中
-const loading = ref<boolean>(false)
+const loading: Ref<boolean> = ref(false)
 //表单
-const form = ref<FormInstance>()
+const form: Ref<FormInstance | null> = ref(null)
 //错误信息
-const tip = ref<string | null>(null)
+const tip: Ref<string | null> = ref(null)
 
 //表单模型
-const model = reactive({
-    //主键
+const model: AllowNull<UserModel> = reactive({
     id: null,
     //用户名
     username: null,
@@ -82,14 +80,15 @@ const model = reactive({
     //头像
     avatar: null,
     //状态
-    state: USER_STATE_ENABLED,
+    state: null,
     //上次登录时间
     loginTime: null,
     //角色ID列表
     roleIds: [] as ID[]
 })
+
 //表单规则
-const rules = {
+const rules: FormRules = {
     //用户名
     username: [
         {
@@ -103,15 +102,6 @@ const rules = {
             max: 32,
             trigger: 'blur',
             message: '用户名最多32个字符'
-        }
-    ],
-    //角色
-    roleIds: [
-        {
-            type: 'array',
-            required: true,
-            trigger: 'blur',
-            message: '角色必须选择'
         }
     ],
     //登录密码
@@ -189,7 +179,7 @@ const rules = {
 /**
  * 保存按钮点击
  */
-const saveBtnClick = async () => {
+const onSaveBtnClick = async () => {
     tip.value = null
     const success = await form.value!.validate().catch(() => false)
     if (!success) {
@@ -200,6 +190,7 @@ const saveBtnClick = async () => {
         username: model.username, //用户名
         password: model.password, //登录密码
         name: model.name, //姓名
+        avatar: model.avatar, //头像
         state: model.state, //状态
         roleIds: model.roleIds
     }
@@ -215,7 +206,7 @@ const saveBtnClick = async () => {
 /**
  * 取消按钮点击
  */
-const cancelBtnClick = () => {
+const onCancelBtnClick = () => {
     emits('close', 'cancel')
 }
 
@@ -223,15 +214,15 @@ const cancelBtnClick = () => {
  * 用户新增
  * @param data 新增的数据
  */
-const submitCreate = (data: object) => {
+const submitCreate = (data: any) => {
     loading.value = true
     createUser(data).then((result) => {
         if (!result.success) {
             tip.value = result.message
-            return
+        } else {
+            messageTip.success(result.message)
+            emits('close', 'save')
         }
-        messageTip.success(result.message)
-        emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
@@ -241,22 +232,22 @@ const submitCreate = (data: object) => {
  * 用户更新
  * @param data 更新的数据
  */
-const submitUpdate = (data: object) => {
+const submitUpdate = (data: any) => {
     loading.value = true
     updateUser(data).then((result) => {
         if (!result.success) {
             tip.value = result.message
-            return
+        } else {
+            messageTip.success(result.message)
+            emits('close', 'save')
         }
-        messageTip.success(result.message)
-        emits('close', 'save')
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
     })
 }
 
 /**
- * 用户载入
+ * 载入用户
  * @param id 主键ID
  */
 const loadUser = (id: ID) => {
@@ -274,7 +265,7 @@ const loadUser = (id: ID) => {
 }
 
 onMounted(() => {
-    if (props.payload?.id) {
+    if (props.payload && props.payload?.id) {
         loadUser(props.payload.id)
     }
 })

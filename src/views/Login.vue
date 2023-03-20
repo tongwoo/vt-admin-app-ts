@@ -142,7 +142,6 @@ const submitLogin = async () => {
     }
     loading.value = true
     requestLogin(params).then((result) => {
-        debugger
         if (!result.success) {
             tip.value = result.message ?? '网络错误'
             return false

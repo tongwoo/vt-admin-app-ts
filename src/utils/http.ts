@@ -24,9 +24,10 @@ const http: AxiosInstance = axios.create({
 //请求拦截器
 http.interceptors.request.use(
     function (request) {
+        debugger
         //添加授权头
         const token = useUserStore().authorization
-        if (request.headers !== undefined && request.headers.authorization !== undefined && token) {
+        if (request.headers !== undefined && token) {
             request.headers.authorization = token
         }
         return request
@@ -60,7 +61,6 @@ http.interceptors.response.use(
     },
     function (error) {
         const response = error.response
-        debugger
         response.isOk = false
         //未授权、未登录、404 直接抛异常交由 catch 处理
         const codes = [401, 403, 404]

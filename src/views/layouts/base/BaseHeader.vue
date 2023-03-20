@@ -70,7 +70,7 @@
                 </div>
                 <template v-slot:dropdown>
                     <el-dropdown-menu>
-                        <!--<el-dropdown-item command="avatar"><i class="bi bi-image"></i>修改头像</el-dropdown-item>-->
+                        <el-dropdown-item command="avatar"><i class="bi bi-image"></i>修改头像</el-dropdown-item>
                         <el-dropdown-item command="change-password"><i class="bi bi-shield-lock"></i>修改密码</el-dropdown-item>
                         <el-dropdown-item command="exit" divided><i class="bi bi-power"></i>退出系统</el-dropdown-item>
                     </el-dropdown-menu>
@@ -84,11 +84,11 @@
             </transition>
         </el-dialog>
         <!--用户头像表单-->
-        <!--<el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">-->
-        <!--    <transition name="el-fade-in" mode="out-in">-->
-        <!--<avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>-->
-        <!--</transition>-->
-        <!--</el-dialog>-->
+        <el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">
+            <transition name="el-fade-in" mode="out-in">
+                <avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>
+            </transition>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
@@ -99,7 +99,7 @@ import {http} from '@/utils/http'
 import logo from '@/assets/logo.svg'
 import setting from '@/setting'
 import ChangePassword from '@/views/ChangePassword.vue'
-//import AvatarSetting from "@/views/AvatarSetting.vue";
+import AvatarSetting from "@/views/AvatarSetting.vue";
 import mitter from '@/utils/mitter'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {useAppStore, useUserStore} from '@/pinia/index'
@@ -193,8 +193,8 @@ const onUserDropdownCommand = (command: string) => {
 //密码配置
 const password = reactive({
     dialog: {
-        show: false,
-    },
+        show: false
+    }
 })
 
 /**
@@ -203,11 +203,11 @@ const password = reactive({
 const exitSystem = () => {
     const loading = ElLoading.service({
         lock: true,
-        text: '退出中',
+        text: '退出中'
     })
     //调用失败也退出
     http.post(
-        '/system/logout',
+        '/system/logout'
     ).finally(() => {
         loading.close()
         appStore.$reset()
@@ -224,8 +224,8 @@ const avatar = {
     //弹框
     dialog: reactive({
         show: false,
-        title: null,
-    }),
+        title: null
+    })
 }
 
 /**

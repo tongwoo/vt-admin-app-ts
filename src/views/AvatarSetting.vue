@@ -6,17 +6,7 @@
     <div class="avatar-container" v-loading="loading">
         <div class="maintain">
             <div class="editor">
-                <vueCropper
-                    ref="cropper"
-                    :img="model.img"
-                    :autoCrop="true"
-                    :autoCropWidth="200"
-                    :autoCropHeight="200"
-                    :fixed="true"
-                    :fixedBox="true"
-                    @realTime="previewCallback"
-                    outputType="png"
-                ></vueCropper>
+                <vueCropper ref="cropper" :img="model.img" :autoCrop="true" :autoCropWidth="200" :autoCropHeight="200" :fixed="true" :fixedBox="true" @realTime="previewCallback" outputType="png"></vueCropper>
             </div>
             <div class="preview">
                 <div>当前头像</div>
@@ -37,7 +27,7 @@
             <div class="upload-container">
                 <el-button type="primary" @click="fileInput.click();"><i class="bi bi-image el-icon--left"></i>选择图片</el-button>
                 <el-button type="primary" @click="saveAvatar"><i class="bi bi-upload el-icon--left"></i>保存头像</el-button>
-                <input ref="fileInput" type="file" @change="chooseFile" accept="image/jpg,image/jpeg,image/png">
+                <input ref="fileInput" type="file" @change="onChooseFile" accept="image/jpg,image/jpeg,image/png">
             </div>
         </div>
     </div>
@@ -91,7 +81,7 @@ const previewCallback = (data) => {
 /**
  * 文件变更
  */
-const chooseFile = (e) => {
+const onChooseFile = (e) => {
     if (e.target.files.length === 0) {
         messageTip.error('请选择图片')
         return

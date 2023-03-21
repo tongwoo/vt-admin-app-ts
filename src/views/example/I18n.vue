@@ -25,14 +25,22 @@
                                 </el-radio-group>
                             </el-form-item>
                             <el-form-item :label="$t('example.region')">
-                                <el-select class="mr-10"></el-select>
-                                <el-select></el-select>
+                                <div class="form-item-auto mr-10">
+                                    <el-select></el-select>
+                                </div>
+                                <div class="form-item-auto">
+                                    <el-select></el-select>
+                                </div>
                             </el-form-item>
                             <el-form-item :label="$t('example.id_number')">
-                                <el-input v-model.number="model.idNumber" :maxlength="18"></el-input>
+                                <div class="form-item-auto">
+                                    <el-input-number v-model="model.idNumber" controls-position="right"></el-input-number>
+                                </div>
                             </el-form-item>
                             <el-form-item :label="$t('example.birthday')">
-                                <el-date-picker v-model="model.birthday"></el-date-picker>
+                                <div class="form-item-auto">
+                                    <el-date-picker v-model="model.birthday"></el-date-picker>
+                                </div>
                             </el-form-item>
                             <el-form-item :label="$t('example.address')">
                                 <el-input :placeholder="$t('example.address_placeholder')"></el-input>

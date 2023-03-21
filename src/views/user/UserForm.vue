@@ -1,17 +1,17 @@
 <!--用户-->
 <template>
     <div class="form-container" v-loading="loading">
-        <el-form ref="form" :model="model" :rules="rules" label-width="100px" size="default" @submit.prevent>
+        <el-form ref="form" :model="model" :rules="rules" label-width="80px" size="default" @submit.prevent>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
                     <el-option v-for="(item,i) in roles" :key="i" :label="item.name" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="username">
-                <el-input v-model="model.username" maxlength="32"></el-input>
+                <el-input v-model="model.username" maxlength="32" ></el-input>
             </el-form-item>
             <el-form-item v-if="model.id===null" label="登录密码" prop="password">
-                <el-input v-model="model.password" maxlength="64"></el-input>
+                <el-input v-model="model.password" type="password" autocomplete="new-password" show-password maxlength="64"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
                 <el-input v-model="model.name" maxlength="32"></el-input>
@@ -34,6 +34,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {USER_STATE_ENABLED} from "@/constants/user-state"
 import {ref, reactive, onMounted, Ref, defineAsyncComponent} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, FormInstance, FormRules} from "element-plus"
 import {cloneObject, updateObject} from "@/utils/object"
@@ -80,15 +81,24 @@ const model: AllowNull<UserModel> = reactive({
     //头像
     avatar: null,
     //状态
-    state: null,
+    state: USER_STATE_ENABLED,
     //上次登录时间
     loginTime: null,
     //角色ID列表
-    roleIds: [] as ID[]
+    roleIds: []
 })
 
 //表单规则
 const rules: FormRules = {
+    //角色
+    roleIds:[
+        {
+            type:'array',
+            required: true,
+            trigger: 'blur',
+            message: '角色必须选择'
+        }
+    ],
     //用户名
     username: [
         {
@@ -134,46 +144,15 @@ const rules: FormRules = {
             message: '姓名最多32个字符'
         }
     ],
-    //头像
-    avatar: [
-        {
-            type: 'string',
-            required: true,
-            trigger: 'blur',
-            message: '头像必须填写'
-        },
-        {
-            type: 'string',
-            max: 100,
-            trigger: 'blur',
-            message: '头像最多100个字符'
-        }
-    ],
     //状态
     state: [
         {
             type: 'integer',
             required: true,
             trigger: 'blur',
-            message: '状态必须填写'
+            message: '状态必须选择'
         },
-        {
-            type: 'integer',
-            min: 0,
-            max: 9,
-            trigger: 'blur',
-            message: '状态必须介于0-9之间'
-        }
     ],
-    //上次登录时间
-    loginTime: [
-        {
-            type: 'object',
-            required: true,
-            trigger: 'blur',
-            message: '上次登录时间必须选择'
-        }
-    ]
 }
 
 /**

@@ -24,7 +24,6 @@ const http: AxiosInstance = axios.create({
 //请求拦截器
 http.interceptors.request.use(
     function (request) {
-        debugger
         //添加授权头
         const token = useUserStore().authorization
         if (request.headers !== undefined && token) {

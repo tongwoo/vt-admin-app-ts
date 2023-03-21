@@ -32,7 +32,7 @@
  * 按钮
  */
 .el-button {
-    font-size: 12px;
+    //font-size: 12px;
 }
 
 .el-button + .el-button {
@@ -80,6 +80,26 @@
  */
 .el-form--inline .el-form-item {
     margin-right: 6px;
+}
+
+.form-item-auto {
+    flex: auto;
+
+    .el-select {
+        width: 100%;
+    }
+
+    .el-date-editor {
+        --el-date-editor-width: 100%;
+    }
+
+    .el-input-number {
+        width: 100%;
+    }
+}
+
+.form-item-unit {
+    margin-left: 5px;
 }
 
 /**

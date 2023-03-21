@@ -1,6 +1,5 @@
 <!--
-功能：用户登录
-日期：2022-02-09
+用户登录
 -->
 <template>
     <div class="login-container">
@@ -45,7 +44,7 @@
 </template>
 <script lang="ts" setup>
 import {ref, reactive, onMounted} from 'vue'
-import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance} from 'element-plus'
+import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance, FormRules} from 'element-plus'
 import {useRouter} from 'vue-router'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {cleanAuthorization, writeAuthorization} from '@/utils/authorize'
@@ -78,7 +77,7 @@ const model = reactive({
     captcha: null
 })
 //规则
-const rules = {
+const rules: FormRules = {
     //用户名
     username: [
         {

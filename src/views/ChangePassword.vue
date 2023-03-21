@@ -1,7 +1,5 @@
 <!--
 功能：修改密码
-作者：tongwoo
-日期：2022-03-03
 -->
 <template>
     <div class="form-container">
@@ -19,8 +17,8 @@
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button @click="cancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
-                <el-button type="primary" @click="saveBtnClick" :loading="loading" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
+                <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
+                <el-button type="primary" @click="onSaveBtnClick" :loading="loading" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
             </div>
         </el-form>
     </div>
@@ -77,7 +75,7 @@ const rules = {
 /**
  * 保存按钮点击
  */
-const saveBtnClick = async () => {
+const onSaveBtnClick = async () => {
     tip.value = null
     const success = await form.value!.validate().catch(() => false)
     if (!success) {
@@ -96,7 +94,7 @@ const saveBtnClick = async () => {
 /**
  * 取消按钮点击
  */
-const cancelBtnClick = () => {
+const onCancelBtnClick = () => {
     emits('close', 'cancel')
 }
 

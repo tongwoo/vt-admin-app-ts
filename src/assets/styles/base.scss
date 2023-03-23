@@ -2,7 +2,7 @@
     //主色
     --base-primary-color: #2F53EB;
     //顶栏背景色
-    --base-header-bg-color: white;
+    --base-header-bg-color: var(--el-bg-color);
     //顶栏高度
     --base-header-height: 60px;
     //顶栏标题(Logo)背景色

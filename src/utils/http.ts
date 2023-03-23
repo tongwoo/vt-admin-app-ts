@@ -1,4 +1,4 @@
-import {useUserStore} from "@/pinia/index"
+import {useUserStore} from "@/pinia/user"
 import axios, {AxiosInstance, AxiosResponseHeaders} from 'axios'
 import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {ResponseCode} from "@/types/built-in"

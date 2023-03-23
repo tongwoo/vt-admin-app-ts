@@ -29,7 +29,7 @@ import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, r
 import {useRoute} from 'vue-router'
 import mitter from '@/utils/mitter'
 import RouteSwitcher from '@/components/RouteSwitcher.vue'
-import {useAppStore} from '@/pinia/index'
+import {useAppStore} from '@/pinia/app'
 
 //顶栏
 const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))

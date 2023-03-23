@@ -3,6 +3,13 @@ import {RouteRecordRaw} from "vue-router"
 
 const routes: RouteRecordRaw[] = [
     {
+        path: '/test',
+        component: () => import('@/views/TestFunction.vue'),
+        meta: {
+            title: '测试'
+        }
+    },
+    {
         path: '/login',
         component: () => import('@/views/Login.vue'),
         meta: {

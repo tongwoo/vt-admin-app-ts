@@ -1,6 +1,6 @@
 import {AUTH_STORAGE_COOKIE} from "@/constants/auth-storage"
 import {AUTH_STORAGE_LOCAL} from "@/constants/auth-storage"
-import {useUserStore} from "@/pinia/index"
+import {useUserStore} from "@/pinia/user"
 import setting from "@/setting"
 import jsCookie from "js-cookie"
 

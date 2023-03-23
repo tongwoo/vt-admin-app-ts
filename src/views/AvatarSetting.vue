@@ -35,11 +35,11 @@
 <script setup>
 import 'vue-cropper/dist/index.css'
 import {VueCropper} from "vue-cropper"
-import {ref, reactive, computed} from "vue"
+import {ref, reactive} from "vue"
 import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus"
 import {http} from '@/utils/http'
 import {httpErrorHandler} from "@/utils/error"
-import {useUserStore} from '@/pinia'
+import {useUserStore} from '@/pinia/user'
 
 const userStore = useUserStore()
 

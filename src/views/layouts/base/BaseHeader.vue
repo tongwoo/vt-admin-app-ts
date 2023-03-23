@@ -54,6 +54,10 @@
             </el-badge>
             <i v-else class="bi bi-chat-dots btn-icon-text"></i>
         </div>
+        <!--模式切换-->
+        <div class="header-col">
+            <el-switch v-model="theme" inline-prompt :active-icon="Sunny" :inactive-icon="Moon" @change="onThemeChange"></el-switch>
+        </div>
         <!--全屏-->
         <div class="header-col header-col-btn" @click="onFullScreenBtnClick">
             <el-tooltip :content="isFullScreen ? '退出全屏' : '全屏'">
@@ -92,6 +96,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {useDark, useToggle} from "@vueuse/core"
 import {computed, reactive, ref} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {ElLoading, ElMessage} from 'element-plus'
@@ -99,10 +104,12 @@ import {http} from '@/utils/http'
 import logo from '@/assets/logo.svg'
 import setting from '@/setting'
 import ChangePassword from '@/views/ChangePassword.vue'
-import AvatarSetting from "@/views/AvatarSetting.vue";
+import AvatarSetting from "@/views/AvatarSetting.vue"
 import mitter from '@/utils/mitter'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
-import {useAppStore, useUserStore} from '@/pinia/index'
+import {useUserStore} from '@/pinia/user'
+import {useAppStore} from '@/pinia/app'
+import {Sunny, Moon} from "@element-plus/icons-vue"
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -148,6 +155,17 @@ const onNavBtnClick = () => {
     appStore.$patch((state) => {
         state.navigator.collapse = !state.navigator.collapse
     })
+}
+
+const theme = ref(null)
+
+/**
+ * 主题切换
+ */
+const onThemeChange = () => {
+    const isDark = useDark()
+    const toggleDark = useToggle(isDark)
+    toggleDark()
 }
 
 /**
@@ -272,7 +290,7 @@ const onLanguageChange = (lang: string) => {
             cursor: pointer;
 
             &:hover {
-                background-color: #f4f5f7;
+                background-color: rgba(235, 230, 230, 0.15);
             }
         }
     }

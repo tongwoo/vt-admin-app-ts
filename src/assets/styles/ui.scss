@@ -12,7 +12,7 @@ body, div, ul, li {
     //页面分段，一个容器中可以有多个分段
     .page-segment {
         padding: 15px;
-        background-color: white;
+        background-color: var(--el-bg-color);
         border-radius: 2px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
         margin-bottom: 10px;
@@ -100,6 +100,7 @@ body, div, ul, li {
 
 //表单容器
 .form-container {
+    padding: 20px;
 
     //抵消表单项边距，用于搜索
     &.margin-none {

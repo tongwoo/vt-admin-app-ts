@@ -7,7 +7,7 @@
 import {computed, onMounted} from 'vue'
 import zhCN from 'element-plus/es/locale/lang/zh-cn'
 import enUS from 'element-plus/es/locale/lang/en'
-import {useAppStore} from '@/pinia'
+import {useAppStore} from '@/pinia/app'
 
 const appStore = useAppStore()
 

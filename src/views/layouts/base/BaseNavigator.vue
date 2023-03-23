@@ -34,7 +34,8 @@ import MenuItem from '@/components/MenuItem.vue'
 import {useRoute} from 'vue-router'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {filterAuthMenus, navigateMenus} from '@/data/menu'
-import {useAppStore, useUserStore} from '@/pinia/index'
+import {useUserStore} from '@/pinia/user'
+import {useAppStore} from '@/pinia/app'
 
 const appStore = useAppStore()
 const userStore = useUserStore()

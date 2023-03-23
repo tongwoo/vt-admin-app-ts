@@ -3,13 +3,20 @@
  * @param executor 要执行的函数引用
  * @param delay 多长时后间才执行，单位：毫秒
  */
-export function debounce(executor: () => void, delay = 1000): () => void {
+export function debounce(executor: (...args: any[]) => void, delay = 1000): { destroy: () => void, handler: () => void } {
     let taskId: number | null = null
-    return function () {
+    const destroy = () => {
         if (taskId) {
             window.clearTimeout(taskId)
+            taskId = null
         }
-        taskId = window.setTimeout(executor, delay)
+    }
+    return {
+        destroy,
+        handler(...args: any[]) {
+            destroy()
+            taskId = window.setTimeout(executor, delay, ...args)
+        }
     }
 }
 
@@ -18,7 +25,7 @@ export function debounce(executor: () => void, delay = 1000): () => void {
  * @param executor 要执行的函数引用
  * @param delay 间隔多长时后间才能继续执行，单位：毫秒
  */
-export function throttle(executor: () => void, delay = 500): () => void {
+export function throttle(executor: (...args: any[]) => void, delay = 500): () => void {
     let beginTime: number = new Date().getTime()
     return function () {
         const currentTime: number = new Date().getTime()
@@ -35,7 +42,7 @@ export function throttle(executor: () => void, delay = 500): () => void {
  * @param interval 执行时间间隔，单位：毫秒
  * @param now 是否立即执行
  */
-export function loop(executor: () => Promise<void>, interval = 1000, now = true) {
+export function loop(executor: (...args: any[]) => Promise<void>, interval = 1000, now = true) {
     let id: number | null
 
     async function run() {

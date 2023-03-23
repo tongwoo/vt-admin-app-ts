@@ -3,7 +3,8 @@ import businessRoutes from '@/router/business-routes'
 import {checkAccess} from '@/utils/authorize'
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import setting from '@/setting'
-import {useAppStore, useUserStore} from '@/pinia'
+import {useUserStore} from '@/pinia/user'
+import {useAppStore} from '@/pinia/app'
 
 /**
  * 路由列表

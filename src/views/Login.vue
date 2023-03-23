@@ -52,7 +52,7 @@ import {httpErrorHandler} from '@/utils/error'
 import setting from '@/setting'
 import {API_PATH_DEFAULT} from '@/constants/api-path'
 import {fetchProfile, requestLogin} from '@/modules/authorization'
-import {useUserStore} from '@/pinia'
+import {useUserStore} from '@/pinia/user'
 
 const userStore = useUserStore()
 const router = useRouter()

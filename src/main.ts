@@ -9,6 +9,7 @@ import 'moment/locale/zh-cn.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/styles/element.scss'
 import './assets/styles/element-patch.scss'
+import './assets/styles/element-dark-vars.css'
 import './assets/styles/app.scss'
 
 const app = createApp(App)

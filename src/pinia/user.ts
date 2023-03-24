@@ -13,11 +13,19 @@ export const useUserStore = defineStore('user', () => {
     const avatar: Ref<string | null> = ref(null)
     //此用户拥有的权限列表
     const permissions: Ref<string[]> = ref([])
+    //清空
+    const cleanup = () => {
+        authorization.value = null
+        nickname.value = null
+        avatar.value = null
+        permissions.value = []
+    }
 
     return {
         authorization,
         nickname,
         avatar,
-        permissions
+        permissions,
+        cleanup,
     }
 })

@@ -43,6 +43,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {AllowNull} from "@/types/built-in"
 import {ref, reactive, onMounted} from 'vue'
 import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance, FormRules} from 'element-plus'
 import {useRouter} from 'vue-router'
@@ -68,12 +69,16 @@ const tip = ref<string | null>(null)
 //加载中
 const loading = ref(false)
 //登录模型
-const model = reactive({
+const model: AllowNull<{
     //用户名
-    username: null,
+    username: string,
     //密码
-    password: null,
+    password: string,
     //验证码
+    captcha: string,
+}> = reactive({
+    username: null,
+    password: null,
     captcha: null
 })
 //规则

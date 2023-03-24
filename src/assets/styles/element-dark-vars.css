@@ -91,3 +91,8 @@ html.dark .el-empty {
     --el-empty-fill-color-8: #1c1d1f;
     --el-empty-fill-color-9: #18181a
 }
+
+
+html.dark .el-dialog {
+    --el-dialog-header-border: 1px solid #545454;
+}

@@ -107,7 +107,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .base-layout {
     min-height: 100vh;
-    background-color: #f4f5f7;
+    background-color: var(--base-layout-bg-color);
 
     &.base-layout-collapse {
         .route-tab-bar {

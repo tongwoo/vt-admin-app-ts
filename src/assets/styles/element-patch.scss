@@ -3,7 +3,7 @@
  */
 .el-dialog__header {
     padding-bottom: var(--el-dialog-padding-primary);
-    border-bottom: 1px solid #ededed;
+    border-bottom: var(--el-dialog-header-border);
     margin-right: 0;
 }
 

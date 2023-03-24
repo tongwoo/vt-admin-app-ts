@@ -104,8 +104,8 @@ onMounted(() => {
 
 .route-tab-switcher-container {
     font-size: 12px;
-    background: white;
-    border-bottom: 1px solid #ddd;
+    background: var(--route-tab-switcher-container-bg-color);
+    border-bottom: 1px solid var(--route-tab-item-border-color);
     padding: 5px 5px 0 5px;
     position: relative;
 }
@@ -123,14 +123,14 @@ onMounted(() => {
         display: flex;
         align-items: center;
         gap: 10px;
-        background-color: white;
+        background-color: var(--route-tab-item-bg);
         padding: 7px 10px;
         border-radius: 3px 3px 0 0;
         cursor: pointer;
         color: #777;
         border-width: 1px 1px 0 1px;
         border-style: solid;
-        border-color: #efefef #efefef transparent #efefef;
+        border-color: var(--route-tab-item-border-color) var(--route-tab-item-border-color) transparent;
 
         &:hover {
         }
@@ -139,7 +139,7 @@ onMounted(() => {
             font-weight: bold;
             color: #2d8cf0;
             border-top: 1px solid #2d8cf0;
-            background-image: linear-gradient(180deg, white 50%, #F4F5F7);
+            background-image: var(--route-tab-item-active-bg);
             position: relative;
             bottom: -1px;
             padding: 7px 10px 8px;

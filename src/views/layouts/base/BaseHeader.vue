@@ -56,7 +56,7 @@
         </div>
         <!--模式切换-->
         <div class="header-col">
-            <el-switch v-model="theme" inline-prompt :active-icon="Sunny" :inactive-icon="Moon" @change="onThemeChange"></el-switch>
+            <el-switch v-model="isDark" inline-prompt :active-icon="Moon" :inactive-icon="Sunny"></el-switch>
         </div>
         <!--全屏-->
         <div class="header-col header-col-btn" @click="onFullScreenBtnClick">
@@ -157,16 +157,10 @@ const onNavBtnClick = () => {
     })
 }
 
-const theme = ref(null)
-
 /**
- * 主题切换
+ * 是否使用暗黑模式
  */
-const onThemeChange = () => {
-    const isDark = useDark()
-    const toggleDark = useToggle(isDark)
-    toggleDark()
-}
+const isDark = useDark()
 
 /**
  * 全屏按钮点击

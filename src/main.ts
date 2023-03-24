@@ -11,6 +11,7 @@ import './assets/styles/element.scss'
 import './assets/styles/element-patch.scss'
 import './assets/styles/element-dark-vars.css'
 import './assets/styles/app.scss'
+import './assets/styles/dark-vars.scss'
 
 const app = createApp(App)
 app.use(pinia)

@@ -63,7 +63,7 @@ export function buildSeasonLineOption(): EChartsOption {
                 show: false,
                 symbol: "none",
                 lineStyle: {
-                    color: "#333",
+                    color: "#555",
                     width: 1,
                     type: "solid",
                     opacity: 1

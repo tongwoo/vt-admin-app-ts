@@ -2,7 +2,7 @@
     //主色
     --base-primary-color: #2F53EB;
     //顶栏背景色
-    --base-header-bg-color: var(--el-bg-color);
+    --base-header-bg-color: white;
     //顶栏高度
     --base-header-height: 60px;
     //顶栏标题(Logo)背景色
@@ -13,4 +13,20 @@
     --base-navigator-width: 236px;
     //导航栏折叠后宽度
     --base-navigator-collapse-width: 64px;
+    //布局背景色
+    --base-layout-bg-color: #f4f5f7;
+    //基础文字颜色
+    --base-text-color: #333333;
+    //路由tab背景
+    --route-tab-switcher-container-bg-color: white;
+    //路由tab项背景
+    --route-tab-item-bg: white;
+    //路由tab激活项背景
+    --route-tab-item-active-bg: linear-gradient(180deg, white 50%, #F4F5F7);
+    //路由tab项边框色
+    --route-tab-item-border-color: #efefef;
+    //页面区段背景色
+    --page-segment-bg-color: white;
+    //页面区段背头部边框
+    --segment-header-border-color: #eee;
 }

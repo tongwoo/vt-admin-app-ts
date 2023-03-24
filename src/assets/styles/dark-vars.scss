@@ -1,0 +1,27 @@
+html.dark {
+    //主色
+    --base-primary-color: #2F53EB;
+    //顶栏背景色
+    --base-header-bg-color: #191a23;
+    //顶栏标题(Logo)背景色
+    --base-header-logo-bg-color: #191a23;
+    //导航栏背景色
+    --base-navigator-bg-color: var(--base-header-logo-bg-color);
+    //布局背景色
+    --base-layout-bg-color: #353535;
+    //基础文字颜色
+    --base-text-color: rgba(255, 255, 255, 0.78);
+    //路由tab背景
+    --route-tab-switcher-container-bg-color: #191a23;
+    //路由tab项背景
+    --route-tab-item-bg: #474747;
+    //路由tab激活项背景
+    --route-tab-item-active-bg: linear-gradient(180deg, #383838 50%, #353535);
+    //路由tab项边框色
+    --route-tab-item-border-color: #333333;
+    //页面区段背景色
+    --page-segment-bg-color: #232323;
+    //页面区段背头部边框
+    --segment-header-border-color: #444;
+
+}

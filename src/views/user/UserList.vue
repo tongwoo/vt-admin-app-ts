@@ -81,7 +81,7 @@
 import {getUserStates} from "@/enums/user-state"
 import {fetchPageUsers, removeUser, UserModel} from "@/modules/user"
 import setting from "@/setting"
-import {AllowNull, DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {Nullable, DialogOption, ID, RecordSet} from "@/types/built-in.js"
 import {httpErrorHandler} from "@/utils/error"
 import {cloneObject} from "@/utils/object"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"

@@ -41,7 +41,7 @@ import {cloneObject, updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {getUserStates} from "@/enums/user-state"
 import {createUser, updateUser, fetchUser, UserModel} from "@/modules/user"
-import {AllowNull, ID, NameValue} from "@/types/built-in"
+import {Nullable, ID, NameValue} from "@/types/built-in"
 import {usePairRoles} from "@/modules/role"
 
 //事件
@@ -69,7 +69,7 @@ const form: Ref<FormInstance | null> = ref(null)
 const tip: Ref<string | null> = ref(null)
 
 //表单模型
-const model: AllowNull<UserModel> = reactive({
+const model: Nullable<UserModel> = reactive({
     id: null,
     //用户名
     username: null,

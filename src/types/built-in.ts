@@ -107,6 +107,6 @@ export interface MenuItem {
 /**
  * 允许T的值为null
  */
-export type AllowNull<T> = {
+export type Nullable<T> = {
     [P in keyof T]: T[P] | null
 }

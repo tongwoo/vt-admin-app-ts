@@ -34,7 +34,7 @@
 </template>
 <script lang="ts" setup>
 import {ref, reactive, onMounted, Ref} from "vue"
-import {ID, AllowNull} from "@/types/built-in.js"
+import {ID, Nullable} from "@/types/built-in.js"
 import {ElMessage as messageTip,FormInstance, FormRules} from "element-plus"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
@@ -64,7 +64,7 @@ const form: Ref<FormInstance | null> = ref(null)
 const tip: Ref<string | null> = ref(null)
 
 //表单模型
-const model: AllowNull<RoleModel> = reactive({
+const model: Nullable<RoleModel> = reactive({
     id: null,
     //角色名称
     name: null,

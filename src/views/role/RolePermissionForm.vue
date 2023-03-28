@@ -6,8 +6,8 @@
             <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
         </div>
         <div class="footer-container" v-if="permissions.length>0">
-            <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
-            <el-button type="primary" @click="onSaveBtnClick" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
+            <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
+            <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存</el-button>
         </div>
     </div>
 </template>
@@ -16,6 +16,7 @@
 import {nextTick, onMounted, ref} from "vue"
 import {http} from "@/utils/http"
 import {ElMessage as messageTip, ElTree} from "element-plus"
+import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
 import {httpErrorHandler} from "@/utils/error"
 import {fetchPermissionTree, PermissionTree} from "@/modules/permission"
 import {fetchRolePermissions} from "@/modules/role"

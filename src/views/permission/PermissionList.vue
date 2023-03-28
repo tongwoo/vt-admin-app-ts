@@ -5,8 +5,8 @@
             <div class="segment-header with-bordered with-flex">
                 <div class="header-title">权限列表</div>
                 <div class="header-buttons">
-                    <el-button type="primary" size="default" @click="onCreateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
-                    <el-button type="danger" size="default" @click="onBatchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
+                    <el-button type="primary" :icon="Plus" size="default" @click="onCreateBtnClick">新增</el-button>
+                    <el-button type="danger" :icon="Delete" size="default" @click="onBatchRemoveBtnClick">删除</el-button>
                 </div>
             </div>
             <div class="segment-body">
@@ -46,6 +46,7 @@ import {QueryParam, ID, RecordSet, NameValue, DialogOption, PageResult, Nullable
 import {HttpResponse} from "@/utils/http"
 import {ref, reactive, Ref, onMounted, defineAsyncComponent} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"

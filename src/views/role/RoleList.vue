@@ -16,8 +16,8 @@
                                 <el-input v-model="query.description" clearable></el-input>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="submitQuery" native-type="submit"><i class="bi bi-search el-icon--left"></i>查询</el-button>
-                                <el-button type="default" @click="resetQuery"><i class="bi bi-arrow-clockwise el-icon--left"></i>重置</el-button>
+                                <el-button type="primary" :icon="Search" :disabled="record.loading" @click="submitQuery" native-type="submit">查询</el-button>
+                                <el-button type="default" :icon="Refresh" :disabled="record.loading" @click="resetQuery">重置</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -28,8 +28,8 @@
             <div class="segment-header with-bordered with-flex">
                 <div class="header-title">角色列表</div>
                 <div class="header-buttons">
-                    <el-button type="primary" size="default" @click="onCreateBtnClick"><i class="bi bi-plus-lg el-icon--left"></i>新增</el-button>
-                    <el-button type="danger" size="default" @click="onBatchRemoveBtnClick"><i class="bi bi-trash el-icon--left"></i>删除</el-button>
+                    <el-button type="primary" :icon="Plus" size="default" @click="onCreateBtnClick">新增</el-button>
+                    <el-button type="danger" :icon="Delete" size="default" @click="onBatchRemoveBtnClick">删除</el-button>
                 </div>
             </div>
             <div class="segment-body">
@@ -87,6 +87,7 @@ import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
 import {httpErrorHandler} from "@/utils/error"
 import {cloneObject} from "@/utils/object"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
+import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
 import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
 
 //角色表单

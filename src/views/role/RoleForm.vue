@@ -26,8 +26,8 @@
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
-                <el-button type="primary" @click="onSaveBtnClick" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
+                <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
+                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存</el-button>
             </div>
         </el-form>
     </div>
@@ -36,6 +36,7 @@
 import {ref, reactive, onMounted, Ref} from "vue"
 import {ID, Nullable} from "@/types/built-in.js"
 import {ElMessage as messageTip,FormInstance, FormRules} from "element-plus"
+import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {useRules} from "@/modules/rbac"

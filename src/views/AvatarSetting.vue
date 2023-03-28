@@ -3,7 +3,7 @@
 日期：2022-06-16
 -->
 <template>
-    <div class="avatar-container" v-loading="loading">
+    <div class="avatar-container pall-30" v-loading="loading">
         <div class="maintain">
             <div class="editor">
                 <vueCropper ref="cropper" :img="model.img" :autoCrop="true" :autoCropWidth="200" :autoCropHeight="200" :fixed="true" :fixedBox="true" @realTime="previewCallback" outputType="png"></vueCropper>

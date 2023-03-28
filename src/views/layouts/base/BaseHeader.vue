@@ -96,10 +96,10 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {useDark, useToggle} from "@vueuse/core"
+import {useDark} from "@vueuse/core"
 import {computed, reactive, ref} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
-import {ElLoading, ElMessage} from 'element-plus'
+import {ElLoading as loadingTip} from 'element-plus'
 import {http} from '@/utils/http'
 import logo from '@/assets/logo.svg'
 import setting from '@/setting'
@@ -213,7 +213,7 @@ const password = reactive({
  * 退出系统
  */
 const exitSystem = () => {
-    const loading = ElLoading.service({
+    const loading = loadingTip.service({
         lock: true,
         text: '退出中'
     })

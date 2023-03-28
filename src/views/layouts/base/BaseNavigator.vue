@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
+import {computed} from 'vue'
 import MenuItem from '@/components/MenuItem.vue'
 import {useRoute} from 'vue-router'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'

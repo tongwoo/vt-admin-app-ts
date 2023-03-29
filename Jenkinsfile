@@ -9,6 +9,7 @@ pipeline{
     stages{
         stage('build'){
             steps{
+                sh "rm -rf pnpm-lock.yaml"
                 sh "npm install -g pnpm@7.30.5"
                 sh "pnpm install"
                 sh "pnpm build"

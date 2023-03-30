@@ -43,7 +43,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {Nullable} from "@/types/built-in"
 import {ref, reactive, onMounted} from 'vue'
 import {ElLoading as loadingTip, ElMessage as messageTip, FormInstance, FormRules} from 'element-plus'
 import {useRouter} from 'vue-router'
@@ -69,14 +68,14 @@ const tip = ref<string | null>(null)
 //加载中
 const loading = ref(false)
 //登录模型
-const model: Nullable<{
+const model: {
     //用户名
-    username: string,
+    username: string | null,
     //密码
-    password: string,
+    password: string | null,
     //验证码
-    captcha: string,
-}> = reactive({
+    captcha: string | null,
+} = reactive({
     username: null,
     password: null,
     captcha: null
@@ -126,6 +125,7 @@ const refreshCaptcha = () => {
  */
 const clean = () => {
     cleanAuthorization()
+    userStore.$reset()
 }
 
 /**

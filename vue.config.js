@@ -21,7 +21,7 @@ module.exports = defineConfig({
     },
     devServer: {
         host: '0.0.0.0',
-        port: 50000,
+        //port: 50000,
         allowedHosts: ['*'],
         proxy: {
             //接口路径和映射地址，不要修改此处，酌情修改 .env.development 文件

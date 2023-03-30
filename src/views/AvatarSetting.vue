@@ -11,13 +11,13 @@
             <div class="preview">
                 <div>当前头像</div>
                 <div class="preview-image">
-                    <img :src="userStore.avatar">
+                    <img :src="userStore.avatar" alt="">
                 </div>
                 <div>新头像</div>
                 <div v-if="preview.style!==null && preview.data!==null" class="preview-image">
                     <div :style="preview.style">
                         <div :style="preview.data.div">
-                            <img :src="preview.data.url" :style="preview.data.img">
+                            <img :src="preview.data.url" :style="preview.data.img" alt="">
                         </div>
                     </div>
                 </div>

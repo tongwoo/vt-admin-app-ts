@@ -15,3 +15,12 @@ pinia.use((context: PiniaPluginContext) => {
         ...data
     }
 })
+/**
+ * Pinia插件 - 解决无法在setup方式中调用$reset
+ */
+pinia.use(({ store }) => {
+    const initialState = JSON.parse(JSON.stringify(store.$state));
+    store.$reset = () => {
+        store.$patch(initialState);
+    }
+})

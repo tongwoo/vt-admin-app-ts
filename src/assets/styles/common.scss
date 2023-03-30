@@ -9,7 +9,7 @@
  *  全部 = mall
  */
 
-@each $position in mt, mr, mb, ml, mtb, mlr, mall {
+@each $position in mall, mt, mr, mb, ml, mtb, mlr {
     $property: null;
     @if $position == mt {
         $property: margin-top;
@@ -56,7 +56,7 @@
  *  全部 = pall
  */
 
-@each $position in pt, pr, pb, pl, ptb, plr, pall {
+@each $position in pall, pt, pr, pb, pl, ptb, plr {
     $property: null;
     @if $position == pt {
         $property: padding-top;

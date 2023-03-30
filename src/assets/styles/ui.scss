@@ -8,76 +8,76 @@ body, div, ul, li {
 //页面容器
 .page-container {
     padding: 10px;
+}
 
-    //页面分段，一个容器中可以有多个分段
-    .page-segment {
-        padding: 15px;
-        background-color: var(--page-segment-bg-color);
-        border-radius: 2px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+//页面分段，一个容器中可以有多个分段
+.page-segment {
+    padding: 15px;
+    background-color: var(--page-segment-bg-color);
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    margin-bottom: 10px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    //分段头部
+    .segment-header {
+        padding: 0 0 10px 0;
         margin-bottom: 10px;
 
-        &:last-child {
-            margin-bottom: 0;
+        &.with-bordered {
+            border-bottom: 1px solid var(--segment-header-border-color);
         }
 
-        //分段头部
-        .segment-header {
-            padding: 0 0 10px 0;
-            margin-bottom: 10px;
+        &.with-bg {
+            background-color: white;
+        }
 
-            &.with-bordered {
-                border-bottom: 1px solid var(--segment-header-border-color);
+        &.with-flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        //头部标题
+        .header-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--base-text-color);
+
+            &:before {
+                content: '';
+                width: 3px;
+                height: 14px;
+                background-color: var(--base-primary-color);
+                display: inline-block;
+                margin-right: 5px;
+                position: relative;
+                top: 2px;
             }
 
-            &.with-bg {
-                background-color: white;
+        }
+
+        //头部布局
+        .header-flex {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+
+            .header-flexible {
+                flex: 1;
             }
 
-            &.with-flex {
-                display: flex;
-                justify-content: space-between;
-            }
-
-            //头部标题
-            .header-title {
-                font-weight: bold;
-                font-size: 14px;
-                color: var(--base-text-color);
-
-                &:before {
-                    content: '';
-                    width: 3px;
-                    height: 14px;
-                    background-color: var(--base-primary-color);
-                    display: inline-block;
-                    margin-right: 5px;
-                    position: relative;
-                    top: 2px;
-                }
-
-            }
-
-            //头部布局
-            .header-flex {
+            .header-buttons {
                 display: flex;
                 align-items: center;
-                font-size: 14px;
-
-                .header-flexible {
-                    flex: 1;
-                }
-
-                .header-buttons {
-                    display: flex;
-                    align-items: center;
-                }
             }
         }
+    }
 
-        //分段主体
-        .segment-body {
-        }
+    //分段主体
+    .segment-body {
     }
 }
 

@@ -90,7 +90,7 @@
         <!--用户头像表单-->
         <el-dialog title="修改头像" v-model="avatar.dialog.show" :close-on-click-modal="false" append-to-body width="720px">
             <transition name="el-fade-in" mode="out-in">
-                <avatar-setting v-if="avatar.dialog.show" :id="avatar.id" @close="avatar.dialog.show=false"></avatar-setting>
+                <avatar-setting v-if="avatar.dialog.show" @close="avatar.dialog.show=false"></avatar-setting>
             </transition>
         </el-dialog>
     </div>

@@ -55,9 +55,11 @@
             <i v-else class="bi bi-chat-dots btn-icon-text"></i>
         </div>
         <!--模式切换-->
+        <!--
         <div class="header-col">
             <el-switch v-model="isDark" inline-prompt :active-icon="Moon" :inactive-icon="Sunny"></el-switch>
         </div>
+        -->
         <!--全屏-->
         <div class="header-col header-col-btn" @click="onFullScreenBtnClick">
             <el-tooltip :content="isFullScreen ? '退出全屏' : '全屏'">

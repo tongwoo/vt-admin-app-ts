@@ -1,6 +1,10 @@
 /**
  * 弹框
  */
+.el-dialog {
+    --el-dialog-header-border: 1px solid #ededed;
+}
+
 .el-dialog__header {
     padding-bottom: var(--el-dialog-padding-primary);
     border-bottom: var(--el-dialog-header-border);
@@ -111,4 +115,13 @@
     --el-message-text-color: var(--el-color-error);
     border-radius: 3px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, .07);
+}
+
+/**
+ * 数值输入框
+ */
+.el-input-number {
+    .el-input__inner{
+        text-align: left;
+    }
 }

@@ -66,6 +66,13 @@ const onNavigatorBtnClick = () => {
 
 <style lang="scss" scoped>
 .base-navigator {
+    --el-menu-text-color: rgba(255, 255, 255, 0.7);
+    --el-menu-hover-text-color: #ffffff;
+    --el-menu-bg-color: var(--base-navigator-bg-color);
+    --el-menu-hover-bg-color: #333333;
+    --el-menu-active-color: #729bff;
+    --el-menu-item-height: 46px;
+
     position: fixed;
     top: var(--base-header-height);
     left: 0;

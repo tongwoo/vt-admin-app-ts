@@ -4,14 +4,16 @@
         <el-form ref="form" :model="model" :rules="rules" label-width="80px" size="default" @submit.prevent>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
-                    <el-option v-for="(item,i) in roles" :key="i" :label="item.description" :value="item.id"></el-option>
+                    <el-option v-for="(item,i) in roles" :key="i" :label="item.description"
+                               :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="username">
                 <el-input v-model="model.username" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item v-if="model.id===null" label="登录密码" prop="password">
-                <el-input v-model="model.password" type="password" autocomplete="new-password" show-password maxlength="64"></el-input>
+                <el-input v-model="model.password" type="password" autocomplete="new-password" show-password
+                          maxlength="64"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
                 <el-input v-model="model.name" maxlength="32"></el-input>
@@ -28,21 +30,26 @@
             </div>
             <div class="footer-container">
                 <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
-                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存</el-button>
+                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存
+                </el-button>
             </div>
         </el-form>
     </div>
 </template>
 <script lang="ts" setup>
 import {USER_STATE_ENABLED} from "@/constants/user-state"
-import {ref, reactive, onMounted, Ref, defineAsyncComponent} from "vue"
-import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, FormInstance, FormRules} from "element-plus"
+import {ref, reactive, onMounted, Ref} from "vue"
+import {
+    ElMessage as messageTip,
+    FormInstance,
+    FormRules
+} from "element-plus"
 import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {getUserStates} from "@/enums/user-state"
-import {createUser, updateUser, fetchUser, UserModel} from "@/modules/user"
-import {Nullable, ID, NameValue} from "@/types/built-in"
+import {createUser, updateUser, fetchUser} from "@/modules/user"
+import {ID, NameValue} from "@/types/built-in"
 import {useRoles} from "@/modules/role"
 
 //事件
@@ -71,23 +78,36 @@ const form: Ref<FormInstance | null> = ref(null)
 //错误信息
 const tip: Ref<string | null> = ref(null)
 
-//表单模型
-const model: Nullable<UserModel> = reactive({
-    id: null,
+//表单模型接口
+interface UserFormModel {
+    //主键
+    id: ID | null,
     //用户名
-    username: null,
+    username: string | null,
     //登录密码
-    password: null,
+    password: string | null,
     //姓名
-    name: null,
+    name: string | null,
     //头像
-    avatar: null,
+    avatar: string | null,
     //状态
-    state: USER_STATE_ENABLED,
+    state: number | null,
     //上次登录时间
-    loginTime: null,
+    loginTime: string | null,
     //角色ID列表
-    roleIds: []
+    roleIds: ID[]
+}
+
+//表单模型
+const model: UserFormModel = reactive({
+    id: null,
+    username: null,
+    password: null,
+    name: null,
+    avatar: null,
+    state: USER_STATE_ENABLED,
+    loginTime: null,
+    roleIds: [] as ID[]
 })
 
 //表单规则

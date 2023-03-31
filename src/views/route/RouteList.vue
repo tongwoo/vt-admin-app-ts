@@ -70,7 +70,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {usePairPermissions} from "@/modules/permission"
 import {fetchPageRoutes, generateRoutes, removeRoute, RouteModel, truncateRoutes} from "@/modules/route"
 import setting from "@/setting"
 import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
@@ -82,9 +81,6 @@ import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
 
 //路由表单
 const RouteForm = defineAsyncComponent(() => import('./RouteForm.vue'))
-
-//权限列表
-const permissions = usePairPermissions()
 
 onMounted(() => {
     //载入路由

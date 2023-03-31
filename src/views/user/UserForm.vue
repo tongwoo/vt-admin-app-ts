@@ -4,11 +4,11 @@
         <el-form ref="form" :model="model" :rules="rules" label-width="80px" size="default" @submit.prevent>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
-                    <el-option v-for="(item,i) in roles" :key="i" :label="item.name" :value="item.value"></el-option>
+                    <el-option v-for="(item,i) in roles" :key="i" :label="item.description" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="username">
-                <el-input v-model="model.username" maxlength="32" ></el-input>
+                <el-input v-model="model.username" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item v-if="model.id===null" label="登录密码" prop="password">
                 <el-input v-model="model.password" type="password" autocomplete="new-password" show-password maxlength="64"></el-input>
@@ -37,16 +37,18 @@
 import {USER_STATE_ENABLED} from "@/constants/user-state"
 import {ref, reactive, onMounted, Ref, defineAsyncComponent} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, FormInstance, FormRules} from "element-plus"
-import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
-import {cloneObject, updateObject} from "@/utils/object"
+import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
+import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {getUserStates} from "@/enums/user-state"
 import {createUser, updateUser, fetchUser, UserModel} from "@/modules/user"
 import {Nullable, ID, NameValue} from "@/types/built-in"
-import {usePairRoles} from "@/modules/role"
+import {useRoles} from "@/modules/role"
 
 //事件
-const emits = defineEmits(['close'])
+const emits = defineEmits<{
+    (event: 'close', payload: any): void
+}>()
 
 //属性
 const props = withDefaults(
@@ -60,7 +62,7 @@ const props = withDefaults(
 //状态列表
 const states: Ref<NameValue[]> = ref(getUserStates())
 //角色列表
-const roles = usePairRoles()
+const {roles} = useRoles()
 
 //加载中
 const loading: Ref<boolean> = ref(false)
@@ -91,9 +93,9 @@ const model: Nullable<UserModel> = reactive({
 //表单规则
 const rules: FormRules = {
     //角色
-    roleIds:[
+    roleIds: [
         {
-            type:'array',
+            type: 'array',
             required: true,
             trigger: 'blur',
             message: '角色必须选择'
@@ -151,8 +153,8 @@ const rules: FormRules = {
             required: true,
             trigger: 'blur',
             message: '状态必须选择'
-        },
-    ],
+        }
+    ]
 }
 
 /**

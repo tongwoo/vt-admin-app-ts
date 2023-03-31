@@ -159,51 +159,23 @@ export function fetchPagePermissions(params: Record<string, any> = {}): Promise<
 }
 
 /**
- * 获取权限键值对列表
- * @param params 查询参数
- */
-export function fetchPairPermissions(params: Record<string, any> = {}): Promise<NameValue[]> {
-    return fetchPermissions(params).then((items) => {
-        return items.map((item) => {
-            return {
-                name: item.name,
-                value: item.id
-            }
-        })
-    })
-}
-
-
-/**
  * 使用权限列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
+ * @param preload 是否预先加载
  */
-export function usePermissions(params: Record<string, any> = {}, callback?: () => void): Ref<PermissionModel[]> {
-    const permissions = ref<PermissionModel[]>([])
-    onMounted(async () => {
-        permissions.value = await fetchPermissions(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return permissions
-}
-
-/**
- * 使用权限名称值列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
- */
-export function usePairPermissions(params: Record<string, any> = {}, callback?: () => void): Ref<NameValue[]> {
-    const permissions = ref<NameValue[]>([])
-    onMounted(async () => {
-        permissions.value = await fetchPairPermissions(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return permissions
+export function usePermissions(preload: boolean = true) {
+    const permissions: Ref<PermissionModel[]> = ref([])
+    const loadPermissions = (...args: any[]) => {
+        return fetchPermissions(...args).then((items) => {
+            return permissions.value = items
+        })
+    }
+    if (preload) {
+        onMounted(loadPermissions)
+    }
+    return {
+        permissions,
+        loadPermissions
+    }
 }
 
 /**

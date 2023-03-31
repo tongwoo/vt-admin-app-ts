@@ -171,51 +171,23 @@ export function fetchPageRoles(params: Record<string, any> = {}): Promise<PageRe
 }
 
 /**
- * 获取角色键值对列表
- * @param params 查询参数
- */
-export function fetchPairRoles(params: Record<string, any> = {}): Promise<NameValue[]> {
-    return fetchRoles(params).then((items) => {
-        return items.map((item) => {
-            return {
-                name: item.description,
-                value: item.id
-            }
-        })
-    })
-}
-
-
-/**
  * 使用角色列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
+ * @param preload 是否预先加载
  */
-export function useRoles(params: Record<string, any> = {}, callback?: () => void): Ref<RoleModel[]> {
-    const roles = ref<RoleModel[]>([])
-    onMounted(async () => {
-        roles.value = await fetchRoles(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return roles
-}
-
-/**
- * 使用角色名称值列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
- */
-export function usePairRoles(params: Record<string, any> = {}, callback?: () => void): Ref<NameValue[]> {
-    const roles = ref<NameValue[]>([])
-    onMounted(async () => {
-        roles.value = await fetchPairRoles(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return roles
+export function useRoles(preload: boolean = true) {
+    const roles: Ref<RoleModel[]> = ref([])
+    const loadRoles = (...args: any[]) => {
+        return fetchRoles(...args).then((items) => {
+            return roles.value = items
+        })
+    }
+    if (preload) {
+        onMounted(loadRoles)
+    }
+    return {
+        roles,
+        loadRoles
+    }
 }
 
 /**

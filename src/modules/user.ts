@@ -37,8 +37,6 @@ export interface UserModel extends Model {
  */
 export function dataToUserModel(data: any): UserModel {
     return {
-        //原数据
-        _: data,
         //ID
         id: data.id,
         //用户名
@@ -181,49 +179,21 @@ export function fetchPageUsers(params: Record<string, any> = {}): Promise<PageRe
 }
 
 /**
- * 获取用户键值对列表
- * @param params 查询参数
- */
-export function fetchPairUsers(params: Record<string, any> = {}): Promise<NameValue[]> {
-    return fetchUsers(params).then((items) => {
-        return items.map((item) => {
-            return {
-                name: item.name,
-                value: item.id
-            }
-        })
-    })
-}
-
-
-/**
  * 使用用户列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
+ * @param preload 是否预先加载
  */
-export function useUsers(params: Record<string, any> = {}, callback?: () => void): Ref<UserModel[]> {
-    const users = ref<UserModel[]>([])
-    onMounted(async () => {
-        users.value = await fetchUsers(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return users
-}
-
-/**
- * 使用用户名称值列表
- * @param params 查询参数
- * @param callback 加载完成后的回调
- */
-export function usePairUsers(params: Record<string, any> = {}, callback?: () => void): Ref<NameValue[]> {
-    const users = ref<NameValue[]>([])
-    onMounted(async () => {
-        users.value = await fetchPairUsers(params)
-        if (callback !== undefined) {
-            callback()
-        }
-    })
-    return users
+export function useUsers(preload: boolean = true) {
+    const users: Ref<UserModel[]> = ref([])
+    const loadUsers = (...args: any[]) => {
+        return fetchUsers(...args).then((items) => {
+            return users.value = items
+        })
+    }
+    if (preload) {
+        onMounted(loadUsers)
+    }
+    return {
+        users,
+        loadUsers
+    }
 }

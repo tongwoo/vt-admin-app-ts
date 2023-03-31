@@ -171,43 +171,23 @@ export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PageR
 }
 
 /**
- * 获取路由键值对列表
- * @param params 查询参数
- */
-export function fetchPairRoutes(params: Record<string, any> = {}): Promise<NameValue[]> {
-    return fetchRoutes(params).then((items) => {
-        return items.map((item) => {
-            return {
-                name: item.name,
-                value: item.id,
-                origin: item
-            }
-        })
-    })
-}
-
-/**
  * 使用路由列表
- * @param params 查询参数
+ * @param preload 是否预先加载
  */
-export function useRoutes(params: Record<string, any> = {}): Ref<RouteModel[]> {
-    const routes = ref<RouteModel[]>([])
-    onMounted(async () => {
-        routes.value = await fetchRoutes(params)
-    })
-    return routes
-}
-
-/**
- * 使用路由名称值列表
- * @param params 查询参数
- */
-export function usePairRoutes(params: Record<string, any> = {}): Ref<NameValue[]> {
-    const routes = ref<NameValue[]>([])
-    onMounted(async () => {
-        routes.value = await fetchPairRoutes(params)
-    })
-    return routes
+export function useRoutes(preload: boolean = true) {
+    const routes: Ref<RouteModel[]> = ref([])
+    const loadRoutes = (...args: any[]) => {
+        return fetchRoutes(...args).then((items) => {
+            return routes.value = items
+        })
+    }
+    if (preload) {
+        onMounted(loadRoutes)
+    }
+    return {
+        routes,
+        loadRoutes
+    }
 }
 
 /**

@@ -5,7 +5,7 @@
             <el-form-item label="权限" prop="permissionId">
                 <div class="form-item-auto">
                     <el-select v-model="model.permissionId" class="el-select-long">
-                        <el-option v-for="(item,i) in permissions" :key="i" :label="item.name" :value="item.value"></el-option>
+                        <el-option v-for="(item,i) in permissions" :key="i" :label="item.description" :value="item.id"></el-option>
                     </el-select>
                 </div>
             </el-form-item>
@@ -32,8 +32,8 @@ import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
 import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {usePairPermissions} from "@/modules/permission"
-import {createRoute, updateRoute, fetchRoute} from "@/modules/route"
+import {usePermissions} from "@/modules/permission"
+import {createRoute, updateRoute, fetchRoute, RouteModel} from "@/modules/route"
 
 //事件
 const emits = defineEmits(['close'])
@@ -49,7 +49,7 @@ const props = withDefaults(
 
 
 //权限列表
-const permissions: Ref<NameValue[]> = usePairPermissions()
+const {permissions} = usePermissions()
 
 //加载中
 const loading: Ref<boolean> = ref(false)

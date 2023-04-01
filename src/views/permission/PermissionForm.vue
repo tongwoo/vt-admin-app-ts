@@ -33,14 +33,16 @@
 import {ref, reactive, onMounted, Ref} from "vue"
 import {ID, Nullable} from "@/types/built-in.js"
 import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
-import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
+import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {createPermission, updatePermission, fetchPermission, usePermissionTree, PermissionModel} from "@/modules/permission"
 import {useRules} from "@/modules/rbac"
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits<{
+    (event: 'close', payload: any): void
+}>()
 
 //属性
 const props = withDefaults(
@@ -64,18 +66,29 @@ const form: Ref<FormInstance | null> = ref(null)
 //错误信息
 const tip: Ref<string | null> = ref(null)
 
-//表单模型
-const model: Nullable<PermissionModel> = reactive({
-    id: null,
+//表单模型接口
+interface PermissionFormModel {
+    //主键
+    id: ID | null,
     //父权限
-    parentId: null,
+    parentId: number | null,
     //权限名称
-    name: null,
+    name: string | null,
     //权限描述
-    description: null,
+    description: string | null,
     //规则名称
-    ruleName: null,
+    ruleName: string | null,
     //是否创建增删改查
+    include: boolean
+}
+
+//表单模型
+const model: PermissionFormModel = reactive({
+    id: null,
+    parentId: null,
+    name: null,
+    description: null,
+    ruleName: null,
     include: false
 })
 
@@ -151,7 +164,7 @@ const onSaveBtnClick = async () => {
  * 取消按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close', 'cancel')
+    emit('close', 'cancel')
 }
 
 /**
@@ -165,7 +178,7 @@ const submitCreate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -183,7 +196,7 @@ const submitUpdate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false

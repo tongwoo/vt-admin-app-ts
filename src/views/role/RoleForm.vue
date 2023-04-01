@@ -35,15 +35,17 @@
 <script lang="ts" setup>
 import {ref, reactive, onMounted, Ref} from "vue"
 import {ID, Nullable} from "@/types/built-in.js"
-import {ElMessage as messageTip,FormInstance, FormRules} from "element-plus"
-import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
+import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
+import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {useRules} from "@/modules/rbac"
 import {createRole, updateRole, fetchRole, RoleModel} from "@/modules/role"
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits<{
+    (event: 'close', payload: any): void
+}>()
 
 //属性
 const props = withDefaults(
@@ -64,16 +66,26 @@ const form: Ref<FormInstance | null> = ref(null)
 //错误信息
 const tip: Ref<string | null> = ref(null)
 
-//表单模型
-const model: Nullable<RoleModel> = reactive({
-    id: null,
+//表单模型接口
+interface RoleFormModel {
+    //主键
+    id: ID | null,
     //角色名称
-    name: null,
+    name: string | null,
     //角色描述
-    description: null,
+    description: string | null,
     //规则名称
-    ruleName: null,
+    ruleName: string | null,
     //是否内置
+    isBuiltIn: number | null,
+}
+
+//表单模型
+const model: RoleFormModel = reactive({
+    id: null,
+    name: null,
+    description: null,
+    ruleName: null,
     isBuiltIn: 0
 })
 
@@ -157,7 +169,7 @@ const onSaveBtnClick = async () => {
  * 取消按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close', 'cancel')
+    emit('close', 'cancel')
 }
 
 /**
@@ -171,7 +183,7 @@ const submitCreate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -189,7 +201,7 @@ const submitUpdate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false

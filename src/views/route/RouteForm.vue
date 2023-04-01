@@ -29,14 +29,16 @@
 import {ref, reactive, onMounted, Ref} from "vue"
 import {ID, NameValue, Nullable} from "@/types/built-in.js"
 import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
-import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
+import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {usePermissions} from "@/modules/permission"
 import {createRoute, updateRoute, fetchRoute, RouteModel} from "@/modules/route"
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits<{
+    (event: 'close', payload: any): void
+}>()
 
 //属性
 const props = withDefaults(
@@ -58,17 +60,25 @@ const form: Ref<FormInstance | null> = ref(null)
 //错误信息
 const tip: Ref<string | null> = ref(null)
 
-//表单模型
-const model: Nullable<RouteModel> = reactive({
-    id: null,
+//表单模型接口
+interface RouteFormModel {
+    //主键
+    id: ID | null,
     //权限
-    permissionId: null,
+    permissionId: number | null,
     //名称
-    name: null,
+    name: string | null,
     //路径
+    path: string | null,
+}
+
+//表单模型
+const model: RouteFormModel = reactive({
+    id: null,
+    permissionId: null,
+    name: null,
     path: null
 })
-
 //表单规则
 const rules: FormRules = {
     //权限
@@ -139,7 +149,7 @@ const onSaveBtnClick = async () => {
  * 取消按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close', 'cancel')
+    emit('close', 'cancel')
 }
 
 /**
@@ -153,7 +163,7 @@ const submitCreate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -171,7 +181,7 @@ const submitUpdate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false

@@ -47,7 +47,7 @@ const userStore = useUserStore()
 const loading = ref(false)
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits(['close'])
 
 //剪裁DOM
 const cropper = ref(null)
@@ -111,7 +111,7 @@ const saveAvatar = () => {
                     userStore.$patch((state) => {
                         state.avatar = response.data.data.url
                     })
-                    emits('close')
+                    emit('close')
                 }
             }).catch(httpErrorHandler).finally(() => {
                 loading.value = false

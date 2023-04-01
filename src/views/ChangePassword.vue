@@ -31,7 +31,7 @@ import {httpErrorHandler} from "@/utils/error"
 import {http} from "@/utils/http"
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits(['close'])
 //加载中
 const loading = ref(false)
 //表单
@@ -95,7 +95,7 @@ const onSaveBtnClick = async () => {
  * 取消按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close', 'cancel')
+    emit('close', 'cancel')
 }
 
 /**
@@ -113,7 +113,7 @@ const submitUpdate = (data: object) => {
             tip.value = response.data.message
         } else {
             messageTip.success(response.data.message)
-            emits('close')
+            emit('close')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false

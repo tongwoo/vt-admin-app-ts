@@ -30,7 +30,9 @@ const props = defineProps({
 })
 
 //事件
-const emits = defineEmits(['close'])
+const emit = defineEmits<{
+    (event: 'close', payload?: any): void
+}>()
 
 //加载中
 const loading = ref(false)
@@ -99,7 +101,7 @@ const submitSave = (data: object) => {
             tip.value = response.data.message
         } else {
             messageTip.success(response.data.message)
-            emits('close')
+            emit('close')
         }
     }).finally(() => {
         loading.value = false
@@ -127,7 +129,7 @@ const onSaveBtnClick = () => {
  * 取消保存按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close')
+    emit('close')
 }
 </script>
 

@@ -4,16 +4,14 @@
         <el-form ref="form" :model="model" :rules="rules" label-width="80px" size="default" @submit.prevent>
             <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="model.roleIds" class="el-select-long" :multiple="true">
-                    <el-option v-for="(item,i) in roles" :key="i" :label="item.description"
-                               :value="item.id"></el-option>
+                    <el-option v-for="(item,i) in roles" :key="i" :label="item.description" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="username">
                 <el-input v-model="model.username" maxlength="32"></el-input>
             </el-form-item>
             <el-form-item v-if="model.id===null" label="登录密码" prop="password">
-                <el-input v-model="model.password" type="password" autocomplete="new-password" show-password
-                          maxlength="64"></el-input>
+                <el-input v-model="model.password" type="password" autocomplete="new-password" show-password maxlength="64"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
                 <el-input v-model="model.name" maxlength="32"></el-input>
@@ -30,8 +28,7 @@
             </div>
             <div class="footer-container">
                 <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
-                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存
-                </el-button>
+                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" native-type="submit">保存</el-button>
             </div>
         </el-form>
     </div>
@@ -53,7 +50,7 @@ import {ID, NameValue} from "@/types/built-in"
 import {useRoles} from "@/modules/role"
 
 //事件
-const emits = defineEmits<{
+const emit = defineEmits<{
     (event: 'close', payload: any): void
 }>()
 
@@ -208,7 +205,7 @@ const onSaveBtnClick = async () => {
  * 取消按钮点击
  */
 const onCancelBtnClick = () => {
-    emits('close', 'cancel')
+    emit('close', 'cancel')
 }
 
 /**
@@ -222,7 +219,7 @@ const submitCreate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false
@@ -240,7 +237,7 @@ const submitUpdate = (data: any) => {
             tip.value = result.message
         } else {
             messageTip.success(result.message)
-            emits('close', 'save')
+            emit('close', 'save')
         }
     }).catch(httpErrorHandler).finally(() => {
         loading.value = false

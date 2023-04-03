@@ -11,7 +11,7 @@
             <div class="preview">
                 <div>当前头像</div>
                 <div class="preview-image">
-                    <img :src="userStore.avatar" alt="">
+                    <img :src="userStore.avatar" alt="" @error="onAvatarError($event)">
                 </div>
                 <div>新头像</div>
                 <div v-if="preview.style!==null && preview.data!==null" class="preview-image">
@@ -25,68 +25,83 @@
         </div>
         <div class="toolbar">
             <div class="upload-container">
-                <el-button type="primary" @click="fileInput.click();"><i class="bi bi-image el-icon--left"></i>选择图片</el-button>
+                <el-button type="primary" @click="fileInput!.click();"><i class="bi bi-image el-icon--left"></i>选择图片</el-button>
                 <el-button type="primary" @click="saveAvatar"><i class="bi bi-upload el-icon--left"></i>保存头像</el-button>
                 <input ref="fileInput" type="file" @change="onChooseFile" accept="image/jpg,image/jpeg,image/png">
             </div>
         </div>
     </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import 'vue-cropper/dist/index.css'
+import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {VueCropper} from "vue-cropper"
-import {ref, reactive} from "vue"
+import {ref, reactive, Ref} from "vue"
 import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus"
 import {http} from '@/utils/http'
 import {httpErrorHandler} from "@/utils/error"
 import {useUserStore} from '@/pinia/user'
+import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 
 const userStore = useUserStore()
 
 //加载中
 const loading = ref(false)
-
 //事件
 const emit = defineEmits(['close'])
-
 //剪裁DOM
-const cropper = ref(null)
+const cropper: any = ref(null)
 //文件浏览框DOM
-const fileInput = ref(null)
-
+const fileInput: Ref<HTMLInputElement | null> = ref(null)
 //模型
-const model = reactive({
-    img: null,
+const model: {
+    //图片地址
+    img: string | null
+} = reactive({
+    img: null
 })
-
-const preview = reactive({
+//预览
+const preview: {
+    //图形数据
+    data: any,
+    //样式
+    style: any
+} = reactive({
     data: null,
-    style: null,
+    style: null
 })
 
 /**
  * 预览
  */
-const previewCallback = (data) => {
+const previewCallback = (data: any) => {
     preview.style = {
         width: data.w + "px",
         height: data.h + "px",
         overflow: "hidden",
         margin: "0",
-        zoom: 200 / Math.max(data.w, data.h),
+        zoom: 200 / Math.max(data.w, data.h)
     }
     preview.data = data
 }
 
 /**
+ * 头像加载错误
+ */
+const onAvatarError = (e: Event) => {
+    (e.target as HTMLImageElement).src = defaultAvatar
+}
+
+/**
  * 文件变更
  */
-const onChooseFile = (e) => {
-    if (e.target.files.length === 0) {
+const onChooseFile = (e: Event) => {
+    const files = (e.target as HTMLInputElement).files
+    if (files!.length === 0) {
         messageTip.error('请选择图片')
         return
     }
-    const file = e.target.files[0]
+    const file = files![0]
     if (file.size === 0) {
         messageTip.error('图片异常')
         return
@@ -99,17 +114,17 @@ const onChooseFile = (e) => {
  */
 const saveAvatar = () => {
     try {
-        cropper.value.getCropBlob((data) => {
+        cropper.value!.getCropBlob((data: Blob) => {
             const formData = new FormData()
             formData.append('file', data, '头像.png')
             loading.value = true
             http.post(
                 '/upload/avatar',
-                formData,
+                formData
             ).then((response) => {
                 if (response.isOk) {
                     userStore.$patch((state) => {
-                        state.avatar = response.data.data.url
+                        state.avatar = API_PATH_DEFAULT + response.data.data.url
                     })
                     emit('close')
                 }

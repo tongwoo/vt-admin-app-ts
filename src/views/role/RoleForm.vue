@@ -34,13 +34,13 @@
 </template>
 <script lang="ts" setup>
 import {ref, reactive, onMounted, Ref} from "vue"
-import {ID, Nullable} from "@/types/built-in.js"
+import {ID} from "@/types/built-in.js"
 import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
 import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {useRules} from "@/modules/rbac"
-import {createRole, updateRole, fetchRole, RoleModel} from "@/modules/role"
+import {createRole, updateRole, fetchRole} from "@/modules/role"
 
 //事件
 const emit = defineEmits<{

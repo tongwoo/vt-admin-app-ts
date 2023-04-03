@@ -163,12 +163,12 @@ export function fetchPageUsers(params: Record<string, any> = {}): Promise<PageRe
             params
         }
     ).then((response) => {
-        const result = response.data
         const data = {
             items: [] as UserModel[],
             total: 0
         }
         if (response.isOk) {
+            const result = response.data
             data.items = result.data.items.map((item: any) => {
                 return dataToUserModel(item)
             })

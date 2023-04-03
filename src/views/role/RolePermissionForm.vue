@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts" setup>
-import {nextTick, onMounted, ref} from "vue"
+import {nextTick, onMounted, Ref, ref} from "vue"
 import {http} from "@/utils/http"
 import {ElMessage as messageTip, ElTree} from "element-plus"
-import {CircleCheckFilled,CircleCloseFilled} from "@element-plus/icons-vue"
+import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {httpErrorHandler} from "@/utils/error"
 import {fetchPermissionTree, PermissionTree} from "@/modules/permission"
 import {fetchRolePermissions} from "@/modules/role"
@@ -35,13 +35,13 @@ const emit = defineEmits<{
 }>()
 
 //加载中
-const loading = ref(false)
+const loading: Ref<boolean> = ref(false)
 //权限树
-const tree = ref<InstanceType<typeof ElTree>>()
+const tree: Ref<InstanceType<typeof ElTree> | null> = ref(null)
 //错误
-const tip = ref<string | null>(null)
+const tip: Ref<string | null> = ref(null)
 //权限集合
-const permissions = ref<PermissionTree[]>([])
+const permissions: Ref<PermissionTree[]> = ref([])
 //权限树选项
 const treeProps = {
     value: 'id',

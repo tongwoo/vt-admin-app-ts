@@ -5,6 +5,10 @@ body, div, ul, li {
     font-family: "微软雅黑", "PingFang SC", "Helvetica Neue", Helvetica, "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
 }
 
+div, li, p, i {
+    outline: none;
+}
+
 //页面容器
 .page-container {
     padding: 10px;

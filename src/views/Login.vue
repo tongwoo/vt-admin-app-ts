@@ -158,7 +158,7 @@ const submitLogin = async () => {
         userStore.$patch((state) => {
             state.authorization = authorization
             state.nickname = result.data.name
-            state.avatar = result.data.avatar ?? defaultAvatar
+            state.avatar = result.data.avatar ? API_PATH_DEFAULT + result.data.avatar : defaultAvatar
             state.permissions = result.data.permissions
         })
         //加载用户数据（如果需要额外调用接口的话）

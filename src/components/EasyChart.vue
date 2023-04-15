@@ -6,6 +6,7 @@
      2022-05-08 增加显示表格（折线图、柱形图、饼图)、下载图片功能
      2022-07-20 修复在使用其他类型series无法重置尺寸的问题
      2022-09-30 重构部分代码
+     2023-04-10 增加防抖
 -->
 <template>
     <div ref="chartContainer" :style="style" class="chart-container">
@@ -30,6 +31,7 @@ import {PieDataItemOption} from 'echarts/types/src/chart/pie/PieSeries'
 import {CategoryAxisBaseOption} from 'echarts/types/src/coord/axisCommonTypes'
 import {ref, reactive, onMounted, watch, onUnmounted, nextTick, computed, Ref} from 'vue'
 import * as echarts from 'echarts'
+import {debounce} from "@/utils/task";
 
 //图表实例
 let instance: EChartsType | null = null
@@ -207,7 +209,7 @@ onMounted(() => {
         instance = echarts.init(chartInstance.value!)
         instance!.setOption(props.option, true)
         //监听尺寸变化以便重置图表尺寸
-        observer = new ResizeObserver(observerResize)
+        observer = new ResizeObserver(debounce(observerResize,500))
         observer.observe(container!)
     })
 })

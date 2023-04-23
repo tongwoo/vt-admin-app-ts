@@ -39,6 +39,7 @@ http.interceptors.response.use(
         response.isOk = true
         if (response.headers['content-type'].includes('application/json')) {
             if (!ResponseCode.isOk(response.data?.code)) {
+                response.isOk = false
                 //未授权、未登录、404 直接抛异常交由 catch 处理
                 const codes = [
                     ResponseCode.UNAUTHORIZED,
@@ -48,7 +49,6 @@ http.interceptors.response.use(
                 if (codes.indexOf(response.data.code) !== -1) {
                     return Promise.reject(response)
                 }
-                response.isOk = false
             }
             //重命名 msg 为 message
             if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
@@ -66,7 +66,7 @@ http.interceptors.response.use(
         if (codes.indexOf(response.status) !== -1) {
             return Promise.reject(error.response)
         }
-        if (response.headers['content-type'].includes('application/json')) {
+        if (Object.prototype.hasOwnProperty.call(response, 'headers') && response.headers['content-type'].includes('application/json')) {
             //重命名 msg 为 message
             if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
                 response.data.message = response.data.msg

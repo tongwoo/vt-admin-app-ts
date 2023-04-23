@@ -4,6 +4,7 @@ pipeline{
             image "node:14.18"
             args "-v \$HOME/.npm:/root/.npm"
             args "-v \$HOME/.local/share/pnpm:/root/.local/share/pnpm"
+            args "-e TZ=Asia/Shanghai"
         }
     }
     stages{

@@ -105,8 +105,8 @@ export interface MenuItem {
 }
 
 /**
- * 允许T的值为null
+ * 允许T的属性值为null
  */
 export type Nullable<T> = {
-    [P in keyof T]: T[P] | null
+    [P in keyof T]: T[P] extends Array<any> ? T[P] : T[P] | null
 }

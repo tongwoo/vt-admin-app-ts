@@ -18,15 +18,15 @@ export function httpErrorHandler(response: any) {
         }
         return
     }
-    const isJson = response.headers['content-type'].includes('application/json')
     const code = response.data.code
-    const hasMessageBox = document.querySelector('.is-message-box') !== null
+    const isJson = response.headers['content-type'].includes('application/json')
+    const messageExists = document.querySelector('.is-message-box') !== null
     if (response.status === 404 || isJson && code === ResponseCode.NOT_FOUND) {
         messageTip.error('页面不存在')
     } else if (response.status === 500 || isJson && code === ResponseCode.ERROR) {
         messageTip.error('服务器异常')
     } else if (response.status === 401 || isJson && code === ResponseCode.UNAUTHORIZED) {
-        if (hasMessageBox) {
+        if (messageExists) {
             return
         }
         messageBox.confirm('登录凭证已经过期，是否重新登录？', '提示', {
@@ -39,7 +39,7 @@ export function httpErrorHandler(response: any) {
             //...
         })
     } else if (response.status === 403 || isJson && code === ResponseCode.FORBIDDEN) {
-        if (hasMessageBox) {
+        if (messageExists) {
             return
         }
         messageBox.confirm('没有权限，是否重新登录？', '提示', {

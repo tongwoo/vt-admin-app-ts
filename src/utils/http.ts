@@ -1,4 +1,5 @@
 import {useUserStore} from "@/pinia/user"
+import setting from "@/setting"
 import axios, {AxiosInstance, AxiosResponseHeaders} from 'axios'
 import {API_PATH_DEFAULT} from "@/constants/api-path"
 import {ResponseCode} from "@/types/built-in"
@@ -47,6 +48,9 @@ http.interceptors.response.use(
                     ResponseCode.NOT_FOUND
                 ]
                 if (codes.indexOf(response.data.code) !== -1) {
+                    if (setting.auth.redirect) {
+                        window.location.href = '/#/login'
+                    }
                     return Promise.reject(response)
                 }
             }
@@ -64,6 +68,9 @@ http.interceptors.response.use(
         //未授权、未登录、404 直接抛异常交由 catch 处理
         const codes = [401, 403, 404]
         if (codes.indexOf(response.status) !== -1) {
+            if (setting.auth.redirect) {
+                window.location.href = '/#/login'
+            }
             return Promise.reject(error.response)
         }
         if (Object.prototype.hasOwnProperty.call(response, 'headers') && response.headers['content-type'].includes('application/json')) {

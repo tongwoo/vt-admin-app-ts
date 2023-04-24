@@ -25,6 +25,9 @@ module.exports = defineConfig({
         allowedHosts: ['all'],
         client: {
             progress: true,
+            overlay: {
+                runtimeErrors: false,
+            },
         },
         proxy: {
             //接口路径和映射地址，不要修改此处，酌情修改 .env.development 文件

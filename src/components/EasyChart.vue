@@ -47,7 +47,7 @@ const chartInstance: Ref<HTMLElement | null> = ref(null)
 //属性
 const props = withDefaults(defineProps<{
     //echarts配置对象
-    option: EChartsOption,
+    option: any,
     //重置图表尺寸是否使用动画
     resizeAnimation?: boolean,
     //是否显示表格
@@ -78,17 +78,17 @@ const position = reactive({
 //表格
 const table: {
     size: string,
-    height: number | undefined
+    height: number
 } = reactive({
     size: 'small',
-    height: undefined
+    height: 100
 })
 
 //在图表选项变化的时候更新图表
 watch(
     () => props.option,
     () => {
-        instance!.setOption(props.option, true)
+        instance!.setOption(props.option as EChartsOption, true)
     },
     {
         deep: true
@@ -107,7 +107,7 @@ const tableColumns = computed(() => {
         }
     }
     //如果序列里有饼图则最终以饼图出现的为最终列
-    for (let series of <SeriesOption[]>option.series!) {
+    for (let series of option.series!) {
         if (series.type === 'pie') {
             return ['类型', '值']
         }
@@ -122,7 +122,7 @@ const tableColumns = computed(() => {
 const tableRows = computed(() => {
     const option = props.option
     const rows = []
-    for (let series of <SeriesOption[]>option.series!) {
+    for (let series of option.series!) {
         if (series.type === 'pie') {
             const items = series.data as PieDataItemOption[]
             items.forEach((item) => {
@@ -183,6 +183,8 @@ const observerResize = () => {
     tableResize()
 }
 
+const {destroy,handler} = debounce(observerResize, 300)
+
 defineExpose({
     instance,
     container,
@@ -190,7 +192,7 @@ defineExpose({
 })
 
 onMounted(() => {
-    container = <HTMLElement>chartContainer.value!.parentElement
+    container = chartContainer.value!.parentElement
     if (!container) {
         throw new Error('没有找到父元素')
     }
@@ -209,7 +211,7 @@ onMounted(() => {
         instance = echarts.init(chartInstance.value!)
         instance!.setOption(props.option, true)
         //监听尺寸变化以便重置图表尺寸
-        observer = new ResizeObserver(debounce(observerResize,500))
+        observer = new ResizeObserver(handler)
         observer.observe(container!)
     })
 })
@@ -217,6 +219,7 @@ onMounted(() => {
 onUnmounted(() => {
     observer?.disconnect()
     instance?.dispose()
+    destroy()
 })
 </script>
 

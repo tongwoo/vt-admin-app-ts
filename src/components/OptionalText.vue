@@ -3,10 +3,11 @@
 日期：2022-03-09
 变更：
      2022-09-30 增加跳动选项
+     2023-04-28 增加slot
 -->
 <template>
-    <span v-if="props.isJump && isNumber" ref="el" key="count"></span>
-    <span v-else key="text">{{ content }}</span>
+    <span v-if="props.isJump && isNumber" key="count"><span ref="el"></span><slot></slot></span>
+    <span v-else key="text">{{ content }}<slot></slot></span>
 </template>
 
 <script lang="ts" setup>
@@ -37,7 +38,7 @@ const isNumber = computed(() => {
 
 //非跳动显示的内容
 const content = computed(() => {
-    if (props.modelValue === null || props.modelValue === undefined) {
+    if (props.modelValue === null || props.modelValue === '' || props.modelValue === undefined) {
         return props.text
     }
     return props.modelValue

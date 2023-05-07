@@ -1,8 +1,8 @@
-import {useUserStore} from "@/pinia/user"
-import setting from "@/setting"
+import {useUserStore} from '@/pinia/user'
+import setting from '@/setting'
 import axios, {AxiosInstance, AxiosResponseHeaders} from 'axios'
-import {API_PATH_DEFAULT} from "@/constants/api-path"
-import {ResponseCode} from "@/types/built-in"
+import {API_PATH_DEFAULT} from '@/constants/api-path'
+import {ResponseCode} from '@/types/built-in'
 
 declare module 'axios' {
     interface AxiosResponse {
@@ -23,8 +23,7 @@ const http: AxiosInstance = axios.create({
 })
 
 //请求拦截器
-http.interceptors.request.use(
-    function (request) {
+http.interceptors.request.use((request) => {
         //添加授权头
         const token = useUserStore().authorization
         if (request.headers !== undefined && token) {
@@ -39,6 +38,11 @@ http.interceptors.response.use(
     function (response) {
         response.isOk = true
         if (response.headers['content-type'].includes('application/json')) {
+            //重命名 msg 为 message
+            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
+                response.data.message = response.data.msg
+                delete response.data.msg
+            }
             if (!ResponseCode.isOk(response.data?.code)) {
                 response.isOk = false
                 //未授权、未登录、404 直接抛异常交由 catch 处理
@@ -53,11 +57,6 @@ http.interceptors.response.use(
                     }
                     return Promise.reject(response)
                 }
-            }
-            //重命名 msg 为 message
-            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
-                response.data.message = response.data.msg
-                delete response.data.msg
             }
         }
         return response
@@ -100,14 +99,14 @@ export interface HttpResponse<T = any> {
 
 /**
  * 从响应头中获取附件名称
- * @param {AxiosResponseHeaders} headers 响应头
+ * @param headers 响应头
  */
 export function getAttachmentName(headers: AxiosResponseHeaders): string {
-    const disposition = headers['Content-Disposition'] ?? headers['content-disposition']
+    const disposition = headers['content-disposition']
     if (!disposition) {
         return '未命名'
     }
-    const keyword = "filename*=utf-8''"
+    const keyword = 'filename*=utf-8\'\''
     const offset = disposition.indexOf(keyword)
     if (offset !== -1) {
         const name = disposition.substring(offset + keyword.length)

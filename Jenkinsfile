@@ -3,7 +3,7 @@ pipeline{
     environment{
         IMAGE_NAME = 'vt-admin-app'
         CONTAINER_NAME = 'vt-admin-app-test'
-        ACCESS_PORT = '57451'
+        ACCESS_PORT = '65000'
     }
     stages{
         stage('build'){
@@ -25,6 +25,7 @@ pipeline{
         stage('package'){
             steps{
                 sh "docker build -t ${IMAGE_NAME} ."
+                sh "docker stop ${CONTAINER_NAME} 2> /dev/null "
                 sh "docker rm -f ${CONTAINER_NAME} 2> /dev/null "
             }
         }

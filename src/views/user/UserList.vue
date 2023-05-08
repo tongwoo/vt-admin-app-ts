@@ -39,7 +39,7 @@
                         <el-table ref="table" border stripe size="small" row-key="id" :data="record.items" v-loading="record.loading" @selection-change="onSelectionChange">
                             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
                             <el-table-column label="序号" type="index" fixed="left" align="center" width="80"></el-table-column>
-                            <el-table-column label="用户名" prop="username" align="center" min-width="100" show-overflow-tooltip></el-table-column>
+                            <el-table-column label="用户名" prop="username" align="center" min-width="100" :show-overflow-tooltip="true"></el-table-column>
                             <el-table-column label="姓名" prop="name" align="center" min-width="100" show-overflow-tooltip></el-table-column>
                             <el-table-column label="角色" prop="roles" align="center" min-width="100" show-overflow-tooltip>
                                 <template v-slot="{row}">
@@ -78,10 +78,9 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {getUserStates} from "@/enums/user-state"
 import {fetchPageUsers, removeUser, UserModel} from "@/modules/user"
 import setting from "@/setting"
-import {Nullable, DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
 import {httpErrorHandler} from "@/utils/error"
 import {cloneObject} from "@/utils/object"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
@@ -90,9 +89,6 @@ import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
 
 //用户表单
 const UserForm = defineAsyncComponent(() => import('./UserForm.vue'));
-
-//状态列表
-const states = ref(getUserStates())
 
 onMounted(() => {
     //载入用户

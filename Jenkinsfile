@@ -4,6 +4,7 @@ pipeline{
         IMAGE_NAME = 'vt-admin-app'
         CONTAINER_NAME = 'vt-admin-app-test'
         ACCESS_PORT = '65000'
+        BASE_API = 'http://127.0.0.1:21231'
     }
     stages{
         stage('build'){
@@ -31,7 +32,7 @@ pipeline{
         }
         stage('deploy'){
             steps{
-                sh "docker run -d --restart on-failure -e API=http://127.0.0.1:21231 -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "docker run -d --restart on-failure -e API=${BASE_API} -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
     }

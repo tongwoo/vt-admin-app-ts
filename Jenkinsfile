@@ -10,6 +10,7 @@ pipeline{
         stage('build'){
             agent{
                 docker{
+                    reuseNode true
                     image "node:14.18"
                     args "-v \$HOME/.npm:/root/.npm"
                     args "-v \$HOME/.local/share/pnpm:/root/.local/share/pnpm"

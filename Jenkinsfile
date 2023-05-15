@@ -21,7 +21,7 @@ pipeline{
                 sh "rm -rf pnpm-lock.yaml"
                 sh "npm install -g pnpm@7.30.5"
                 sh "pnpm install"
-                sh "pnpm build --dest app"
+                sh "pnpm build:docker"
             }
         }
         stage('package'){
@@ -33,7 +33,7 @@ pipeline{
         }
         stage('deploy'){
             steps{
-                sh "docker run -d --restart on-failure -e API=${BASE_API} -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "docker run -d --restart on-failure -e TZ=Asia/Shanghai -e API=${BASE_API} -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
     }

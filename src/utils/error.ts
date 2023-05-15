@@ -1,6 +1,6 @@
-import {ElMessage as messageTip, ElMessageBox as messageBox} from "element-plus"
-import router from "../router/index"
-import {ResponseCode} from "@/types/built-in"
+import {ElMessage as messageTip, ElMessageBox as messageBox} from 'element-plus'
+import router from '../router/index'
+import {ResponseCode} from '@/types/built-in'
 
 /**
  * HTTP错误处理
@@ -51,6 +51,8 @@ export function httpErrorHandler(response: any) {
         }).catch(() => {
             //...
         })
+    } else if (response?.message) {
+        messageTip.error(response.message)
     } else {
         messageTip.error('网络异常，请稍后重试')
     }

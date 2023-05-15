@@ -28,7 +28,7 @@ pipeline{
             steps{
                 sh "docker build -t ${IMAGE_NAME} ."
                 sh "docker stop ${CONTAINER_NAME} 2> /dev/null || true"
-                sh "docker rm -f ${CONTAINER_NAME} 2> /dev/null || true "
+                sh "docker rm -f ${CONTAINER_NAME} 2> /dev/null || true"
             }
         }
         stage('deploy'){

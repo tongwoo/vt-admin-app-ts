@@ -9,3 +9,12 @@ declare module '*.png'
 declare module '*.js'
 
 
+interface Number {
+    toDecimal(precision?: number): number
+}
+
+interface String{
+    asDateTime(format?: string): string
+    asDate(format?: string): string
+    asTime(format?: string): string
+}

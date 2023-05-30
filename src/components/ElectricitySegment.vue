@@ -1,9 +1,7 @@
 <!--
-功能：尖峰平谷时段背景+标签展示
-作者：wutong
-日期：2023-05-28
+尖峰平谷时段
 -->
-<templatevfo>
+<template>
     <div class="electricity-segment" :style="boundsStyle">
         <ul class="segment-names">
             <li v-for="(item,i) in segmentNames" :key="i" class="segment-name" :style="{left:item.x+'%',backgroundColor:item.color}">
@@ -12,7 +10,7 @@
         </ul>
         <div class="segment-color" :style="segmentStyle"></div>
     </div>
-</templatevfo>
+</template>
 
 <script lang="ts">
 export default {
@@ -33,17 +31,20 @@ interface Segment {
 
 //属性
 const props = withDefaults(defineProps<{
-    //边界距离 上右下左
+    //边界
     bounds: [number, number, number, number]
-    //长度，每整个小时=24 每半个小时=48 如果用于图表可能需要设置成长度-1
-    length?: number,
+    //间隔长度，多少分钟为一段 1小时=60 半小时=30
+    interval?: number,
+    //一共多少分钟
+    minutes?: number,
     //时段
     segments: Segment[],
 }>(), {
     bounds: () => {
         return [0, 0, 0, 0]
     },
-    length: 24,
+    interval: 60,
+    minutes: 1440,
     segments: () => {
         return []
     }
@@ -105,17 +106,7 @@ const calcColor = (name: string, opacity: number = 1) => {
  * 计算时间所占的百分比
  */
 const calcPercent = (time: string) => {
-    const length = props.length <= 24 ? timeToHours(time) : timeToMinutes(time)
-    return length / props.length * 100
-}
-
-/**
- * 将时间字符串转换成小时数
- * @param time 时间，示例 08:30
- */
-const timeToHours = (time: string) => {
-    const [hour, minute] = [...time.split(':')]
-    return parseInt(hour) + parseInt(minute) / 60
+    return (timeToMinutes(time) / props.interval) / (props.minutes / props.interval) * 100
 }
 
 /**

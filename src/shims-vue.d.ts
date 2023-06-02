@@ -10,11 +10,12 @@ declare module '*.js'
 
 
 interface Number {
-    toDecimal(precision?: number): number
+    asDecimal(precision?: number): number
 }
 
 interface String{
     asDateTime(format?: string): string
     asDate(format?: string): string
     asTime(format?: string): string
+    toNumeric(): number
 }

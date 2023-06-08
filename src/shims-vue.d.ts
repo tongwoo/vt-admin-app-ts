@@ -7,6 +7,7 @@ declare module '*.vue' {
 
 declare module '*.png'
 declare module '*.js'
+declare module '*.key'
 
 
 interface Number {

@@ -7,19 +7,16 @@ import {ResponseCode} from '@/types/built-in'
  */
 export function httpErrorHandler(response: any) {
     //判断是否是服务端响应异常
-    if (!(
-        Object.prototype.hasOwnProperty.call(response, 'headers') &&
-        Object.prototype.hasOwnProperty.call(response.headers, 'content-type')
-    )) {
-        if (Object.prototype.hasOwnProperty.call(response, 'message')) {
+    if (!(response?.headers?.['content-type'])) {
+        if (response?.message) {
             messageTip.error(response.message)
         } else {
-            messageTip.error('网络异常，请稍后重试')
+            messageTip.error('网络异常')
         }
         return
     }
     const code = response.data.code
-    const isJson = response.headers['content-type'].includes('application/json')
+    const isJson = response.headers['content-type']?.includes('application/json')
     const messageExists = document.querySelector('.is-message-box') !== null
     if (response.status === 404 || isJson && code === ResponseCode.NOT_FOUND) {
         messageTip.error('页面不存在')
@@ -54,6 +51,6 @@ export function httpErrorHandler(response: any) {
     } else if (response?.message) {
         messageTip.error(response.message)
     } else {
-        messageTip.error('网络异常，请稍后重试')
+        messageTip.error('发生了未知错误')
     }
 }

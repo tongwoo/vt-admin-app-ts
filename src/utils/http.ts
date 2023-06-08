@@ -39,7 +39,7 @@ http.interceptors.response.use(
         response.isOk = true
         if (response.headers['content-type'].includes('application/json')) {
             //重命名 msg 为 message
-            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
+            if (response.data?.msg !== undefined) {
                 response.data.message = response.data.msg
                 delete response.data.msg
             }
@@ -75,14 +75,14 @@ http.interceptors.response.use(
             }
             return Promise.reject(error.response)
         }
-        if (Object.prototype.hasOwnProperty.call(response, 'headers') && response.headers['content-type'].includes('application/json')) {
+        if (response?.headers?.['content-type']?.includes('application/json')) {
             //重命名 msg 为 message
-            if (Object.prototype.hasOwnProperty.call(response.data, 'msg')) {
+            if (response.data?.msg !== undefined) {
                 response.data.message = response.data.msg
                 delete response.data.msg
             }
         }
-        return error.response
+        return Promise.reject(error.response)
     }
 )
 

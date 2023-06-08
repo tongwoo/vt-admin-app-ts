@@ -14,11 +14,11 @@
         </div>
         <div class="base-content">
             <router-view v-slot="{ Component, route }">
-                <transition name="el-fade-in" mode="out-in">
+                <!--<transition name="el-fade-in" mode="out-in">-->
                     <keep-alive :include="keepAliveComponents">
                         <component ref="viewComponent" v-if="!reload" :is="Component" :key="route.path"></component>
                     </keep-alive>
-                </transition>
+                <!--</transition>-->
             </router-view>
         </div>
     </div>

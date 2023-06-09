@@ -1,3 +1,5 @@
+import setting from "@/setting";
+
 /**
  * 构建控制台头部信息
  * @param color 颜色
@@ -10,8 +12,8 @@ export function buildConsoleHeadInfo(color: string) {
     const msn = ms < 10 ? '00' + ms : ms < 100 ? '0' + ms : ms
     const time = hours + ':' + minutes + ':' + date.getSeconds() + '.' + msn
     return {
-        content: `%cVT-ADMIN ${time}`,
-        style: `background:linear-gradient(90deg,#555 62px,${color} 62px);color:white;padding:0 6px;font-family:'consolas'`
+        content: `%c ${setting.name} %c ${time} `,
+        style: [`background-color:#444;color:white;padding:2px 0;`,`background-color:${color};color:white;padding:2px 0;`]
     }
 }
 
@@ -22,7 +24,7 @@ export function buildConsoleHeadInfo(color: string) {
 export function log(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#2d8cf0')
     for (const arg of args) {
-        console.log(content, style, arg)
+        console.log(content, ...style, arg)
     }
 }
 
@@ -33,7 +35,7 @@ export function log(...args: any[]): void {
 export function warn(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#e5953a')
     for (const arg of args) {
-        console.log(content, style, arg)
+        console.log(content, ...style, arg)
     }
 }
 
@@ -44,6 +46,6 @@ export function warn(...args: any[]): void {
 export function err(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#e5213f')
     for (const arg of args) {
-        console.log(content, style, arg)
+        console.log(content, ...style, arg)
     }
 }

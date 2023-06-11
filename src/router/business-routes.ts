@@ -1,7 +1,12 @@
 import BaseLayout from "@/views/layouts/base/BaseLayout.vue"
 import {RouteRecordRaw} from "vue-router"
+import KanbanBoard from '@/components/kanban/KanbanBoard.vue'
 
 const routes: RouteRecordRaw[] = [
+    {
+        path: '/kanban',
+        component: KanbanBoard,
+    },
     {
         path: '/',
         redirect: '/dashboard',

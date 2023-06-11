@@ -8,12 +8,13 @@ export function buildConsoleHeadInfo(color: string) {
     const date = new Date()
     const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
     const hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+    const seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
     const ms = date.getMilliseconds()
     const msn = ms < 10 ? '00' + ms : ms < 100 ? '0' + ms : ms
-    const time = hours + ':' + minutes + ':' + date.getSeconds() + '.' + msn
+    const time = hours + ':' + minutes + ':' + seconds + '.' + msn
     return {
         content: `%c ${setting.name} %c ${time} `,
-        style: [`background-color:#444;color:white;padding:2px 0;`,`background-color:${color};color:white;padding:2px 0;`]
+        style: [`background-color:#444;color:white;padding:2px 0;`, `background-color:${color};color:white;padding:2px 0;`]
     }
 }
 
@@ -23,9 +24,7 @@ export function buildConsoleHeadInfo(color: string) {
  */
 export function log(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#2d8cf0')
-    for (const arg of args) {
-        console.log(content, ...style, arg)
-    }
+    console.log(content, ...style, ...args)
 }
 
 /**

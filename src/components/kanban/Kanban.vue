@@ -1,7 +1,32 @@
 <script setup lang="ts">
-import {computed, nextTick, onMounted, reactive, ref, Ref} from 'vue'
+import {computed, nextTick, onMounted, reactive, ref, Ref, watch} from 'vue'
 import {Point} from './kanban'
 import {log} from '@/utils/console'
+
+//属性
+const props = withDefaults(defineProps<{
+    //是否显示工具栏
+    showToolbar?: boolean,
+    //是否只有在事件目标为board或者view的时候才进行拖动
+    direct?: boolean,
+    //在刚开始渲染视图后是否让所有子元素出现在画面中
+    fit?: boolean,
+}>(), {
+    showToolbar: true,
+    direct: true,
+    fit: true,
+})
+
+onMounted(() => {
+    const boardRect = board.value!.getBoundingClientRect()
+    const viewRect = view.value!.getBoundingClientRect()
+
+    const scale = Math.min(viewRect.width / boardRect.width, viewRect.height / boardRect.height)
+    //scaleFromPoint({
+    //    x: boardRect.width / 2,
+    //    y: boardRect.height / 2
+    //}, scale > 1 ? -scale : scale)
+})
 
 const board: Ref<HTMLDivElement | undefined> = ref()
 const boardModel = reactive({
@@ -32,8 +57,10 @@ const viewModel: {
  * 鼠标按下
  */
 const onBoardMouseDown = (event: MouseEvent) => {
-    if (event.target !== board.value! && event.target !== view.value!) {
-        return
+    if (props.direct) {
+        if (event.target !== board.value! && event.target !== view.value!) {
+            return
+        }
     }
     boardModel.distance.x = event.pageX - viewModel.position.x
     boardModel.distance.y = event.pageY - viewModel.position.y
@@ -99,7 +126,6 @@ const scaleFromPoint = (point: Point, scale: number) => {
     if (viewModel.scale < 0.2) {
         viewModel.scale = 0.2
     }
-    slider.value!.value = viewModel.scale.toString()
     renderViewStyle()
     nextTick(() => {
         const viewNewRect = view.value!.getBoundingClientRect()
@@ -125,6 +151,7 @@ const onFullScreen = () => {
 
 /**
  * 缩放
+ * @param scale 缩放多少(不是缩放至多少)
  */
 const zoom = (scale: number) => {
     log(scale)
@@ -139,11 +166,21 @@ const zoom = (scale: number) => {
 }
 
 const slider: Ref<HTMLInputElement | undefined> = ref()
+
+watch(
+    () => viewModel.scale,
+    (scale) => {
+        if (props.showToolbar) {
+            slider.value!.value = scale.toString()
+        }
+    }
+)
 </script>
 
 <template>
     <div ref="board" class="kanban-board" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
-        <div class="kanban-toolbar">
+        <!--工具栏-->
+        <div v-if="showToolbar" class="kanban-toolbar">
             <button type="button" @click="zoom(-0.3)">
                 <i class="bi bi-dash"></i>
             </button>
@@ -155,6 +192,7 @@ const slider: Ref<HTMLInputElement | undefined> = ref()
                 <i class="bi bi-fullscreen"></i>
             </button>
         </div>
+        <!--视图-->
         <div ref="view" class="kanban-viewport">
             <slot></slot>
         </div>

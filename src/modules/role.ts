@@ -3,7 +3,7 @@
 */
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
-import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 import {getConfirmName, getConfirmClass} from "@/constants/confirm"
 import {PermissionModel} from './permission'
 
@@ -148,7 +148,7 @@ export function fetchRoles(params: Record<string, any> = {}): Promise<RoleModel[
  * 获取分页之后的角色列表
  * @param params 查询参数
  */
-export function fetchPageRoles(params: Record<string, any> = {}): Promise<PageResult<RoleModel>> {
+export function fetchPageRoles(params: Record<string, any> = {}): Promise<PaginationResult<RoleModel>> {
     return http.get(
         '/role/page-items',
         {

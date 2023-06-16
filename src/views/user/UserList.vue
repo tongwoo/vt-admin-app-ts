@@ -78,17 +78,17 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageUsers, removeUser, UserModel} from "@/modules/user"
-import setting from "@/setting"
-import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
-import {httpErrorHandler} from "@/utils/error"
-import {cloneObject} from "@/utils/object"
-import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
-import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
-import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
+import {fetchPageUsers, removeUser, UserModel} from '@/modules/user'
+import setting from '@/setting'
+import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
+import {httpErrorHandler} from '@/utils/error'
+import {cloneObject} from '@/utils/object'
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from 'element-plus'
+import {Refresh, Search, Plus, Delete} from '@element-plus/icons-vue'
+import {defineAsyncComponent, onMounted, reactive, ref, Ref} from 'vue'
 
 //用户表单
-const UserForm = defineAsyncComponent(() => import('./UserForm.vue'));
+const UserForm = defineAsyncComponent(() => import('./UserForm.vue'))
 
 onMounted(() => {
     //载入用户
@@ -98,15 +98,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: {
-    [index: string]: any,
-    //页码
-    page: number,
-    //用户名
-    username: string | null,
-    //姓名
-    name: string | null,
-} = reactive({
+const query: PaginationQuery<UserModel> = reactive({
     page: 1,
     username: null,
     name: null
@@ -294,7 +286,7 @@ const loadUsers = () => {
         if (result.items.length === 0 && query.page > 1) {
             query.page -= 1
             loadUsers()
-        }else{
+        } else {
             record.total = result.total
             record.items = result.items
         }

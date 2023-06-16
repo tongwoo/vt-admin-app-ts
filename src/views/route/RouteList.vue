@@ -70,14 +70,14 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageRoutes, generateRoutes, removeRoute, RouteModel, truncateRoutes} from "@/modules/route"
-import setting from "@/setting"
-import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
-import {httpErrorHandler} from "@/utils/error"
-import {cloneObject} from "@/utils/object"
-import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
-import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
-import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
+import {fetchPageRoutes, generateRoutes, removeRoute, RouteModel, truncateRoutes} from '@/modules/route'
+import setting from '@/setting'
+import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
+import {httpErrorHandler} from '@/utils/error'
+import {cloneObject} from '@/utils/object'
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from 'element-plus'
+import {Refresh, Search, Plus, Delete} from '@element-plus/icons-vue'
+import {defineAsyncComponent, onMounted, reactive, ref, Ref} from 'vue'
 
 //路由表单
 const RouteForm = defineAsyncComponent(() => import('./RouteForm.vue'))
@@ -90,15 +90,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: {
-    [index: string]: any,
-    //页码
-    page: number,
-    //名称
-    name: string | null,
-    //路径
-    path: string | null,
-} = reactive({
+const query: PaginationQuery<RouteModel> = reactive({
     page: 1,
     name: null,
     path: null

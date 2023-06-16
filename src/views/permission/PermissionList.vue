@@ -42,7 +42,7 @@
 </template>
 <script lang="ts" setup>
 import moment from "moment"
-import {QueryParam, ID, RecordSet, NameValue, DialogOption, PageResult, Nullable} from "@/types/built-in.js"
+import {ID, RecordSet, NameValue, DialogOption, PaginationResult, Nullable} from "@/types/built-in.js"
 import {HttpResponse} from "@/utils/http"
 import {ref, reactive, Ref, onMounted, defineAsyncComponent} from "vue"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"

@@ -3,7 +3,7 @@
 */
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
-import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 
 /**
  * 权限模型
@@ -136,7 +136,7 @@ export function fetchPermissions(params: Record<string, any> = {}): Promise<Perm
  * 获取分页之后的权限列表
  * @param params 查询参数
  */
-export function fetchPagePermissions(params: Record<string, any> = {}): Promise<PageResult<PermissionModel>> {
+export function fetchPagePermissions(params: Record<string, any> = {}): Promise<PaginationResult<PermissionModel>> {
     return http.get(
         '/permission/page-items',
         {

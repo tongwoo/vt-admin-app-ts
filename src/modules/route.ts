@@ -1,6 +1,6 @@
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from '@/utils/http'
-import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 
 /**
  * 路由模型
@@ -148,7 +148,7 @@ export function fetchRoutes(params: Record<string, any> = {}): Promise<RouteMode
  * 获取分页之后的路由列表
  * @param params 查询参数
  */
-export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PageResult<RouteModel>> {
+export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PaginationResult<RouteModel>> {
     return http.get(
         '/route/page-items',
         {

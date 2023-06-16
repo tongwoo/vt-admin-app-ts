@@ -83,7 +83,7 @@
 import {getConfirms} from "@/constants/confirm"
 import {fetchPageRoles, removeRole, RoleModel} from "@/modules/role"
 import setting from "@/setting"
-import {DialogOption, ID, RecordSet} from "@/types/built-in.js"
+import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
 import {httpErrorHandler} from "@/utils/error"
 import {cloneObject} from "@/utils/object"
 import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
@@ -103,15 +103,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: {
-    [index: string]: any,
-    //页码
-    page: number,
-    //角色名称
-    name: string | null,
-    //角色描述
-    description: string | null,
-} = reactive({
+const query: PaginationQuery<RoleModel> = reactive({
     page: 1,
     name: null,
     description: null,

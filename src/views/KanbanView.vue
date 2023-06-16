@@ -7,7 +7,7 @@ import Login from '@/views/Login.vue'
 
 <template>
     <kanban>
-        <login></login>
+        <el-button type="primary" v-for="(item,i) in 2000" :key="i">测试</el-button>
     </kanban>
 </template>
 

@@ -57,10 +57,8 @@ const viewModel: {
  * 鼠标按下
  */
 const onBoardMouseDown = (event: MouseEvent) => {
-    if (props.direct) {
-        if (event.target !== board.value! && event.target !== view.value!) {
-            return
-        }
+    if (props.direct && event.target !== board.value! && event.target !== view.value!) {
+        return
     }
     boardModel.distance.x = event.pageX - viewModel.position.x
     boardModel.distance.y = event.pageY - viewModel.position.y

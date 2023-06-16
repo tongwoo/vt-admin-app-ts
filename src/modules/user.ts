@@ -3,7 +3,7 @@
 */
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
-import {ID, NameValue, PageResult, Model} from "@/types/built-in"
+import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 import {getUserStateName, getUserStateClass} from "@/enums/user-state"
 import {RoleModel} from "@/modules/role"
 
@@ -156,7 +156,7 @@ export function fetchUsers(params: Record<string, any> = {}): Promise<UserModel[
  * 获取分页之后的用户列表
  * @param params 查询参数
  */
-export function fetchPageUsers(params: Record<string, any> = {}): Promise<PageResult<UserModel>> {
+export function fetchPageUsers(params: Record<string, any> = {}): Promise<PaginationResult<UserModel>> {
     return http.get(
         '/user/page-items',
         {

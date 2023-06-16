@@ -40,7 +40,7 @@ export type ID = string | number
 /**
  * 分页结果
  */
-export interface PageResult<T = any> {
+export interface PaginationResult<T = any> {
     total: number,
     items: T[]
 }
@@ -48,9 +48,9 @@ export interface PageResult<T = any> {
 /**
  * 查询参数
  */
-export interface QueryParam {
-    [key: string]: any,
-
+export type PaginationQuery<T> = PropNullable<Partial<T>> & {
+    [index: string]: any,
+    //页码
     page: number
 }
 
@@ -107,6 +107,6 @@ export interface MenuItem {
 /**
  * 允许T的属性值为null
  */
-export type Nullable<T> = {
+export type PropNullable<T> = {
     [P in keyof T]: T[P] extends Array<any> ? T[P] : T[P] | null
 }

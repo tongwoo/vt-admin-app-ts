@@ -105,8 +105,8 @@ export interface MenuItem {
 }
 
 /**
- * 允许T的属性值为null
+ * 允许T的属性值为null, 但是如果类型为数组则不允许为null, E为可以不用为null的联合
  */
-export type PropNullable<T> = {
-    [P in keyof T]: T[P] extends Array<any> ? T[P] : T[P] | null
+export type PropNullable<T, E = void> = {
+    [P in keyof T]: P extends E ? T[P] : T[P] extends Array<any> ? T[P] : T[P] | null
 }

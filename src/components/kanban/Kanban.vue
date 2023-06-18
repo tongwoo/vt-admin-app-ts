@@ -1,3 +1,25 @@
+<template>
+    <div ref="boardDom" class="kanban-board" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
+        <!--工具栏-->
+        <div v-if="showToolbar" class="kanban-toolbar">
+            <button type="button" @click="zoom(-0.3)">
+                <i class="bi bi-dash"></i>
+            </button>
+            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.1" value="1" @input="zoom(Number($event.target.value)-viewport.scale)">
+            <button type="button" @click="zoom(0.3)">
+                <i class="bi bi-plus"></i>
+            </button>
+            <button type="button" @click="onFullScreen">
+                <i class="bi bi-fullscreen"></i>
+            </button>
+        </div>
+        <!--视图-->
+        <div ref="viewportDom" class="kanban-viewport">
+            <slot></slot>
+        </div>
+    </div>
+</template>
+
 <script setup lang="ts">
 import {computed, nextTick, onMounted, reactive, ref, Ref, watch} from 'vue'
 import {Point} from './kanban'
@@ -18,8 +40,8 @@ const props = withDefaults(defineProps<{
 })
 
 onMounted(() => {
-    const boardRect = board.value!.getBoundingClientRect()
-    const viewRect = view.value!.getBoundingClientRect()
+    const boardRect = boardDom.value!.getBoundingClientRect()
+    const viewRect = viewportDom.value!.getBoundingClientRect()
 
     const scale = Math.min(viewRect.width / boardRect.width, viewRect.height / boardRect.height)
     //scaleFromPoint({
@@ -28,8 +50,8 @@ onMounted(() => {
     //}, scale > 1 ? -scale : scale)
 })
 
-const board: Ref<HTMLDivElement | undefined> = ref()
-const boardModel = reactive({
+const boardDom: Ref<HTMLDivElement | undefined> = ref()
+const board = reactive({
     //位置
     position: {
         x: 0,
@@ -41,8 +63,8 @@ const boardModel = reactive({
         y: 0
     }
 })
-const view: Ref<HTMLDivElement | undefined> = ref()
-const viewModel: {
+const viewportDom: Ref<HTMLDivElement | undefined> = ref()
+const viewport: {
     position: Point,
     scale: number
 } = reactive({
@@ -57,11 +79,11 @@ const viewModel: {
  * 鼠标按下
  */
 const onBoardMouseDown = (event: MouseEvent) => {
-    if (props.direct && event.target !== board.value! && event.target !== view.value!) {
+    if (props.direct && event.target !== boardDom.value! && event.target !== viewportDom.value!) {
         return
     }
-    boardModel.distance.x = event.pageX - viewModel.position.x
-    boardModel.distance.y = event.pageY - viewModel.position.y
+    board.distance.x = event.pageX - viewport.position.x
+    board.distance.y = event.pageY - viewport.position.y
     document.addEventListener('mousemove', onDocumentMouseMove)
     document.addEventListener('mouseup', onDocumentMouseUp)
 }
@@ -72,16 +94,9 @@ const onBoardMouseDown = (event: MouseEvent) => {
 const onDocumentMouseMove = (event: MouseEvent) => {
     event.preventDefault()
     event.stopPropagation()
-    viewModel.position.x = event.pageX - boardModel.distance.x
-    viewModel.position.y = event.pageY - boardModel.distance.y
+    viewport.position.x = event.pageX - board.distance.x
+    viewport.position.y = event.pageY - board.distance.y
     renderViewStyle()
-}
-
-/**
- * 渲染view样式，此处直接操作dom样式是为了解决在使用响应式带来的卡顿问题
- */
-const renderViewStyle = () => {
-    view.value!.style.transform = `translate(${viewModel.position.x}px,${viewModel.position.y}px) scale(${viewModel.scale})`
 }
 
 /**
@@ -108,31 +123,42 @@ const onBoardWheel = (event: WheelEvent) => {
 }
 
 /**
+ * 渲染view样式，此处直接操作dom样式是为了解决在使用响应式带来的卡顿问题
+ */
+const renderViewStyle = () => {
+    viewportDom.value!.style.transform = `translate(${viewport.position.x}px,${viewport.position.y}px) scale(${viewport.scale})`
+}
+
+/**
  * 丛指定位置进行缩放
+ * @param point 位置
+ * @param scale 缩放多少倍数，整数为放大，负数为缩小
  */
 const scaleFromPoint = (point: Point, scale: number) => {
-    const boardRect = board.value!.getBoundingClientRect()
-    const viewRect = view.value!.getBoundingClientRect()
-    const scaleX = point.x - boardRect.x - viewModel.position.x
-    const scaleY = point.y - boardRect.y - viewModel.position.y
+    const boardRect = boardDom.value!.getBoundingClientRect()
+    const viewRect = viewportDom.value!.getBoundingClientRect()
+    const scaleX = point.x - boardRect.x - viewport.position.x
+    const scaleY = point.y - boardRect.y - viewport.position.y
     const distanceXRatio = scaleX / viewRect.width
     const distanceYRatio = scaleY / viewRect.height
-    viewModel.scale += scale
-    if (viewModel.scale > 5) {
-        viewModel.scale = 5
+    viewport.scale += scale
+    if (viewport.scale > 5) {
+        viewport.scale = 5
     }
-    if (viewModel.scale < 0.2) {
-        viewModel.scale = 0.2
+    if (viewport.scale < 0.2) {
+        viewport.scale = 0.2
     }
+    //重新渲染一下用于获取最新尺寸
     renderViewStyle()
     nextTick(() => {
-        const viewNewRect = view.value!.getBoundingClientRect()
-        viewModel.position.x -= viewNewRect.width * distanceXRatio - scaleX
-        viewModel.position.y -= viewNewRect.height * distanceYRatio - scaleY
+        const viewNewRect = viewportDom.value!.getBoundingClientRect()
+        viewport.position.x -= viewNewRect.width * distanceXRatio - scaleX
+        viewport.position.y -= viewNewRect.height * distanceYRatio - scaleY
         renderViewStyle()
     })
 }
 
+//是否处于全屏
 const isFullScreen = ref(false)
 
 /**
@@ -141,7 +167,7 @@ const isFullScreen = ref(false)
 const onFullScreen = () => {
     isFullScreen.value = !isFullScreen.value
     if (isFullScreen.value) {
-        board.value!.requestFullscreen()
+        boardDom.value!.requestFullscreen()
     } else {
         document.exitFullscreen()
     }
@@ -153,7 +179,7 @@ const onFullScreen = () => {
  */
 const zoom = (scale: number) => {
     log(scale)
-    const boardRect = board.value!.getBoundingClientRect()
+    const boardRect = boardDom.value!.getBoundingClientRect()
     scaleFromPoint(
         {
             x: boardRect.width / 2,
@@ -163,39 +189,46 @@ const zoom = (scale: number) => {
     )
 }
 
+//放大/缩小的滑杆
 const slider: Ref<HTMLInputElement | undefined> = ref()
 
 watch(
-    () => viewModel.scale,
+    () => viewport.scale,
     (scale) => {
         if (props.showToolbar) {
             slider.value!.value = scale.toString()
         }
     }
 )
-</script>
 
-<template>
-    <div ref="board" class="kanban-board" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
-        <!--工具栏-->
-        <div v-if="showToolbar" class="kanban-toolbar">
-            <button type="button" @click="zoom(-0.3)">
-                <i class="bi bi-dash"></i>
-            </button>
-            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.1" value="1" @input="zoom(Number($event.target.value)-viewModel.scale)">
-            <button type="button" @click="zoom(0.3)">
-                <i class="bi bi-plus"></i>
-            </button>
-            <button type="button" @click="onFullScreen">
-                <i class="bi bi-fullscreen"></i>
-            </button>
-        </div>
-        <!--视图-->
-        <div ref="view" class="kanban-viewport">
-            <slot></slot>
-        </div>
-    </div>
-</template>
+/**
+ * 显示全部内容
+ */
+const fitViewport = () => {
+    const boardRect = boardDom.value!.getBoundingClientRect()
+    const elements = [...viewportDom.value!.querySelectorAll('div')]
+    const size = {
+        width: 0,
+        height: 0
+    }
+    viewportDom.value!.querySelectorAll('div').forEach((element, i) => {
+        const bound = element.getBoundingClientRect()
+        const width = bound.left + bound.width - boardRect.left
+        const height = bound.top + bound.height - boardRect.top
+        if (width > size.width) {
+            size.width = width
+        }
+        if (height > size.height) {
+            size.height = height
+        }
+    })
+    console.log(size)
+}
+
+onMounted(()=>{
+    fitViewport()
+})
+</script>
 
 <style scoped lang="scss">
 .kanban-board {
@@ -206,9 +239,9 @@ watch(
 
     .kanban-toolbar {
         position: absolute;
-        right: 10px;
+        left: 50%;
         bottom: 10px;
-        //transform: translateX(-50%);
+        transform: translateX(-50%);
         background-color: white;
         border-radius: 3px;
         padding: 8px;

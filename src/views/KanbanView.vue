@@ -7,7 +7,8 @@ import Login from '@/views/Login.vue'
 
 <template>
     <kanban>
-        <el-button type="primary" v-for="(item,i) in 2000" :key="i">测试</el-button>
+        <div style="background: red;width: 100px;height: 300px;position: absolute;left: 100px;top: 150px"></div>
+        <div style="background: red;width: 100px;height: 100px;position: absolute;left: 400px;top: 350px"></div>
     </kanban>
 </template>
 

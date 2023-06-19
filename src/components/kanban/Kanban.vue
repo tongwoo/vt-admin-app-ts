@@ -1,7 +1,7 @@
 <template>
     <div ref="boardDom" class="kanban-board" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
         <!--工具栏-->
-        <div v-if="showToolbar" class="kanban-toolbar">
+        <div v-if="showToolbar" class="kanban-toolbar" @mousedown.stop>
             <button type="button" @click="zoom(-0.3)">
                 <i class="bi bi-dash"></i>
             </button>
@@ -12,6 +12,9 @@
             </button>
             <button type="button" @click="onFullScreen">
                 <i class="bi bi-fullscreen"></i>
+            </button>
+            <button type="button" @click="fitViewport">
+                <i class="bi bi-map"></i>
             </button>
         </div>
         <!--视图-->
@@ -193,7 +196,7 @@ watch(
 /**
  * 显示全部内容
  */
-const fitViewport = window.aa = () => {
+const fitViewport = () => {
     const boardRect = boardDom.value!.getBoundingClientRect()
     const viewportRect = viewportDom.value!.getBoundingClientRect()
     const size = getChildrenSize()
@@ -203,16 +206,18 @@ const fitViewport = window.aa = () => {
     const realHeight = scaleHeight / viewport.scale
     const scale = Math.min(boardRect.width / realWidth, boardRect.height / realHeight)
     //先缩放
-    viewport.position.x = -size.xmin
-    viewport.position.y = -size.ymin
+    viewport.position.x = -size.xmin + boardRect.left
+    viewport.position.y = -size.ymin + boardRect.top
     viewport.scale = scale
     renderViewStyle()
     //后调整位置
     {
-        //const size = getChildrenSize()
-        //viewport.position.x += (boardRect.width - size.xmax - size.xmin) / 2 - size.xmin
-        //viewport.position.y += (boardRect.height - size.ymax - size.ymin) / 2 - size.ymin
-        //renderViewStyle()
+        const size = getChildrenSize()
+        const scaleWidth = size.xmax - size.xmin
+        const scaleHeight = size.ymax - size.ymin
+        viewport.position.x += (boardRect.width - scaleWidth) / 2 - size.xmin + boardRect.left
+        viewport.position.y += (boardRect.height - scaleHeight) / 2 - size.ymin + boardRect.top
+        renderViewStyle()
     }
 }
 

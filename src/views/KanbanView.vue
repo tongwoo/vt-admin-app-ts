@@ -20,7 +20,7 @@ const items = [...new Array(112)].map(() => {
 
 <template>
     <div class="a">
-        <kanban :show-toolbar="false">
+        <kanban :show-toolbar="true">
             <div class="lay" v-for="(item,i) in items" :key="i"
                  :style="{background: 'red',width: item.width+'px',height: item.height+'px',position: 'absolute',left: item.x+'px',top: item.y+'px',opacity:item.opacity,backgroundColor:item.color}"></div>
                 <!--<div data-v-2fde8394="" class="lay"-->
@@ -36,9 +36,9 @@ const items = [...new Array(112)].map(() => {
 .a {
     width: 900px;
     height: 600px;
-    //position: absolute;
-    //top: 100px;
-    //left: 200px;
+    position: absolute;
+    top: 100px;
+    left: 200px;
 }
 .s{
     width: 2px;

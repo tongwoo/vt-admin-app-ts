@@ -5,7 +5,8 @@
             <button type="button" @click="zoom(-0.3)">
                 <i class="bi bi-dash"></i>
             </button>
-            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.1" value="1" @input="zoom(Number($event.target.value)-viewport.scale)">
+            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.1" value="1"
+                   @input="zoom(Number($event.target.value)-viewport.scale)">
             <button type="button" @click="zoom(0.3)">
                 <i class="bi bi-plus"></i>
             </button>
@@ -35,19 +36,8 @@ const props = withDefaults(defineProps<{
     fit?: boolean,
 }>(), {
     showToolbar: true,
-    direct: true,
+    direct: false,
     fit: true,
-})
-
-onMounted(() => {
-    const boardRect = boardDom.value!.getBoundingClientRect()
-    const viewRect = viewportDom.value!.getBoundingClientRect()
-
-    const scale = Math.min(viewRect.width / boardRect.width, viewRect.height / boardRect.height)
-    //scaleFromPoint({
-    //    x: boardRect.width / 2,
-    //    y: boardRect.height / 2
-    //}, scale > 1 ? -scale : scale)
 })
 
 const boardDom: Ref<HTMLDivElement | undefined> = ref()
@@ -178,7 +168,6 @@ const onFullScreen = () => {
  * @param scale 缩放多少(不是缩放至多少)
  */
 const zoom = (scale: number) => {
-    log(scale)
     const boardRect = boardDom.value!.getBoundingClientRect()
     scaleFromPoint(
         {
@@ -204,28 +193,80 @@ watch(
 /**
  * 显示全部内容
  */
-const fitViewport = () => {
+const fitViewport = window.aa = () => {
     const boardRect = boardDom.value!.getBoundingClientRect()
-    const elements = [...viewportDom.value!.querySelectorAll('div')]
+    const viewportRect = viewportDom.value!.getBoundingClientRect()
     const size = {
-        width: 0,
-        height: 0
+        xmin: 0,
+        ymin: 0,
+        xmax: 0,
+        ymax: 0
     }
-    viewportDom.value!.querySelectorAll('div').forEach((element, i) => {
-        const bound = element.getBoundingClientRect()
-        const width = bound.left + bound.width - boardRect.left
-        const height = bound.top + bound.height - boardRect.top
-        if (width > size.width) {
-            size.width = width
+    const children = viewportDom.value!.children
+    for (let i = 0; i < children.length; i++) {
+        const bound = children[i].getBoundingClientRect()
+        if (i === 0 || bound.left < size.xmin) {
+            size.xmin = bound.left
         }
-        if (height > size.height) {
-            size.height = height
+        if (i === 0 || bound.top < size.ymin) {
+            size.ymin = bound.top
         }
-    })
-    console.log(size)
+        if (i === 0 || bound.right > size.xmax) {
+            size.xmax = bound.right
+        }
+        if (i === 0 || bound.bottom > size.ymax) {
+            size.ymax = bound.bottom
+        }
+    }
+    //size.xmin -= boardRect.left
+    //size.xmax -= boardRect.left
+    const scaleWidth = size.xmax - size.xmin
+    const scaleHeight = size.ymax - size.ymin
+    const realWidth = scaleWidth / viewport.scale
+    const realHeight = scaleHeight / viewport.scale
+    const scale = Math.min(boardRect.width / realWidth, boardRect.height / realHeight)
+    // viewport.position.x = 0
+    viewport.position.x = -size.xmin;
+    // viewport.position.y = 0
+    viewport.position.y = -size.ymin;
+    viewport.scale = scale
+    log(size)
+    log(viewportRect)
+    renderViewStyle()
+    {
+
+        const size = {
+            xmin: 0,
+            ymin: 0,
+            xmax: 0,
+            ymax: 0
+        }
+        const children = viewportDom.value!.children
+        for (let i = 0; i < children.length; i++) {
+            const bound = children[i].getBoundingClientRect()
+            if (i === 0 || bound.left < size.xmin) {
+                size.xmin = bound.left
+            }
+            if (i === 0 || bound.top < size.ymin) {
+                size.ymin = bound.top
+            }
+            if (i === 0 || bound.right > size.xmax) {
+                size.xmax = bound.right
+            }
+            if (i === 0 || bound.bottom > size.ymax) {
+                size.ymax = bound.bottom
+            }
+        }
+        const scaleWidth = size.xmax - size.xmin
+        const scaleHeight = size.ymax - size.ymin
+        viewport.position.x += (boardRect.width - scaleWidth) / 2 - size.xmin;
+        // viewport.position.y = 0
+        viewport.position.y += (boardRect.height - scaleHeight) / 2 - size.ymin;
+        renderViewStyle()
+    }
 }
 
-onMounted(()=>{
+onMounted(() => {
     fitViewport()
 })
 </script>

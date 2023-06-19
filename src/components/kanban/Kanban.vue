@@ -196,6 +196,30 @@ watch(
 const fitViewport = window.aa = () => {
     const boardRect = boardDom.value!.getBoundingClientRect()
     const viewportRect = viewportDom.value!.getBoundingClientRect()
+    const size = getChildrenSize()
+    const scaleWidth = size.xmax - size.xmin
+    const scaleHeight = size.ymax - size.ymin
+    const realWidth = scaleWidth / viewport.scale
+    const realHeight = scaleHeight / viewport.scale
+    const scale = Math.min(boardRect.width / realWidth, boardRect.height / realHeight)
+    //先缩放
+    viewport.position.x = -size.xmin
+    viewport.position.y = -size.ymin
+    viewport.scale = scale
+    renderViewStyle()
+    //后调整位置
+    {
+        //const size = getChildrenSize()
+        //viewport.position.x += (boardRect.width - size.xmax - size.xmin) / 2 - size.xmin
+        //viewport.position.y += (boardRect.height - size.ymax - size.ymin) / 2 - size.ymin
+        //renderViewStyle()
+    }
+}
+
+/**
+ * 获取子元素尺寸
+ */
+const getChildrenSize = () => {
     const size = {
         xmin: 0,
         ymin: 0,
@@ -218,52 +242,7 @@ const fitViewport = window.aa = () => {
             size.ymax = bound.bottom
         }
     }
-    //size.xmin -= boardRect.left
-    //size.xmax -= boardRect.left
-    const scaleWidth = size.xmax - size.xmin
-    const scaleHeight = size.ymax - size.ymin
-    const realWidth = scaleWidth / viewport.scale
-    const realHeight = scaleHeight / viewport.scale
-    const scale = Math.min(boardRect.width / realWidth, boardRect.height / realHeight)
-    // viewport.position.x = 0
-    viewport.position.x = -size.xmin;
-    // viewport.position.y = 0
-    viewport.position.y = -size.ymin;
-    viewport.scale = scale
-    log(size)
-    log(viewportRect)
-    renderViewStyle()
-    {
-
-        const size = {
-            xmin: 0,
-            ymin: 0,
-            xmax: 0,
-            ymax: 0
-        }
-        const children = viewportDom.value!.children
-        for (let i = 0; i < children.length; i++) {
-            const bound = children[i].getBoundingClientRect()
-            if (i === 0 || bound.left < size.xmin) {
-                size.xmin = bound.left
-            }
-            if (i === 0 || bound.top < size.ymin) {
-                size.ymin = bound.top
-            }
-            if (i === 0 || bound.right > size.xmax) {
-                size.xmax = bound.right
-            }
-            if (i === 0 || bound.bottom > size.ymax) {
-                size.ymax = bound.bottom
-            }
-        }
-        const scaleWidth = size.xmax - size.xmin
-        const scaleHeight = size.ymax - size.ymin
-        viewport.position.x += (boardRect.width - scaleWidth) / 2 - size.xmin;
-        // viewport.position.y = 0
-        viewport.position.y += (boardRect.height - scaleHeight) / 2 - size.ymin;
-        renderViewStyle()
-    }
+    return size
 }
 
 onMounted(() => {

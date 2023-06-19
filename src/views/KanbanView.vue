@@ -2,7 +2,7 @@
 
 import Kanban from '@/components/kanban/Kanban.vue'
 
-const items = [...new Array(1112)].map(() => {
+const items = [...new Array(112)].map(() => {
     const r = Math.ceil(Math.random() * 254)
     const g = Math.ceil(Math.random() * 254)
     const b = Math.ceil(Math.random() * 254)

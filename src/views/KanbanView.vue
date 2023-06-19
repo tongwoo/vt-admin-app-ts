@@ -3,6 +3,7 @@
 import Kanban from '@/components/kanban/Kanban.vue'
 import Login from '@/views/Login.vue'
 import Dashboard from '@/views/Dashboard.vue'
+import ChartGuide from '@/views/example/ChartGuide.vue'
 
 const items = [...new Array(112)].map(() => {
     const r = Math.ceil(Math.random() * 254)
@@ -30,18 +31,15 @@ const items = [...new Array(112)].map(() => {
                 <!--<div data-v-2fde8394="" class="lay"-->
                 <!--     style="background: rgb(101, 216, 72); width: 400px; height: 400px; position: absolute; left: 700px; top: 400px; opacity: 0.678759;"></div>-->
             <dashboard></dashboard>
+            <dashboard></dashboard>
+            <chart-guide></chart-guide>
         </kanban>
-        <div class="s"></div>
     </div>
 </template>
 
 <style scoped lang="scss">
 .a {
-    width: 900px;
     height: 600px;
-    position: absolute;
-    top: 100px;
-    left: 200px;
 }
 .s{
     width: 2px;

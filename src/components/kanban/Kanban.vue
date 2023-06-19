@@ -1,16 +1,15 @@
 <template>
-    <div ref="boardDom" class="kanban-board" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
+    <div ref="boardDom" class="kanban-board" @fullscreenchange="onBoardFullscreenChange" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
         <!--工具栏-->
         <div v-if="showToolbar" class="kanban-toolbar" @mousedown.stop>
             <button type="button" @click="zoom(-0.3)">
                 <i class="bi bi-dash"></i>
             </button>
-            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.1" value="1"
-                   @input="zoom(Number($event.target.value)-viewport.scale)">
+            <input ref="slider" type="range" :min="0.1" :max="5" :step="0.01" value="1" @input="zoom(Number($event.target.value)-viewport.scale)">
             <button type="button" @click="zoom(0.3)">
                 <i class="bi bi-plus"></i>
             </button>
-            <button type="button" @click="onFullScreen">
+            <button type="button" @click="fullscreen">
                 <i class="bi bi-arrows-fullscreen"></i>
             </button>
             <button type="button" @click="fitViewport">
@@ -106,12 +105,13 @@ const onDocumentMouseUp = (event: MouseEvent) => {
  * 鼠标滚轮滚动
  */
 const onBoardWheel = (event: WheelEvent) => {
+    const boardRect = boardDom.value!.getBoundingClientRect()
     scaleFromPoint(
         {
-            x: event.pageX,
-            y: event.pageY,
+            x: event.pageX - boardRect.x,
+            y: event.pageY - boardRect.y,
         },
-        event.deltaY > 0 ? 0.1 : -0.1
+        event.deltaY > 0 ? 0.02 : -0.02
     )
 }
 
@@ -130,8 +130,8 @@ const renderViewStyle = () => {
 const scaleFromPoint = (point: Point, scale: number) => {
     const boardRect = boardDom.value!.getBoundingClientRect()
     const viewRect = viewportDom.value!.getBoundingClientRect()
-    const scaleX = point.x - boardRect.x - viewport.position.x
-    const scaleY = point.y - boardRect.y - viewport.position.y
+    const scaleX = point.x - viewport.position.x
+    const scaleY = point.y - viewport.position.y
     const distanceXRatio = scaleX / viewRect.width
     const distanceYRatio = scaleY / viewRect.height
     viewport.scale += scale
@@ -157,13 +157,20 @@ const isFullScreen = ref(false)
 /**
  * 全屏
  */
-const onFullScreen = () => {
+const fullscreen = () => {
     isFullScreen.value = !isFullScreen.value
     if (isFullScreen.value) {
         boardDom.value!.requestFullscreen()
     } else {
         document.exitFullscreen()
     }
+}
+
+/**
+ * 全屏
+ */
+const onBoardFullscreenChange = (event: Event) => {
+    fitViewport()
 }
 
 /**

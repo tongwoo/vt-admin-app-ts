@@ -11,10 +11,10 @@
                 <i class="bi bi-plus"></i>
             </button>
             <button type="button" @click="onFullScreen">
-                <i class="bi bi-fullscreen"></i>
+                <i class="bi bi-arrows-fullscreen"></i>
             </button>
             <button type="button" @click="fitViewport">
-                <i class="bi bi-map"></i>
+                <i class="bi bi-aspect-ratio"></i>
             </button>
         </div>
         <!--视图-->

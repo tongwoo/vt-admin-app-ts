@@ -38,11 +38,14 @@ const props = withDefaults(defineProps<{
     fit?: boolean,
     //是否自动缩放到合适的视野
     autoFit?: boolean,
+    //是否自动缩放到合适的视野
+    viewDraggable?: boolean,
 }>(), {
     showToolbar: true,
     direct: false,
     fit: true,
     autoFit: false,
+    viewDraggable: true,
 })
 
 const boardDom: Ref<HTMLDivElement | undefined> = ref()
@@ -74,6 +77,9 @@ const viewport: {
  * 鼠标按下
  */
 const onBoardMouseDown = (event: MouseEvent) => {
+    if (!props.viewDraggable) {
+        return
+    }
     if (props.direct && event.target !== boardDom.value! && event.target !== viewportDom.value!) {
         return
     }

@@ -2,17 +2,17 @@
     <div ref="boardDom" class="kanban-board" @fullscreenchange="onBoardFullscreenChange" @wheel.stop.prevent="onBoardWheel" @mousedown.stop="onBoardMouseDown">
         <!--工具栏-->
         <div v-if="showToolbar" class="kanban-toolbar" @mousedown.stop>
-            <button type="button" @click="zoom(-0.3)">
+            <button type="button" @click="zoom(-0.3)" title="缩小">
                 <i class="bi bi-dash"></i>
             </button>
             <input ref="slider" type="range" :min="0.1" :max="5" :step="0.01" value="1" @input="zoom(Number($event.target.value)-viewport.scale)">
-            <button type="button" @click="zoom(0.3)">
+            <button type="button" @click="zoom(0.3)" title="放大">
                 <i class="bi bi-plus"></i>
             </button>
-            <button type="button" @click="fullscreen">
+            <button type="button" @click="fullscreen" title="全屏">
                 <i class="bi bi-arrows-fullscreen"></i>
             </button>
-            <button type="button" @click="fitViewport">
+            <button type="button" @click="fitViewport" title="缩放到合适视野">
                 <i class="bi bi-aspect-ratio"></i>
             </button>
         </div>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, reactive, ref, Ref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, Ref, watch} from 'vue'
 import {Point} from './kanban'
 import {log} from '@/utils/console'
 
@@ -34,12 +34,15 @@ const props = withDefaults(defineProps<{
     showToolbar?: boolean,
     //是否只有在事件目标为board或者view的时候才进行拖动
     direct?: boolean,
-    //在刚开始渲染视图后是否让所有子元素出现在画面中
+    //在刚开始渲染视图后是否自动缩放到合适的视野
     fit?: boolean,
+    //是否自动缩放到合适的视野
+    autoFit?: boolean,
 }>(), {
     showToolbar: true,
     direct: false,
     fit: true,
+    autoFit: false,
 })
 
 const boardDom: Ref<HTMLDivElement | undefined> = ref()
@@ -257,8 +260,30 @@ const getChildrenSize = () => {
     return size
 }
 
-onMounted(() => {
+let fitObserver: ResizeObserver | null = null;
+
+/**
+ * 自动缩放处理
+ */
+const fitResizer = (e: any) => {
     fitViewport()
+}
+onMounted(() => {
+    if (props.fit) {
+        fitViewport()
+    }
+    if (props.autoFit) {
+        log(boardDom.value!)
+        fitObserver = new ResizeObserver(fitResizer)
+        fitObserver.observe(boardDom.value!)
+    }
+})
+
+onUnmounted(() => {
+    if (props.autoFit) {
+        fitObserver?.disconnect()
+        fitObserver = null;
+    }
 })
 </script>
 

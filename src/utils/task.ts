@@ -12,7 +12,9 @@ export function debounce(executor: (...args: any[]) => void, delay = 1000): { de
         }
     }
     return {
+        //销毁
         destroy,
+        //回调
         handler(...args: any[]) {
             destroy()
             taskId = window.setTimeout(executor, delay, ...args)

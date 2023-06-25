@@ -12,7 +12,7 @@
     <div ref="chartContainer" :style="style" class="chart-container">
         <div ref="chartInstance" class="chart-instance"></div>
         <transition name="el-fade-in" mode="out-in">
-            <div v-show="showTable" class="chart-table">
+            <div v-if="showTable" class="chart-table">
                 <el-table :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
                     <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
                         <template v-slot="{row}">{{ row[i] }}</template>

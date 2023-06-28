@@ -55,3 +55,10 @@ String.prototype.asTime = function (format: string = 'HH:mm:ss'): string {
 String.prototype.toNumeric = function (): number {
     return parseFloat(this.toString());
 }
+
+/**
+ * 转换成moment
+ */
+String.prototype.toMoment = function (): moment.Moment {
+    return moment(this.toString())
+}

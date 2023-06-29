@@ -33,9 +33,7 @@ export function log(...args: any[]): void {
  */
 export function warn(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#e5953a')
-    for (const arg of args) {
-        console.log(content, ...style, arg)
-    }
+    console.log(content, ...style, ...args)
 }
 
 /**
@@ -44,7 +42,5 @@ export function warn(...args: any[]): void {
  */
 export function err(...args: any[]): void {
     const {content, style} = buildConsoleHeadInfo('#e5213f')
-    for (const arg of args) {
-        console.log(content, ...style, arg)
-    }
+    console.log(content, ...style, ...args)
 }

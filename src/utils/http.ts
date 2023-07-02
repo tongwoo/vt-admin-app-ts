@@ -37,7 +37,7 @@ http.interceptors.request.use((request) => {
 http.interceptors.response.use(
     function (response) {
         response.isOk = true
-        if (response.headers['content-type'].includes('application/json')) {
+        if (response.headers['content-type']?.includes('application/json')) {
             //重命名 msg 为 message
             if (response.data?.msg !== undefined) {
                 response.data.message = response.data.msg

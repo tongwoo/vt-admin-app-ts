@@ -6,6 +6,10 @@ import {ResponseCode} from '@/types/built-in'
  * HTTP错误处理
  */
 export function httpErrorHandler(response: any) {
+    if (typeof response === 'string') {
+        messageTip.error(response)
+        return
+    }
     //判断是否是服务端响应异常
     if (!(response?.headers?.['content-type'])) {
         if (response?.message) {

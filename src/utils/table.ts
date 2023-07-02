@@ -16,8 +16,8 @@ export function useSpanTable<T>(fieldName: keyof T) {
     const map = new Map<string, { span: number, handled: boolean }>()
 
     /**
-     * 过滤提取
-     * @param items 要提取的集合
+     * 过滤提取，需要保证数据里的同名字段是连续的
+     * @param items 要提取的集合，即：对数据列表进行过滤处理并记录连续同名的字段有多少行，用于合并处理
      */
     const filter = (items: T[]) => {
         map.clear()
@@ -39,7 +39,7 @@ export function useSpanTable<T>(fieldName: keyof T) {
     }
 
     /**
-     * 合并，需要保证数据里的同名字段是连续的
+     * 用于给 el-table#span-method 调用的合并方法
      */
     const span = (prop: SpanTableProps<T>) => {
         //表格组件有bug，会整体的调用2次合并，所以此处判断如果又出现

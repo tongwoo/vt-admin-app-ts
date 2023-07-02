@@ -2,9 +2,9 @@ pipeline{
     agent any
     environment{
         IMAGE_NAME = 'vt-admin-app'
-        CONTAINER_NAME = 'vt-admin-app-test'
+        CONTAINER_NAME = 'vt-admin-app'
         ACCESS_PORT = '65000'
-        BASE_API = 'http://127.0.0.1:21231'
+        BASE_API = 'http://127.0.0.1:8080/'
     }
     stages{
         stage('build'){

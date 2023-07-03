@@ -80,7 +80,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {getConfirms} from "@/constants/confirm"
 import {fetchPageRoles, removeRole, RoleModel} from "@/modules/role"
 import setting from "@/setting"
 import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'

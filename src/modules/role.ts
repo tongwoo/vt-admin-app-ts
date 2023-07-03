@@ -4,8 +4,8 @@
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
-import {getConfirmName, getConfirmClass} from "@/constants/confirm"
 import {PermissionModel} from './permission'
+import {findConfirmClass, findConfirmName} from '@/enums/confirm'
 
 /**
  * 角色模型
@@ -46,9 +46,9 @@ export function dataToRoleModel(data: any): RoleModel {
         //是否内置
         isBuiltIn: data.isBuiltIn,
         //是否内置名称
-        isBuiltInName: getConfirmName(data.isBuiltIn),
+        isBuiltInName: findConfirmName(data.isBuiltIn),
         //是否内置样式Class
-        isBuiltInClass: getConfirmClass(data.isBuiltIn)
+        isBuiltInClass: findConfirmClass(data.isBuiltIn)
     }
 }
 

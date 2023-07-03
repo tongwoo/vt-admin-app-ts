@@ -34,7 +34,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {USER_STATE_ENABLED} from "@/constants/user-state"
+import {UserState} from "@/enums/user-state"
 import {ref, reactive, onMounted, Ref} from "vue"
 import {
     ElMessage as messageTip,
@@ -44,9 +44,9 @@ import {
 import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {getUserStates} from "@/enums/user-state"
+import {useUserStates} from "@/enums/user-state"
 import {createUser, updateUser, fetchUser} from "@/modules/user"
-import {ID, NameValue} from "@/types/built-in"
+import {ID, NameValue, PropNullable} from '@/types/built-in'
 import {useRoles} from "@/modules/role"
 
 //事件
@@ -64,7 +64,7 @@ const props = withDefaults(
 )
 
 //状态列表
-const states: Ref<NameValue[]> = ref(getUserStates())
+const states: Ref<NameValue[]> = useUserStates()
 //角色列表
 const {roles} = useRoles()
 
@@ -78,31 +78,31 @@ const tip: Ref<string | null> = ref(null)
 //表单模型接口
 interface UserFormModel {
     //主键
-    id: ID | null,
+    id: ID,
     //用户名
-    username: string | null,
+    username: string,
     //登录密码
-    password: string | null,
+    password: string,
     //姓名
-    name: string | null,
+    name: string,
     //头像
-    avatar: string | null,
+    avatar: string,
     //状态
-    state: number | null,
+    state: UserState,
     //上次登录时间
-    loginTime: string | null,
+    loginTime: string,
     //角色ID列表
     roleIds: ID[]
 }
 
 //表单模型
-const model: UserFormModel = reactive({
+const model: PropNullable<UserFormModel> = reactive({
     id: null,
     username: null,
     password: null,
     name: null,
     avatar: null,
-    state: USER_STATE_ENABLED,
+    state: UserState.Enabled,
     loginTime: null,
     roleIds: [] as ID[]
 })

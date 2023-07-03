@@ -1,4 +1,5 @@
 import {NameValue} from "@/types/built-in"
+import {Ref, ref} from 'vue'
 
 /**
  * 状态
@@ -17,8 +18,8 @@ export enum UserState {
 /**
  * 获得状态列表
  */
-export function getUserStates(): NameValue[] {
-    return [
+export function useUserStates(): Ref<NameValue[]> {
+    return ref([
         {
             name: '启用',
             value: UserState.Enabled
@@ -27,7 +28,7 @@ export function getUserStates(): NameValue[] {
             name: '禁用',
             value: UserState.Disabled
         }
-    ]
+    ])
 }
 
 /**
@@ -35,7 +36,7 @@ export function getUserStates(): NameValue[] {
  * @param value 值
  */
 export function getUserStateName(value: any): string | null {
-    return getUserStates().find(item => item.value === value)?.name ?? null
+    return useUserStates().value.find(item => item.value === value)?.name ?? null
 }
 
 /**

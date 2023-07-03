@@ -101,10 +101,10 @@ export interface HttpResponse<T = any> {
 }
 
 /**
- * 从响应头中获取附件名称
+ * 从响应头中获取文件名
  * @param headers 响应头
  */
-export function getAttachmentName(headers: AxiosResponseHeaders): string {
+export function parseResponseFilename(headers: AxiosResponseHeaders): string {
     const disposition = headers['content-disposition']
     if (!disposition) {
         return '未命名'

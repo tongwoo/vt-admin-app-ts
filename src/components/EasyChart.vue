@@ -7,9 +7,13 @@
      2022-07-20 修复在使用其他类型series无法重置尺寸的问题
      2022-09-30 重构部分代码
      2023-04-10 增加防抖
+     2023-07-04 增加没数据的提示插槽
 -->
 <template>
     <div ref="chartContainer" :style="style" class="chart-container">
+        <slot name="empty" v-if="!hasDara">
+            <div class="message-tip">暂无数据</div>
+        </slot>
         <div ref="chartInstance" class="chart-instance"></div>
         <transition name="el-fade-in" mode="out-in">
             <div v-if="showTable" class="chart-table">
@@ -31,7 +35,7 @@ import {PieDataItemOption} from 'echarts/types/src/chart/pie/PieSeries'
 import {CategoryAxisBaseOption} from 'echarts/types/src/coord/axisCommonTypes'
 import {ref, reactive, onMounted, watch, onUnmounted, nextTick, computed, Ref} from 'vue'
 import * as echarts from 'echarts'
-import {debounce} from "@/utils/task";
+import {debounce} from '@/utils/task'
 
 //图表实例
 let instance: EChartsType | null = null
@@ -55,6 +59,19 @@ const props = withDefaults(defineProps<{
 }>(), {
     resizeAnimation: true,
     showTable: false
+})
+
+//是否有数据
+const hasDara = computed(() => {
+    if (props.option?.series?.length === 0) {
+        return false
+    }
+    for (const s of props.option?.series) {
+        if (s?.data?.length === 0) {
+            return false
+        }
+    }
+    return true
 })
 
 //样式
@@ -183,7 +200,7 @@ const observerResize = () => {
     tableResize()
 }
 
-const {destroy,handler} = debounce(observerResize, 300)
+const {destroy, handler} = debounce(observerResize, 300)
 
 defineExpose({
     instance,
@@ -231,13 +248,30 @@ onUnmounted(() => {
     bottom: 0;
     left: 0;
 
-    .chart-instance {
-        position: absolute !important;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+    .message-tip {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 99;
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        font-size: 14px;
+        color: #8d8d8d;
+        background: #f8f8f8;
+        border: 1px solid #bebebe;
+        padding: 10px 20px;
+        line-height: 1;
     }
+
+
+}
+
+.chart-instance {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .chart-table {

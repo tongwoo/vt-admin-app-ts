@@ -17,18 +17,19 @@
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
             </div>
             <div class="footer-container">
-                <el-button @click="onCancelBtnClick"><i class="bi bi-x-circle-fill el-icon--left"></i>取消</el-button>
-                <el-button type="primary" @click="onSaveBtnClick" :loading="loading" native-type="submit"><i class="bi bi-check-circle-fill el-icon--left"></i>保存</el-button>
+                <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
+                <el-button type="primary" :icon="CircleCheckFilled" @click="onSaveBtnClick" :loading="loading" native-type="submit">保存</el-button>
             </div>
         </el-form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, reactive} from "vue"
-import {ElMessage as messageTip, FormInstance} from "element-plus"
-import {httpErrorHandler} from "@/utils/error"
-import {http} from "@/utils/http"
+import {ref, reactive} from 'vue'
+import {ElMessage as messageTip, FormInstance, FormRules} from 'element-plus'
+import {httpErrorHandler} from '@/utils/error'
+import {http} from '@/utils/http'
+import {CircleCheckFilled, CircleCloseFilled} from '@element-plus/icons-vue'
 
 //事件
 const emit = defineEmits(['close'])
@@ -48,7 +49,7 @@ const model = reactive({
     confirmPassword: null
 })
 //验证规则
-const rules = {
+const rules: FormRules = {
     oldPassword: [
         {
             type: 'string',

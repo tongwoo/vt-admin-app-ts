@@ -35,7 +35,7 @@ export function useUserStates(): Ref<NameValue[]> {
  * 获取状态名称
  * @param value 值
  */
-export function getUserStateName(value: any): string | null {
+export function findUserStateName(value: any): string | null {
     return useUserStates().value.find(item => item.value === value)?.name ?? null
 }
 
@@ -43,7 +43,7 @@ export function getUserStateName(value: any): string | null {
  * 获取状态样式Class
  * @param value 值
  */
-export function getUserStateClass(value: any): string | null {
+export function findUserStateClass(value: any): string | null {
     if (value === UserState.Enabled) {
         return 'state-enabled'
     } else if (value === UserState.Disabled) {

@@ -4,7 +4,7 @@
 import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
-import {getUserStateName, getUserStateClass} from "@/enums/user-state"
+import {findUserStateName, findUserStateClass} from "@/enums/user-state"
 import {RoleModel} from "@/modules/role"
 
 /**
@@ -50,9 +50,9 @@ export function dataToUserModel(data: any): UserModel {
         //状态
         state: data.state,
         //状态名称
-        stateName: getUserStateName(data.state),
+        stateName: findUserStateName(data.state),
         //状态样式Class
-        stateClass: getUserStateClass(data.state),
+        stateClass: findUserStateClass(data.state),
         //上次登录时间
         loginTime: data.loginTime,
         //角色

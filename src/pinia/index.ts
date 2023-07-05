@@ -2,6 +2,18 @@ import {createPinia, PiniaPluginContext} from 'pinia'
 
 export const pinia = createPinia()
 
+/**
+ * Pinia插件 - 解决无法在setup方式中调用$reset，必须首先调用
+ */
+pinia.use(({ store }) => {
+    const initialState = JSON.parse(JSON.stringify(store.$state));
+    debugger
+    store.$reset = () => {
+        store.$patch(initialState);
+    }
+})
+
+
 //需要排除不恢复的state
 const excludes = [
     {
@@ -26,15 +38,5 @@ pinia.use((context: PiniaPluginContext) => {
     })
     return {
         ...data
-    }
-})
-
-/**
- * Pinia插件 - 解决无法在setup方式中调用$reset
- */
-pinia.use(({ store }) => {
-    const initialState = JSON.parse(JSON.stringify(store.$state));
-    store.$reset = () => {
-        store.$patch(initialState);
     }
 })

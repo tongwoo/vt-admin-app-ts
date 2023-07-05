@@ -360,6 +360,7 @@ const orders: Order[] = [...new Array(8)].map((item) => {
                 font-size: 20px;
                 font-weight: bold;
                 color: #2f3a47;
+                line-height: 1;
             }
 
             .flow {

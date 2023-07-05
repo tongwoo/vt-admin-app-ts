@@ -4,10 +4,6 @@ import KanbanView from "@/views/KanbanView.vue";
 
 const routes: RouteRecordRaw[] = [
     {
-        path: '/kanban',
-        component: KanbanView,
-    },
-    {
         path: '/',
         redirect: '/dashboard',
         component: BaseLayout,

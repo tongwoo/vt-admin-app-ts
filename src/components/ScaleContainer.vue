@@ -60,7 +60,6 @@ const style = computed(() => {
 
 //重新调整大小
 const resize = () => {
-    console.log('resize')
     const parent = container.value!.parentElement!
     const width = parent.clientWidth / props.width
     const height = parent.clientHeight / props.height

@@ -6,12 +6,12 @@
      2023-04-28 增加slot
 -->
 <template>
-    <span v-if="props.isJump && isNumber" key="count"><span ref="el"></span><slot></slot></span>
-    <span v-else key="text">{{ content }}<slot></slot></span>
+    <span v-if="props.isJump && isNumber" class="optional-text" key="count"><span ref="el"></span><slot></slot></span>
+    <span v-else class="optional-text" key="text">{{ content }}<slot></slot></span>
 </template>
 
 <script lang="ts" setup>
-import {computed, nextTick, onMounted, ref, watch} from "vue"
+import {computed, nextTick, onMounted, ref, watch} from 'vue'
 import {CountUp} from 'countup.js'
 
 //属性
@@ -118,3 +118,12 @@ onMounted(() => {
     initCountUp()
 })
 </script>
+
+<style lang="scss" scoped>
+.optional-text, .optional-text * {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+</style>

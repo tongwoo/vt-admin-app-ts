@@ -63,15 +63,13 @@ const props = withDefaults(defineProps<{
 
 //是否有数据
 const hasDara = computed(() => {
-    if (props.option?.series?.length === 0) {
-        return false
+    let xAxis
+    if (Array.isArray(props.option?.xAxis)) {
+        xAxis = props.option.xAxis?.[0]
+    }else{
+        xAxis = props.option.xAxis
     }
-    for (const s of props.option?.series) {
-        if (s?.data?.length === 0) {
-            return false
-        }
-    }
-    return true
+    return xAxis?.data?.length !== 0
 })
 
 //样式

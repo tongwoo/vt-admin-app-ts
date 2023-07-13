@@ -51,10 +51,10 @@ http.interceptors.response.use(
                     ResponseCode.FORBIDDEN,
                     ResponseCode.NOT_FOUND
                 ]
+                if (response.data.code === ResponseCode.UNAUTHORIZED && setting.auth.redirect) {
+                    window.location.href = '/#/login'
+                }
                 if (codes.indexOf(response.data.code) !== -1) {
-                    if (setting.auth.redirect) {
-                        window.location.href = '/#/login'
-                    }
                     return Promise.reject(response)
                 }
             }
@@ -69,10 +69,10 @@ http.interceptors.response.use(
         response.isOk = false
         //未授权、未登录、404 直接抛异常交由 catch 处理
         const codes = [401, 403, 404]
+        if (response.status === 401 && setting.auth.redirect) {
+            window.location.href = '/#/login'
+        }
         if (codes.indexOf(response.status) !== -1) {
-            if (setting.auth.redirect) {
-                window.location.href = '/#/login'
-            }
             return Promise.reject(error.response)
         }
         if (response?.headers?.['content-type']?.includes('application/json')) {

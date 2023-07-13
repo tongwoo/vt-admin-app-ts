@@ -3,16 +3,25 @@
     font-weight: 100;
     src: url("../fonts/din-light.otf");
 }
+
 @font-face {
     font-family: "din";
     font-weight: normal;
     src: url("../fonts/din-regula.otf");
 }
+
 @font-face {
     font-family: "din";
     font-weight: bold;
     src: url("../fonts/din-bold.otf");
 }
+
+@font-face {
+    font-family: "din";
+    font-weight: 900;
+    src: url("../fonts/din-black.otf");
+}
+
 @font-face {
     font-family: "led";
     src: url("../fonts/sa-digital-number.ttf");
@@ -21,4 +30,21 @@
 @font-face {
     font-family: "bebas-neue";
     src: url("../fonts/bebas-neue.otf");
+}
+
+@font-face {
+    font-family: "avanti";
+    src: url("../fonts/avanti.ttf");
+}
+
+@font-face {
+    font-family: "expansiva";
+    font-weight: normal;
+    src: url("../fonts/expansiva.otf");
+}
+
+@font-face {
+    font-family: "expansiva";
+    font-weight: bold;
+    src: url("../fonts/expansiva-bold.otf");
 }

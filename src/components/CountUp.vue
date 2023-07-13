@@ -3,7 +3,7 @@
 日期：2022-08-03
 -->
 <template>
-    <span ref="el"></span>
+    <span class="count-up" ref="el"></span>
 </template>
 
 <script lang="ts" setup>
@@ -63,3 +63,12 @@ onMounted(() => {
     countUp.start()
 })
 </script>
+
+<style lang="scss" scoped>
+.count-up, .count-up * {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+</style>

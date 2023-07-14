@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<{
     item: MenuItemObject,
     showIcon?: boolean
 }>(), {
-    showIcon: false
+    showIcon: true
 })
 
 </script>

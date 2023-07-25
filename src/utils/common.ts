@@ -20,7 +20,7 @@ export function isNumeric(data: any): boolean {
  * @param nameField 要提取的名称字段
  * @param valueField 要提取的值字段
  */
-export function mergeProps<T extends Record<string, any>>(items: T[], nameField: keyof T, valueField: keyof T) {
+export function mergeProps<T extends Record<string, any>>(items: T[], nameField: keyof T, valueField: keyof T): (T & { firstValue: T[typeof valueField], lastValue: T[typeof valueField] })[] {
     const segments: Array<T & { firstValue: T[typeof valueField], lastValue: T[typeof valueField] }> = []
     for (let i = 0; i < items.length; i++) {
         const item = items[i]

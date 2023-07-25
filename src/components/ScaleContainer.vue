@@ -1,7 +1,9 @@
 <!--
 功能：缩放容器
 日期：2022-05-20
-说明：放入此组件
+说明：将要被缩放的内容放入此组件插槽中，父元素需要设置overflow:hidden
+更新：
+     2023-07-25 增加always选项
 -->
 <template>
     <div class="scale-container" ref="container" @wheel="wheel" :style="style" @mousedown="mouseDown">
@@ -29,11 +31,14 @@ const props = withDefaults(defineProps<{
     //是否允许拖动
     allowDrag?: boolean,
     //是否允许滚轮缩放
-    allowZoom?: boolean
+    allowZoom?: boolean,
+    //是否总是进行缩放，设为false则只有父容器小于实际宽高的时候才进行缩放
+    always?: boolean
 }>(), {
     percent: 1,
     allowDrag: false,
-    allowZoom: false
+    allowZoom: false,
+    always: true
 })
 
 //当前缩放率
@@ -52,8 +57,12 @@ const style = computed(() => {
     if (props.allowZoom) {
         properties.cursor = 'zoom'
     }
-    if (scale.value < 1) {
+    if (props.always) {
         properties.transform = `scale(${scale.value})`
+    } else {
+        if (scale.value < 1) {
+            properties.transform = `scale(${scale.value})`
+        }
     }
     return properties
 })

@@ -28,6 +28,7 @@
         "moment": "^2.29.4",
         "nprogress": "^0.2.0",
         "pinia": "^2.1.4",
+        "pinyin-match": "^1.2.4",
         "qs": "^6.11.2",
         "vue": "^3.3.4",
         "vue-cropper": "^1.0.9",

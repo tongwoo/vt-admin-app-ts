@@ -31,7 +31,7 @@
 </template>
 <script lang="ts" setup>
 import {ref, reactive, onMounted, Ref} from "vue"
-import {ID, Nullable} from "@/types/built-in.js"
+import {ID, PropNullable} from "@/types/built-in"
 import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
 import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"

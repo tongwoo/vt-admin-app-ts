@@ -7,7 +7,6 @@ export const pinia = createPinia()
  */
 pinia.use(({ store }) => {
     const initialState = JSON.parse(JSON.stringify(store.$state));
-    debugger
     store.$reset = () => {
         store.$patch(initialState);
     }

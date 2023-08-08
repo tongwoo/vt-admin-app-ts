@@ -6,6 +6,7 @@ import {ResponseCode} from '@/types/built-in'
  * HTTP错误处理
  */
 export function httpErrorHandler(response: any) {
+    messageTip.closeAll()
     if (typeof response === 'string') {
         messageTip.error(response)
         return
@@ -27,31 +28,11 @@ export function httpErrorHandler(response: any) {
     } else if (response.status === 500 || isJson && code === ResponseCode.ERROR) {
         messageTip.error('服务器异常')
     } else if (response.status === 401 || isJson && code === ResponseCode.UNAUTHORIZED) {
-        if (messageExists) {
-            return
-        }
-        messageBox.confirm('登录凭证已经过期，是否重新登录？', '提示', {
-            type: 'warning',
-            confirmButtonText: '重新登录',
-            cancelButtonText: '否'
-        }).then(() => {
-            return router.replace('/login')
-        }).catch(() => {
-            //...
-        })
+        messageTip.error('凭证已过期')
+        router.replace('/login')
     } else if (response.status === 403 || isJson && code === ResponseCode.FORBIDDEN) {
-        if (messageExists) {
-            return
-        }
-        messageBox.confirm('没有权限，是否重新登录？', '提示', {
-            type: 'warning',
-            confirmButtonText: '重新登录',
-            cancelButtonText: '否'
-        }).then(() => {
-            return router.replace('/login')
-        }).catch(() => {
-            //...
-        })
+        messageTip.error('无权限')
+        router.replace('/login')
     } else if (response?.message) {
         messageTip.error(response.message)
     } else {

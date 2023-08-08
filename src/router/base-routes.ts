@@ -1,4 +1,4 @@
-import BaseLayout from "@/views/layouts/base/BaseLayout.vue"
+import NoneLayout from "@/views/layouts/NoneLayout.vue"
 import {RouteRecordRaw} from "vue-router"
 
 const routes: RouteRecordRaw[] = [
@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: '/error',
-        component: BaseLayout,
+        component: NoneLayout,
         meta: {
             title: '异常'
         },

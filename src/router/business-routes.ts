@@ -1,6 +1,5 @@
 import BaseLayout from "@/views/layouts/base/BaseLayout.vue"
 import {RouteRecordRaw} from "vue-router"
-import KanbanView from "@/views/KanbanView.vue";
 
 const routes: RouteRecordRaw[] = [
     {

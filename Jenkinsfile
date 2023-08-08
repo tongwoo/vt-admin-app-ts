@@ -4,7 +4,7 @@ pipeline{
         IMAGE_NAME = 'vt-admin-app'
         CONTAINER_NAME = 'vt-admin-app'
         ACCESS_PORT = '65000'
-        BASE_API = 'http://127.0.0.1:8080/'
+        BASE_API = 'http://host.docker.internal:8080/'
     }
     stages{
         stage('build'){
@@ -33,7 +33,7 @@ pipeline{
         }
         stage('deploy'){
             steps{
-                sh "docker run -d --restart on-failure -e TZ=Asia/Shanghai -e API=${BASE_API} -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "docker run --add-host=host.docker.internal:host-gateway -d --restart on-failure -e TZ=Asia/Shanghai -e API=${BASE_API} -p ${ACCESS_PORT}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
     }

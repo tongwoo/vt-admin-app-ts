@@ -70,7 +70,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageRoutes, generateRoutes, removeRoute, RouteModel, truncateRoutes} from '@/modules/route'
+import {fetchPageRoutes, generateRoutes, removeRoute, Route, truncateRoutes} from '@/modules/route'
 import setting from '@/setting'
 import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
 import {httpErrorHandler} from '@/utils/error'
@@ -90,7 +90,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: PaginationQuery<RouteModel> = reactive({
+const query: PaginationQuery<Route> = reactive({
     page: 1,
     name: null,
     path: null
@@ -171,7 +171,7 @@ const onCreateBtnClick = () => {
  * 修改按钮点击
  * @param row 当前行数据
  */
-const onModifyBtnClick = (row: RouteModel) => {
+const onModifyBtnClick = (row: Route) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
     maintain.dialog.title = '修改路由'
@@ -181,7 +181,7 @@ const onModifyBtnClick = (row: RouteModel) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const onRemoveBtnClick = (row: RouteModel) => {
+const onRemoveBtnClick = (row: Route) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -278,7 +278,7 @@ const onTruncateBtnClick = () => {
 /**
  * 记录集
  */
-const record: RecordSet<RouteModel> = reactive({
+const record: RecordSet<Route> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -293,7 +293,7 @@ const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const onSelectionChange = (records: RouteModel[]) => {
+const onSelectionChange = (records: Route[]) => {
     record.selected = records
 }
 

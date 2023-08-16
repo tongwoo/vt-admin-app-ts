@@ -5,12 +5,12 @@ import {onMounted, Ref, ref} from "vue"
 import {http, HttpResponse} from "@/utils/http"
 import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 import {findUserStateName, findUserStateClass} from "@/enums/user-state"
-import {RoleModel} from "@/modules/role"
+import {Role} from "@/modules/role"
 
 /**
  * 用户模型
  */
-export interface UserModel extends Model {
+export interface User extends Model {
     //用户名
     username: string,
     //登录密码
@@ -28,14 +28,14 @@ export interface UserModel extends Model {
     //上次登录时间
     loginTime: string,
     //用户角色
-    roles?: RoleModel[]
+    roles?: Role[]
 }
 
 /**
  * 将原始数据转换成用户模型
  * @param data 要转换的数据
  */
-export function dataToUserModel(data: any): UserModel {
+export function dataToUser(data: any): User {
     return {
         //ID
         id: data.id,
@@ -119,7 +119,7 @@ export function removeUser(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取用户详情
  * @param id 主键ID
  */
-export function fetchUser(id: ID): Promise<UserModel | null> {
+export function fetchUser(id: ID): Promise<User | null> {
     return http.get(
         '/user/detail?id=' + id
     ).then((response) => {
@@ -127,7 +127,7 @@ export function fetchUser(id: ID): Promise<UserModel | null> {
             return null
         }
         const data = response.data.data
-        return dataToUserModel(data.item)
+        return dataToUser(data.item)
     })
 }
 
@@ -135,7 +135,7 @@ export function fetchUser(id: ID): Promise<UserModel | null> {
  * 获取用户列表
  * @param params 查询参数
  */
-export function fetchUsers(params: Record<string, any> = {}): Promise<UserModel[]> {
+export function fetchUsers(params: Record<string, any> = {}): Promise<User[]> {
     return http.get(
         '/user/items',
         {
@@ -147,7 +147,7 @@ export function fetchUsers(params: Record<string, any> = {}): Promise<UserModel[
             return []
         }
         return result.data.items.map((item: any) => {
-            return dataToUserModel(item)
+            return dataToUser(item)
         })
     })
 }
@@ -156,7 +156,7 @@ export function fetchUsers(params: Record<string, any> = {}): Promise<UserModel[
  * 获取分页之后的用户列表
  * @param params 查询参数
  */
-export function fetchPageUsers(params: Record<string, any> = {}): Promise<PaginationResult<UserModel>> {
+export function fetchPageUsers(params: Record<string, any> = {}): Promise<PaginationResult<User>> {
     return http.get(
         '/user/page-items',
         {
@@ -164,13 +164,13 @@ export function fetchPageUsers(params: Record<string, any> = {}): Promise<Pagina
         }
     ).then((response) => {
         const data = {
-            items: [] as UserModel[],
+            items: [] as User[],
             total: 0
         }
         if (response.isOk) {
             const result = response.data
             data.items = result.data.items.map((item: any) => {
-                return dataToUserModel(item)
+                return dataToUser(item)
             })
             data.total = result.data.total
         }
@@ -183,7 +183,7 @@ export function fetchPageUsers(params: Record<string, any> = {}): Promise<Pagina
  * @param preload 是否预先加载
  */
 export function useUsers(preload: boolean = true) {
-    const users: Ref<UserModel[]> = ref([])
+    const users: Ref<User[]> = ref([])
     const loadUsers = (...args: any[]) => {
         return fetchUsers(...args).then((items) => {
             return users.value = items

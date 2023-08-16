@@ -22,7 +22,7 @@ const locale = computed(() => {
 onMounted(() => {
     //移除加载元素
     const loadElement = document.querySelector('.loading-mask')
-    if (loadElement instanceof Element) {
+    if (loadElement) {
         document.body.removeChild(loadElement)
     }
 })

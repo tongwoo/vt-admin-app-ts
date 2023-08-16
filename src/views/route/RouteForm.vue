@@ -33,7 +33,7 @@ import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import {usePermissions} from "@/modules/permission"
-import {createRoute, updateRoute, fetchRoute, RouteModel} from "@/modules/route"
+import {createRoute, updateRoute, fetchRoute, Route} from "@/modules/route"
 
 //事件
 const emit = defineEmits<{

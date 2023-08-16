@@ -1,6 +1,7 @@
 import {ElMessage as messageTip, ElMessageBox as messageBox} from 'element-plus'
 import router from '../router/index'
 import {ResponseCode} from '@/types/built-in'
+import setting from '@/setting'
 
 /**
  * HTTP错误处理
@@ -29,10 +30,14 @@ export function httpErrorHandler(response: any) {
         messageTip.error('服务器异常')
     } else if (response.status === 401 || isJson && code === ResponseCode.UNAUTHORIZED) {
         messageTip.error('凭证已过期')
-        router.replace('/login')
+        if (setting.auth.redirect) {
+            router.replace('/login')
+        }
     } else if (response.status === 403 || isJson && code === ResponseCode.FORBIDDEN) {
         messageTip.error('无权限')
-        router.replace('/login')
+        if (setting.auth.redirect) {
+            router.replace('/login')
+        }
     } else if (response?.message) {
         messageTip.error(response.message)
     } else {

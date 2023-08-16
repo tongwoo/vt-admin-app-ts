@@ -50,7 +50,7 @@ import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
 import {cloneObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
 import setting from "@/setting"
-import {PermissionModel, removePermission, fetchPagePermissions, fetchPermissionTree} from "@/modules/permission"
+import {Permission, removePermission, fetchPagePermissions, fetchPermissionTree} from "@/modules/permission"
 
 //权限表单
 const PermissionForm = defineAsyncComponent(() => import('./PermissionForm.vue'))
@@ -100,7 +100,7 @@ const onCreateBtnClick = () => {
 /**
  * 新增子权限按钮点击
  */
-const onNewBtnClick = (row: PermissionModel) => {
+const onNewBtnClick = (row: Permission) => {
     maintain.data = {
         clone: true,
         parentId: row.id
@@ -113,7 +113,7 @@ const onNewBtnClick = (row: PermissionModel) => {
  * 修改按钮点击
  * @param row 当前行数据
  */
-const onModifyBtnClick = (row: PermissionModel) => {
+const onModifyBtnClick = (row: Permission) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
     maintain.dialog.title = '修改权限'
@@ -123,7 +123,7 @@ const onModifyBtnClick = (row: PermissionModel) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const onRemoveBtnClick = (row: PermissionModel) => {
+const onRemoveBtnClick = (row: Permission) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -182,7 +182,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record: RecordSet<PermissionModel> = reactive({
+const record: RecordSet<Permission> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -197,7 +197,7 @@ const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const onSelectionChange = (records: PermissionModel[]) => {
+const onSelectionChange = (records: Permission[]) => {
     record.selected = records
 }
 

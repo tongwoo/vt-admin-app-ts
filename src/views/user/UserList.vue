@@ -78,7 +78,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageUsers, removeUser, UserModel} from '@/modules/user'
+import {fetchPageUsers, removeUser, User} from '@/modules/user'
 import setting from '@/setting'
 import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
 import {httpErrorHandler} from '@/utils/error'
@@ -98,7 +98,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: PaginationQuery<UserModel> = reactive({
+const query: PaginationQuery<User> = reactive({
     page: 1,
     username: null,
     name: null
@@ -179,7 +179,7 @@ const onCreateBtnClick = () => {
  * 修改按钮点击
  * @param row 当前行数据
  */
-const onModifyBtnClick = (row: UserModel) => {
+const onModifyBtnClick = (row: User) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
     maintain.dialog.title = '修改用户'
@@ -189,7 +189,7 @@ const onModifyBtnClick = (row: UserModel) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const onRemoveBtnClick = (row: UserModel) => {
+const onRemoveBtnClick = (row: User) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -248,7 +248,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record: RecordSet<UserModel> = reactive({
+const record: RecordSet<User> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -263,7 +263,7 @@ const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const onSelectionChange = (records: UserModel[]) => {
+const onSelectionChange = (records: User[]) => {
     record.selected = records
 }
 

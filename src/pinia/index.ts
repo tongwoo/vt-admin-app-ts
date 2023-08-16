@@ -1,14 +1,15 @@
 import {createPinia, PiniaPluginContext} from 'pinia'
+import {readAuthorization} from '@/utils/authorize'
 
 export const pinia = createPinia()
 
 /**
  * Pinia插件 - 解决无法在setup方式中调用$reset，必须首先调用
  */
-pinia.use(({ store }) => {
-    const initialState = JSON.parse(JSON.stringify(store.$state));
+pinia.use(({store}) => {
+    const initialState = JSON.parse(JSON.stringify(store.$state))
     store.$reset = () => {
-        store.$patch(initialState);
+        store.$patch(initialState)
     }
 })
 
@@ -32,6 +33,10 @@ pinia.use((context: PiniaPluginContext) => {
             delete data[item.property]
         }
     })
+    //在恢复用户数据的时候，从本地存储中取出授权信息（有些项目是需要关闭浏览器就要授权失效）
+    if (context.store.$id === 'user') {
+        data.authorization = readAuthorization()
+    }
     context.store.$subscribe((mutation, state) => {
         localStorage.setItem(mutation.storeId, JSON.stringify(state))
     })

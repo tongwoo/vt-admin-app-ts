@@ -8,7 +8,7 @@ import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 /**
  * 权限模型
  */
-export interface PermissionModel extends Model {
+export interface Permission extends Model {
     //父权限
     parentId: number,
     //权限名称
@@ -23,7 +23,7 @@ export interface PermissionModel extends Model {
  * 将原始数据转换成权限模型
  * @param data 要转换的数据
  */
-export function dataToPermissionModel(data: any): PermissionModel {
+export function dataToPermission(data: any): Permission {
     return {
         //原数据
         _: data,
@@ -99,7 +99,7 @@ export function removePermission(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取权限详情
  * @param id 主键ID
  */
-export function fetchPermission(id: ID): Promise<PermissionModel | null> {
+export function fetchPermission(id: ID): Promise<Permission | null> {
     return http.get(
         '/permission/detail?id=' + id
     ).then((response) => {
@@ -107,7 +107,7 @@ export function fetchPermission(id: ID): Promise<PermissionModel | null> {
             return null
         }
         const data = response.data.data
-        return dataToPermissionModel(data.item)
+        return dataToPermission(data.item)
     })
 }
 
@@ -115,7 +115,7 @@ export function fetchPermission(id: ID): Promise<PermissionModel | null> {
  * 获取权限列表
  * @param params 查询参数
  */
-export function fetchPermissions(params: Record<string, any> = {}): Promise<PermissionModel[]> {
+export function fetchPermissions(params: Record<string, any> = {}): Promise<Permission[]> {
     return http.get(
         '/permission/items',
         {
@@ -127,7 +127,7 @@ export function fetchPermissions(params: Record<string, any> = {}): Promise<Perm
             return []
         }
         return result.data.items.map((item: any) => {
-            return dataToPermissionModel(item)
+            return dataToPermission(item)
         })
     })
 }
@@ -136,7 +136,7 @@ export function fetchPermissions(params: Record<string, any> = {}): Promise<Perm
  * 获取分页之后的权限列表
  * @param params 查询参数
  */
-export function fetchPagePermissions(params: Record<string, any> = {}): Promise<PaginationResult<PermissionModel>> {
+export function fetchPagePermissions(params: Record<string, any> = {}): Promise<PaginationResult<Permission>> {
     return http.get(
         '/permission/page-items',
         {
@@ -145,12 +145,12 @@ export function fetchPagePermissions(params: Record<string, any> = {}): Promise<
     ).then((response) => {
         const result = response.data
         const data = {
-            items: [] as PermissionModel[],
+            items: [] as Permission[],
             total: 0
         }
         if (response.isOk) {
             data.items = result.data.items.map((item: any) => {
-                return dataToPermissionModel(item)
+                return dataToPermission(item)
             })
             data.total = result.data.total
         }
@@ -163,7 +163,7 @@ export function fetchPagePermissions(params: Record<string, any> = {}): Promise<
  * @param preload 是否预先加载
  */
 export function usePermissions(preload: boolean = true) {
-    const permissions: Ref<PermissionModel[]> = ref([])
+    const permissions: Ref<Permission[]> = ref([])
     const loadPermissions = (...args: any[]) => {
         return fetchPermissions(...args).then((items) => {
             return permissions.value = items
@@ -181,8 +181,8 @@ export function usePermissions(preload: boolean = true) {
 /**
  * 权限树
  */
-export interface PermissionTree extends PermissionModel {
-    children: PermissionModel[]
+export interface PermissionTree extends Permission {
+    children: Permission[]
 }
 
 /**

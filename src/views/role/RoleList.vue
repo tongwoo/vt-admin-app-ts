@@ -80,7 +80,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageRoles, removeRole, RoleModel} from "@/modules/role"
+import {fetchPageRoles, removeRole, Role} from "@/modules/role"
 import setting from "@/setting"
 import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
 import {httpErrorHandler} from "@/utils/error"
@@ -102,7 +102,7 @@ onMounted(() => {
 /**
  * 查询参数
  */
-const query: PaginationQuery<RoleModel> = reactive({
+const query: PaginationQuery<Role> = reactive({
     page: 1,
     name: null,
     description: null,
@@ -163,7 +163,7 @@ const permission: {
  * 权限按钮点击
  * @param row 当前行数据
  */
-const permissionBtnClick = (row: RoleModel) => {
+const permissionBtnClick = (row: Role) => {
     permission.data = row
     permission.dialog.show = true
     permission.dialog.title = '权限'
@@ -217,7 +217,7 @@ const onCreateBtnClick = () => {
  * 修改按钮点击
  * @param row 当前行数据
  */
-const onModifyBtnClick = (row: RoleModel) => {
+const onModifyBtnClick = (row: Role) => {
     maintain.data = cloneObject(row)
     maintain.dialog.show = true
     maintain.dialog.title = '修改角色'
@@ -227,7 +227,7 @@ const onModifyBtnClick = (row: RoleModel) => {
  * 单个删除按钮点击
  * @param row 当前行数据
  */
-const onRemoveBtnClick = (row: RoleModel) => {
+const onRemoveBtnClick = (row: Role) => {
     messageBox.confirm('确定删除吗？删除后无法恢复', '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -286,7 +286,7 @@ const submitRemove = (ids: ID | ID[]) => {
 /**
  * 记录集
  */
-const record: RecordSet<RoleModel> = reactive({
+const record: RecordSet<Role> = reactive({
     total: 0,
     loading: false,
     size: setting.pagination.size,
@@ -301,7 +301,7 @@ const table: Ref<InstanceType<typeof ElTable> | null> = ref(null)
  * 表格复选框选中状态变更
  * @param records 已选中的复选框数据
  */
-const onSelectionChange = (records: RoleModel[]) => {
+const onSelectionChange = (records: Role[]) => {
     record.selected = records
 }
 

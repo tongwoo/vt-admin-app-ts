@@ -5,7 +5,7 @@ import {ID, NameValue, PaginationResult, Model} from "@/types/built-in"
 /**
  * 路由模型
  */
-export interface RouteModel extends Model {
+export interface Route extends Model {
     //名称
     name: string,
     //路径
@@ -29,7 +29,7 @@ export interface RouteItem extends Model {
  * 将原始数据转换成路由模型
  * @param data 要转换的数据
  */
-export function dataToRouteModel(data: any): RouteModel {
+export function dataToRoute(data: any): Route {
     return {
         //原始数据
         _: data,
@@ -52,7 +52,7 @@ export function dataToRouteModel(data: any): RouteModel {
  * 将路由模型转换成数据项
  * @param model 路由模型
  */
-export function modelToRouteItem(model: RouteModel): RouteItem {
+export function modelToRouteItem(model: Route): RouteItem {
     return {
         ...model
     }
@@ -115,11 +115,11 @@ export function removeRoute(ids: ID | ID[]): Promise<HttpResponse> {
  * 获取路由详情
  * @param id 主键ID
  */
-export function fetchRoute(id: ID): Promise<RouteModel | null> {
+export function fetchRoute(id: ID): Promise<Route | null> {
     return http.get(
         '/route/detail?id=' + id
     ).then((response) => {
-        return response.isOk ? dataToRouteModel(response.data.data.item) : null
+        return response.isOk ? dataToRoute(response.data.data.item) : null
     })
 }
 
@@ -127,7 +127,7 @@ export function fetchRoute(id: ID): Promise<RouteModel | null> {
  * 获取路由列表
  * @param params 查询参数
  */
-export function fetchRoutes(params: Record<string, any> = {}): Promise<RouteModel[]> {
+export function fetchRoutes(params: Record<string, any> = {}): Promise<Route[]> {
     return http.get(
         '/route/items',
         {
@@ -139,7 +139,7 @@ export function fetchRoutes(params: Record<string, any> = {}): Promise<RouteMode
             return []
         }
         return body.data.items.map((item: any) => {
-            return dataToRouteModel(item)
+            return dataToRoute(item)
         })
     })
 }
@@ -148,7 +148,7 @@ export function fetchRoutes(params: Record<string, any> = {}): Promise<RouteMode
  * 获取分页之后的路由列表
  * @param params 查询参数
  */
-export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PaginationResult<RouteModel>> {
+export function fetchPageRoutes(params: Record<string, any> = {}): Promise<PaginationResult<Route>> {
     return http.get(
         '/route/page-items',
         {
@@ -157,12 +157,12 @@ export function fetchPageRoutes(params: Record<string, any> = {}): Promise<Pagin
     ).then((response) => {
         const body = response.data
         const data = {
-            items: [] as RouteModel[],
+            items: [] as Route[],
             total: 0
         }
         if (response.isOk) {
             data.items = body.data.items.map((item: any) => {
-                return dataToRouteModel(item)
+                return dataToRoute(item)
             })
             data.total = body.data.total
         }
@@ -175,7 +175,7 @@ export function fetchPageRoutes(params: Record<string, any> = {}): Promise<Pagin
  * @param preload 是否预先加载
  */
 export function useRoutes(preload: boolean = true) {
-    const routes: Ref<RouteModel[]> = ref([])
+    const routes: Ref<Route[]> = ref([])
     const loadRoutes = (...args: any[]) => {
         return fetchRoutes(...args).then((items) => {
             return routes.value = items

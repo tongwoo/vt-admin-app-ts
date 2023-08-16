@@ -36,7 +36,7 @@ import {ElMessage as messageTip, FormInstance, FormRules} from "element-plus"
 import {CircleCheckFilled, CircleCloseFilled} from "@element-plus/icons-vue"
 import {updateObject} from "@/utils/object"
 import {httpErrorHandler} from "@/utils/error"
-import {createPermission, updatePermission, fetchPermission, usePermissionTree, PermissionModel} from "@/modules/permission"
+import {createPermission, updatePermission, fetchPermission, usePermissionTree, Permission} from "@/modules/permission"
 import {useRules} from "@/modules/rbac"
 
 //事件

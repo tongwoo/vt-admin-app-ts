@@ -98,7 +98,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {useDark} from "@vueuse/core"
+import {useDark, useEventListener} from '@vueuse/core'
 import {computed, reactive, ref} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {ElLoading as loadingTip} from 'element-plus'
@@ -173,8 +173,12 @@ const onFullScreenBtnClick = () => {
     } else {
         document.documentElement.requestFullscreen()
     }
-    isFullScreen.value = !isFullScreen.value
+    //isFullScreen.value = !isFullScreen.value
 }
+
+useEventListener(document, 'fullscreenchange', () => {
+    isFullScreen.value = document.fullscreenElement !== null
+})
 
 /**
  * 文档按钮点击

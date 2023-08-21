@@ -33,6 +33,13 @@ export interface NameValue<T = any> {
 }
 
 /**
+ * 载入字段
+ */
+export interface Loading {
+    loading: boolean
+}
+
+/**
  * 主键ID
  */
 export type ID = string | number

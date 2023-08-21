@@ -1,0 +1,184 @@
+<!--
+功能: 公用导入表单
+日期: 2021-11-25
+-->
+<template>
+    <div class="form-container" v-loading="loading" element-loading-text="导入中">
+        <el-form ref="form" :model="model" :rules="rules" label-width="60px" label-suffix=":" size="default" @submit.prevent>
+            <el-form-item label="文件" prop="fileName">
+                <div class="import-container">
+                    <el-input v-model="model.fileName" disabled></el-input>
+                    <div class="upload-container">
+                        <el-button type="primary" @click="chooseFile"><i class="bi bi-upload el-icon--left"></i>选择文件</el-button>
+                        <input type="file" ref="fileInput" @change="fileChange" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                    </div>
+                </div>
+            </el-form-item>
+            <div class="error-container" v-if="tip!==null">
+                <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>
+            </div>
+            <div class="footer-container">
+                <el-button :icon="CircleCloseFilled" @click="onCancelBtnClick">取消</el-button>
+                <el-button type="primary" :icon="CircleCheckFilled" @click="onImportBtnClick" native-type="submit">导入</el-button>
+            </div>
+            <div class="upload-template" v-if="templatePath">
+                <a :href="templatePath" :download="templateName">请点击此处下载模板</a>
+            </div>
+        </el-form>
+    </div>
+</template>
+<script lang="ts" setup>
+import {computed, reactive, Ref, ref} from 'vue'
+import {http} from '@/utils/http'
+import {ElMessage as messageTip, FormInstance, FormRules} from 'element-plus'
+import {CircleCheckFilled, CircleCloseFilled} from '@element-plus/icons-vue'
+
+//属性
+const props = withDefaults(defineProps<{
+    //提交地址
+    url?: string,
+    //模板路径
+    templatePath: string,
+    //上传表单名
+    inputName: string,
+}>(), {
+    url: '/common/upload',
+    inputName: 'file'
+})
+//相关事件
+const emits = defineEmits(['close'])
+//模板名称
+const templateName = computed(() => {
+    if (props.templatePath == null) {
+        return null
+    }
+    const segments = props.templatePath.split('/')
+    return segments[segments.length - 1]
+})
+//是否加载中
+const loading = ref(false)
+//表单DOM
+const form: Ref<FormInstance | null> = ref(null)
+//上传框DOM
+const fileInput: Ref<HTMLInputElement | null> = ref(null)
+//错误
+const tip: Ref<string | null> = ref(null)
+//表单数据
+const formData = new FormData()
+//模型
+const model = reactive({
+    fileName: null,
+})
+//规则
+const rules: FormRules = {
+    fileName: [
+        {
+            type: 'string',
+            required: true,
+            message: '请选择文件',
+        },
+    ],
+}
+
+/**
+ * 选择文件
+ */
+const chooseFile = () => {
+    fileInput.value!.click()
+}
+
+/**
+ * 导入按钮点击
+ */
+const onImportBtnClick = async () => {
+    tip.value = null
+    const success = await form.value!.validate().catch(() => false)
+    if (!success) {
+        return
+    }
+    submitImport()
+}
+
+/**
+ * 取消按钮点击
+ */
+const onCancelBtnClick = () => {
+    emits('close', 'cancel')
+}
+
+/**
+ * 选择的文件改变
+ * @param event 事件
+ */
+const fileChange = (event: any) => {
+    tip.value = null
+    const files = event.target.files
+    if (files.length === 0) {
+        return
+    }
+    const file = files[0]
+    if (file.size === 0) {
+        tip.value = '文件大小不能为0'
+        return
+    }
+    //最大10M
+    if (file.size > 1024 * 1024 * 10) {
+        tip.value = '文件体积过大'
+        return
+    }
+    formData.set(props.inputName, file, file.name)
+    model.fileName = file.name
+}
+
+/**
+ * 提交导入
+ */
+const submitImport = () => {
+    loading.value = true
+    http.post(
+        props.url,
+        formData,
+    ).then((response) => {
+        if (!response.isOk) {
+            tip.value = response.data.message
+        } else {
+            messageTip.success(response.data.message)
+            emits('close')
+        }
+    }).catch((err) => {
+        tip.value = err.toString()
+    }).finally(() => {
+        loading.value = false
+    })
+}
+</script>
+<style lang="scss" scoped>
+//导入框容器
+.import-container {
+    display: flex;
+    align-items: center;
+    flex: auto;
+
+    :deep(.el-input) {
+        flex: auto;
+    }
+
+    .upload-container {
+        margin-left: 10px;
+
+        input[type=file] {
+            display: none;
+        }
+    }
+}
+
+.upload-template {
+    text-align: center;
+    padding-top: 10px;
+
+    a {
+        color: #1e4eb8;
+        text-decoration: underline;
+    }
+}
+</style>

@@ -2,7 +2,7 @@ body, div, ul, li {
     margin: 0;
     padding: 0;
     list-style: none;
-    font-family: "微软雅黑", "PingFang SC","Microsoft YaHei", Arial, sans-serif;
+    font-family: "微软雅黑", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
 }
 
 div, li, p, i {
@@ -87,7 +87,9 @@ div, li, p, i {
 
 //查询容器
 .query-container {
-
+    .el-form-item {
+        margin-bottom: 0;
+    }
 }
 
 //表格容器
@@ -104,7 +106,7 @@ div, li, p, i {
 
 //表单容器
 .form-container {
-    padding: 20px;
+    padding: 30px 40px;
 
     //抵消表单项边距，用于搜索
     &.margin-none {

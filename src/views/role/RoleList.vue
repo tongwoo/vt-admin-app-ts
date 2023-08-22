@@ -7,20 +7,18 @@
             </div>
             <div class="segment-body">
                 <div class="query-container">
-                    <div class="form-container margin-none">
-                        <el-form size="default" inline @submit.prevent>
-                            <el-form-item label="角色名称">
-                                <el-input v-model="query.name" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="角色描述">
-                                <el-input v-model="query.description" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" :icon="Search" :disabled="record.loading" @click="submitQuery" native-type="submit">查询</el-button>
-                                <el-button type="default" :icon="Refresh" :disabled="record.loading" @click="resetQuery">重置</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
+                    <el-form size="default" inline @submit.prevent>
+                        <el-form-item label="角色名称">
+                            <el-input v-model="query.name" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="角色描述">
+                            <el-input v-model="query.description" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" :icon="Search" :disabled="record.loading" @click="submitQuery" native-type="submit">查询</el-button>
+                            <el-button type="default" :icon="Refresh" :disabled="record.loading" @click="resetQuery">重置</el-button>
+                        </el-form-item>
+                    </el-form>
                 </div>
             </div>
         </div>
@@ -80,14 +78,14 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {fetchPageRoles, removeRole, Role} from "@/modules/role"
-import setting from "@/setting"
+import {fetchPageRoles, removeRole, Role} from '@/modules/role'
+import setting from '@/setting'
 import {DialogOption, ID, PaginationQuery, RecordSet} from '@/types/built-in.js'
-import {httpErrorHandler} from "@/utils/error"
-import {cloneObject} from "@/utils/object"
-import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from "element-plus"
-import {Refresh,Search,Plus,Delete} from "@element-plus/icons-vue"
-import {defineAsyncComponent, onMounted, reactive, ref, Ref} from "vue"
+import {httpErrorHandler} from '@/utils/error'
+import {cloneObject} from '@/utils/object'
+import {ElLoading as loadingTip, ElMessage as messageTip, ElMessageBox as messageBox, ElTable} from 'element-plus'
+import {Refresh, Search, Plus, Delete} from '@element-plus/icons-vue'
+import {defineAsyncComponent, onMounted, reactive, ref, Ref} from 'vue'
 
 //角色表单
 const RoleForm = defineAsyncComponent(() => import('./RoleForm.vue'))

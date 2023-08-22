@@ -12,17 +12,17 @@
 
 <script lang="ts" setup>
 import {computed, nextTick, onMounted, ref, watch} from 'vue'
-import {CountUp} from 'countup.js'
+import {CountUp, CountUpOptions} from 'countup.js'
 
 //属性
 const props = withDefaults(defineProps<{
     modelValue: string | number | null | undefined,
-    //值不符合规则显示的替换文本，默认为 "-"
+    //值不符合规则显示的替换文本，默认为 "--"
     text?: string | number,
     //是否跳动
     isJump?: boolean,
     //跳动参数
-    jumpOption?: object
+    jumpOption?: CountUpOptions
 }>(), {
     text: '--',
     jsJump: false,

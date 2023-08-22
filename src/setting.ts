@@ -6,7 +6,7 @@ export default {
     //认证&授权相关
     auth: {
         //启用认证
-        enable: true,
+        enable: false,
         //授权存储方式 本地存储=localstorage Cookie存储=cookie
         storage: AUTH_STORAGE_COOKIE,
         //服务端返回未授权是否自动跳转到登录页

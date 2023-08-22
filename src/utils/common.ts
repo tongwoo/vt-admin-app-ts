@@ -44,18 +44,17 @@ export function mergeProps<T extends Record<string, any>>(items: T[], nameField:
 }
 
 /**
- * 查找叶子节点
+ * 查找第一个叶子节点
  * @param items 要查找的数据节点集合
  * @param childKey 子节点子属性名
  */
 export function findLeafNode<T extends { [key: string]: any }>(items: T[], childKey: string = 'children'): T | null {
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-        if (item[childKey]?.length > 0) {
-            return findLeafNode(item[childKey], childKey)
-        } else {
-            return item
-        }
+    if (items.length === 0) {
+        return null
     }
-    return null
+    const item = items[0]
+    if (item[childKey]?.length > 0) {
+        return findLeafNode(item[childKey], childKey)
+    }
+    return item
 }

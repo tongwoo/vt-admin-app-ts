@@ -28,12 +28,13 @@ const excludes = [
 pinia.use((context: PiniaPluginContext) => {
     const backup = localStorage.getItem(context.store.$id)
     const data = backup ? JSON.parse(backup) : {}
+    //删除不需要缓存的数据
     excludes.forEach((item) => {
         if (context.store.$id === item.storeId && data?.[item.property]) {
             delete data[item.property]
         }
     })
-    //在恢复用户数据的时候，从本地存储中取出授权信息（有些项目是需要关闭浏览器就要授权失效）
+    //在恢复用户数据的时候，从本地存储中取出授权信息，不使用pinia中的数据，有些项目是需要关闭浏览器就要求授权失效
     if (context.store.$id === 'user') {
         data.authorization = readAuthorization()
     }

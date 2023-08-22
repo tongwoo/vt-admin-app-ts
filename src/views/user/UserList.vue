@@ -7,20 +7,18 @@
             </div>
             <div class="segment-body">
                 <div class="query-container">
-                    <div class="form-container margin-none">
-                        <el-form size="default" inline @submit.prevent>
-                            <el-form-item label="用户名">
-                                <el-input v-model="query.username" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="姓名">
-                                <el-input v-model="query.name" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" :icon="Search" :disabled="record.loading" @click="submitQuery" native-type="submit">查询</el-button>
-                                <el-button :icon="Refresh" :disabled="record.loading" @click="resetQuery">重置</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
+                    <el-form size="default" inline @submit.prevent>
+                        <el-form-item label="用户名">
+                            <el-input v-model="query.username" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="姓名">
+                            <el-input v-model="query.name" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" :icon="Search" :disabled="record.loading" @click="submitQuery" native-type="submit">查询</el-button>
+                            <el-button :icon="Refresh" :disabled="record.loading" @click="resetQuery">重置</el-button>
+                        </el-form-item>
+                    </el-form>
                 </div>
             </div>
         </div>

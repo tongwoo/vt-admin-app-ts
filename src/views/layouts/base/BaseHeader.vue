@@ -283,7 +283,6 @@ const onLanguageChange = (lang: string) => {
         display: flex;
         align-items: center;
         white-space: nowrap;
-        overflow: hidden;
         flex: none;
 
         &.header-col-btn {

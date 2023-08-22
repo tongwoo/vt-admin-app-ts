@@ -33,7 +33,7 @@
                         <div class="error-container" v-if="tip">
                             <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
                         </div>
-                        <el-button type="primary" round @click="submitLogin" native-type="submit" :loading="loading">登录</el-button>
+                        <el-button type="primary" round @click="mockLogin" native-type="submit" :loading="loading">登录</el-button>
                         <div class="separator"><span class="text">或者</span></div>
                         <el-button round>找回密码</el-button>
                     </el-form>
@@ -53,6 +53,7 @@ import setting from '@/setting'
 import {API_PATH_DEFAULT} from '@/constants/api-path'
 import {fetchProfile, requestLogin} from '@/modules/authorization'
 import {useUserStore} from '@/pinia/user'
+import {PropNullable} from '@/types/built-in'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -68,14 +69,14 @@ const tip = ref<string | null>(null)
 //加载中
 const loading = ref(false)
 //登录模型
-const model: {
+const model: PropNullable<{
     //用户名
-    username: string | null,
+    username: string,
     //密码
-    password: string | null,
+    password: string,
     //验证码
-    captcha: string | null,
-} = reactive({
+    captcha: string,
+}> = reactive({
     username: null,
     password: null,
     captcha: null
@@ -125,7 +126,15 @@ const refreshCaptcha = () => {
  */
 const clean = () => {
     cleanAuthorization()
-    userStore.$reset()
+}
+
+/**
+ * 模拟登录
+ */
+const mockLogin = () => {
+    router.push('/').catch((err) => {
+        console.error('跳转出现异常：', err)
+    })
 }
 
 /**
@@ -199,7 +208,6 @@ const loadProfile = () => {
 
 onMounted(() => {
     clean()
-    //refreshCaptcha();
 })
 </script>
 

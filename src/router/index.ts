@@ -23,7 +23,7 @@ const router = createRouter({
 })
 
 /**
- * 前置守卫 - 路由是否存在
+ * 前置守卫 - 路由是否存在，不存在就跳转到404页面
  */
 router.beforeEach((to) => {
     if (to.matched.length === 0) {
@@ -35,7 +35,7 @@ router.beforeEach((to) => {
 })
 
 /**
- * 前置守卫 - 是否有权限
+ * 前置守卫 - 检测是否需要权限等
  */
 router.beforeEach((to) => {
     //配置中是否启用了认证功能
@@ -53,7 +53,7 @@ router.beforeEach((to) => {
         }
     }
     //访问的路由是否需要权限监测，如需要则检查本地是否有匹配的权限
-    if (to.meta?.permission !== undefined) {
+    if (to.meta?.permission) {
         if (!checkAccess(to.meta.permission)) {
             return {
                 path: '/error/forbidden'
@@ -84,7 +84,7 @@ router.afterEach((to) => {
 
 //后置守卫 - 设置页面标题
 router.afterEach((to) => {
-    if (to.meta?.title !== undefined) {
+    if (to.meta?.title) {
         document.title = to.meta.title + ' - ' + setting.name
     } else {
         document.title = setting.name

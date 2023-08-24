@@ -20,7 +20,7 @@
                             <el-input v-model="model.username" placeholder="请输入用户名"></el-input>
                         </el-form-item>
                         <el-form-item label="登录密码" prop="password">
-                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码"></el-input>
+                            <el-input v-model="model.password" type="password" autocomplete="new-password" placeholder="请输入登录密码" show-password></el-input>
                         </el-form-item>
                         <!--
                         <el-form-item label="验证码" prop="captcha">
@@ -30,12 +30,15 @@
                             </div>
                         </el-form-item>
                         -->
+                        <div class="remember">
+                            <el-checkbox v-model="remember">记住我</el-checkbox>
+                        </div>
                         <div class="error-container" v-if="tip">
                             <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
                         </div>
                         <el-button type="primary" round @click="mockLogin" native-type="submit" :loading="loading">登录</el-button>
-                        <div class="separator"><span class="text">或者</span></div>
-                        <el-button round>找回密码</el-button>
+                        <!--<el-divider content-position="center">或者</el-divider>-->
+                        <!--<el-button round>找回密码</el-button>-->
                     </el-form>
                 </div>
             </div>
@@ -60,6 +63,8 @@ const router = useRouter()
 
 //系统名
 const name = setting.name
+//记住我
+const remember = ref(false)
 //表单
 const form = ref<FormInstance>()
 //验证码
@@ -132,6 +137,12 @@ const clean = () => {
  * 模拟登录
  */
 const mockLogin = () => {
+    userStore.$patch((state) => {
+        state.authorization = 'test'
+        state.nickname = '测试用户'
+        state.avatar = defaultAvatar
+        state.permissions = []
+    })
     router.push('/').catch((err) => {
         console.error('跳转出现异常：', err)
     })
@@ -162,7 +173,7 @@ const submitLogin = async () => {
         //授权数据
         const authorization = result.data.token
         //保存授权数据
-        writeAuthorization(authorization)
+        writeAuthorization(authorization, remember.value ? 7 : undefined)
         //填充用户信息
         userStore.$patch((state) => {
             state.authorization = authorization

@@ -66,11 +66,11 @@ const onNavigatorBtnClick = () => {
 
 <style lang="scss" scoped>
 .base-navigator {
-    --el-menu-text-color: rgba(255, 255, 255, 0.7);
+    --el-menu-text-color: rgba(255, 255, 255, 0.6);
     --el-menu-hover-text-color: #ffffff;
     --el-menu-bg-color: var(--base-navigator-bg-color);
     --el-menu-hover-bg-color: #333333;
-    --el-menu-active-color: #729bff;
+    --el-menu-active-color: #ffffff;
     --el-menu-item-height: 46px;
 
     position: fixed;
@@ -109,7 +109,22 @@ const onNavigatorBtnClick = () => {
     }
 
     :deep(.el-menu) {
-        --el-menu-bg-color: 'white'
+        --el-menu-bg-color: 'white';
+
+        .el-sub-menu .el-menu {
+            background-color: #12131a;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.52);
+        }
+
+        .el-menu-item.is-active {
+            background-color: rgba(255, 255, 255, 0.1);
+            background-image: linear-gradient(90deg, #5095f3 3px, transparent 3px);
+        }
+
+        .el-sub-menu .el-menu-item {
+            height: var(--el-menu-item-height);
+            line-height: var(--el-menu-item-height);
+        }
     }
 
     .navigator-drag {

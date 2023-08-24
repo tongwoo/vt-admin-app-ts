@@ -48,14 +48,17 @@ export function readAuthorization(): null | string {
 /**
  * 设置授权信息到客户端存储
  * @param authorization 授权数据
+ * @param expires 过期天数
  */
-export function writeAuthorization(authorization: string) {
+export function writeAuthorization(authorization: string, expires?: number | Date | undefined) {
     //根据配置将授权数据存放到不同的位置
     if (setting.auth.storage === AUTH_STORAGE_LOCAL) {
         window.localStorage.setItem(AUTHORIZATION_NAME, authorization)
     } else if (setting.auth.storage === AUTH_STORAGE_COOKIE) {
+        debugger
         jsCookie.set(AUTHORIZATION_NAME, authorization, {
-            path: '/'
+            path: '/',
+            expires: expires
         })
     }
 }

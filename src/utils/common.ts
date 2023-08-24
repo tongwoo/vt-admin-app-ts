@@ -1,20 +1,4 @@
 /**
- * 是否是空值
- * @param data 要检测的数据
- */
-export function isEmpty(data: any): boolean {
-    return data === '' || data === null || data === undefined
-}
-
-/**
- * 是否是数值
- * @param data 要检测的数据
- */
-export function isNumeric(data: any): boolean {
-    return typeof data === 'number' || !isNaN(parseFloat(data))
-}
-
-/**
  * 从数据集合中提取指定字段连续的相同时段数据并生成新的集合
  * @param items 数据集合
  * @param nameField 要提取的名称字段

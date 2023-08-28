@@ -54,7 +54,7 @@ import {cleanAuthorization, writeAuthorization} from '@/utils/authorize'
 import {httpErrorHandler} from '@/utils/error'
 import setting from '@/setting'
 import {API_PATH_DEFAULT} from '@/constants/api-path'
-import {fetchProfile, requestLogin} from '@/modules/authorization'
+import {fetchProfile, readRemember, removeRemember, requestLogin, writeRemember} from '@/modules/authorization'
 import {useUserStore} from '@/pinia/user'
 import {PropNullable} from '@/types/built-in'
 
@@ -174,6 +174,12 @@ const submitLogin = async () => {
         const authorization = result.data.token
         //保存授权数据
         writeAuthorization(authorization, remember.value ? 7 : undefined)
+        //记住我
+        if (remember.value) {
+            writeRemember(remember.value, model.username!, model.password!)
+        } else {
+            removeRemember()
+        }
         //填充用户信息
         userStore.$patch((state) => {
             state.authorization = authorization
@@ -219,6 +225,13 @@ const loadProfile = () => {
 
 onMounted(() => {
     clean()
+    //处理「记住我」功能
+    const data = readRemember()
+    if (data) {
+        remember.value = data?.remember ?? true
+        model.username = data?.username ?? null
+        model.password = data?.password ?? null
+    }
 })
 </script>
 

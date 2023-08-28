@@ -23,6 +23,7 @@
         "crypto-js": "^4.1.1",
         "echarts": "^5.4.3",
         "element-plus": "^2.3.9",
+        "js-base64": "^3.7.5",
         "js-cookie": "^3.0.5",
         "mitt": "^3.0.1",
         "moment": "^2.29.4",

@@ -124,7 +124,7 @@ const updateCountUp = () => {
  * 更新小数配置
  */
 const updatePrecision = () => {
-    if (props.modelValue && isNumber.value && countUp) {
+    if (props.autoPrecision && props.modelValue && isNumber.value && countUp) {
         countUp.options!.decimalPlaces = Number(props.modelValue.toString().split('.')[1].length)
     }
 }

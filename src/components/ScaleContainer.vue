@@ -96,11 +96,11 @@ onUnmounted(() => {
  * 鼠标滚轮滚动
  */
 const wheel = (e: WheelEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
     if (!props.allowZoom) {
         return
     }
+    e.preventDefault()
+    e.stopPropagation()
     if (e.deltaY > 0) {
         scale.value += 0.1
     } else {

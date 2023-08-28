@@ -4,6 +4,7 @@
 变更：
      2022-09-30 增加跳动选项
      2023-04-28 增加slot
+     2023-08-28 增加在启用跳动选项的时候自动设置小数位数
 -->
 <template>
     <span v-if="props.isJump && isNumber" class="optional-text" key="count"><span ref="el"></span><slot></slot></span>
@@ -22,13 +23,16 @@ const props = withDefaults(defineProps<{
     //是否跳动
     isJump?: boolean,
     //跳动参数
-    jumpOption?: CountUpOptions
+    jumpOption?: CountUpOptions,
+    //是否使用原有小数位数
+    autoPrecision?: boolean,
 }>(), {
     text: '--',
     jsJump: false,
     jumpOption: () => {
         return {}
-    }
+    },
+    autoPrecision: true
 })
 
 //数据是否数值
@@ -95,6 +99,7 @@ const initCountUp = () => {
         ...defaultJumpOption,
         ...props.jumpOption
     })
+    updatePrecision()
     countUp.start()
 }
 
@@ -110,8 +115,18 @@ const updateCountUp = () => {
         if (countUp === null) {
             initCountUp()
         }
+        updatePrecision()
         countUp!.update(props.modelValue as number)
     })
+}
+
+/**
+ * 更新小数配置
+ */
+const updatePrecision = () => {
+    if (props.modelValue && isNumber.value && countUp) {
+        countUp.options!.decimalPlaces = Number(props.modelValue.toString().split('.')[1].length)
+    }
 }
 
 onMounted(() => {

@@ -86,7 +86,7 @@ import {Refresh, Search, Plus, Delete} from '@element-plus/icons-vue'
 import {defineAsyncComponent, onMounted, reactive, ref, Ref} from 'vue'
 
 //用户表单
-const UserForm = defineAsyncComponent(() => import('./UserForm.vue'))
+const UserForm = defineAsyncComponent(() => import('./user-form.vue'))
 
 onMounted(() => {
     //载入用户

@@ -28,13 +28,13 @@
 import {computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, Ref, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import mitter from '@/utils/mitter'
-import RouteSwitcher from '@/components/RouteSwitcher.vue'
+import RouteSwitcher from '@/components/route-switcher.vue'
 import {useAppStore} from '@/pinia/app'
 
 //顶栏
-const BaseHeader = defineAsyncComponent(() => import('./BaseHeader.vue'))
+const BaseHeader = defineAsyncComponent(() => import('./base-header.vue'))
 //侧边栏导航
-const BaseNavigator = defineAsyncComponent(() => import('./BaseNavigator.vue'))
+const BaseNavigator = defineAsyncComponent(() => import('./base-navigator.vue'))
 
 const appStore = useAppStore()
 const route = useRoute()

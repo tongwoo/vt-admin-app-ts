@@ -105,8 +105,8 @@ import {ElLoading as loadingTip} from 'element-plus'
 import {http} from '@/utils/http'
 import logo from '@/assets/logo.svg'
 import setting from '@/setting'
-import ChangePassword from '@/views/ChangePassword.vue'
-import AvatarSetting from "@/views/AvatarSetting.vue"
+import ChangePassword from '@/views/change-password.vue'
+import AvatarSetting from "@/views/avatar-setting.vue"
 import mitter from '@/utils/mitter'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {useUserStore} from '@/pinia/user'

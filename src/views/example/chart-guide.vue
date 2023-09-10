@@ -41,7 +41,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import EasyChart from "@/components/EasyChart.vue"
+import EasyChart from "@/components/easy-chart.vue"
 import {reactive, ref} from "vue"
 import {buildBaseBarOption, buildBaseLineOption, buildBasePieOption, buildBaseRadarOption, buildBaseScatterOption} from "@/charts/examples/demo";
 

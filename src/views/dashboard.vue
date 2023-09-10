@@ -256,9 +256,9 @@
     </div>
 </template>
 <script lang="ts" setup>
-import EasyChart from "@/components/EasyChart"
+import EasyChart from "@/components/easy-chart.vue"
 import moment from "moment"
-import CountUp from '@/components/CountUp.vue'
+import CountUp from '@/components/count-up.vue'
 import {buildSeasonLineOption, buildUserLineOption, buildUserWherePieOption} from "@/charts/examples/dashboard"
 
 const seasonLine = buildSeasonLineOption()

@@ -53,7 +53,7 @@ import setting from "@/setting"
 import {Permission, removePermission, fetchPagePermissions, fetchPermissionTree} from "@/modules/permission"
 
 //权限表单
-const PermissionForm = defineAsyncComponent(() => import('./PermissionForm.vue'))
+const PermissionForm = defineAsyncComponent(() => import('./permission-form.vue'))
 
 
 onMounted(() => {

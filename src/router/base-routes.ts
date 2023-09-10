@@ -1,10 +1,10 @@
-import NoneLayout from "@/views/layouts/NoneLayout.vue"
+import NoneLayout from "@/views/layouts/none-layout.vue"
 import {RouteRecordRaw} from "vue-router"
 
 const routes: RouteRecordRaw[] = [
     {
         path: '/login',
-        component: () => import('@/views/Login.vue'),
+        component: () => import('@/views/login.vue'),
         meta: {
             title: '登录'
         }
@@ -18,14 +18,14 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'forbidden',
-                component: () => import('@/views/error/Forbidden.vue'),
+                component: () => import('@/views/error/forbidden.vue'),
                 meta: {
                     title: '无权限'
                 }
             },
             {
                 path: 'not-found',
-                component: () => import('@/views/error/NotFound.vue'),
+                component: () => import('@/views/error/not-found.vue'),
                 meta: {
                     title: '页面不存在'
                 }

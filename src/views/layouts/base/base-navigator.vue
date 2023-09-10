@@ -30,7 +30,7 @@
 
 <script setup>
 import {computed} from 'vue'
-import MenuItem from '@/components/MenuItem.vue'
+import MenuItem from '@/components/menu-item.vue'
 import {useRoute} from 'vue-router'
 import defaultAvatar from '@/assets/images/icons/avatar-default.png'
 import {filterAuthMenus, navigateMenus} from '@/data/menu'

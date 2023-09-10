@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 
-import OptionalText from '@/components/OptionalText.vue'
+import OptionalText from '@/components/optional-text.vue'
 </script>
 
 <style lang="scss" scoped>

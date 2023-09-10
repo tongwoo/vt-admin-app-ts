@@ -1,4 +1,4 @@
-import BaseLayout from "@/views/layouts/base/BaseLayout.vue"
+import BaseLayout from "@/views/layouts/base/base-layout.vue"
 import {RouteRecordRaw} from "vue-router"
 
 const routes: RouteRecordRaw[] = [
@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'dashboard',
-                component: () => import('@/views/Dashboard.vue'),
+                component: () => import('@/views/dashboard.vue'),
                 meta: {
                     title: '仪表盘',
                     cache: true,
@@ -28,14 +28,14 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'i18n',
-                component: () => import('@/views/example/I18n.vue'),
+                component: () => import('@/views/example/i18n.vue'),
                 meta: {
                     title: '多语言'
                 }
             },
             {
                 path: 'chart',
-                component: () => import('@/views/example/ChartGuide.vue'),
+                component: () => import('@/views/example/chart-guide.vue'),
                 meta: {
                     title: '图表示例',
                     cache: true
@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'user',
-                component: () => import('@/views/user/UserList.vue'),
+                component: () => import('@/views/user/user-list.vue'),
                 meta: {
                     title: '用户管理',
                     auth: true,
@@ -62,7 +62,7 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'role',
-                component: () => import('@/views/role/RoleList.vue'),
+                component: () => import('@/views/role/role-list.vue'),
                 meta: {
                     title: '角色管理',
                     auth: true,
@@ -71,7 +71,7 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'permission',
-                component: () => import('@/views/permission/PermissionList.vue'),
+                component: () => import('@/views/permission/permission-list.vue'),
                 meta: {
                     title: '权限管理',
                     auth: true,
@@ -80,7 +80,7 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'route',
-                component: () => import('@/views/route/RouteList.vue'),
+                component: () => import('@/views/route/route-list.vue'),
                 meta: {
                     title: '后台路由',
                     auth: true,

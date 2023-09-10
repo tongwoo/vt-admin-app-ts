@@ -4,7 +4,7 @@ import {readAuthorization} from '@/utils/authorize'
 export const pinia = createPinia()
 
 /**
- * Pinia插件 - 解决无法在setup方式中调用$reset，必须首先调用
+ * Pinia插件 - 解决无法在setup方式中调用$reset，必须在所有插件中首先调用，否则$reset的是初次从缓存中取的值！
  */
 pinia.use(({store}) => {
     const initialState = JSON.parse(JSON.stringify(store.$state))

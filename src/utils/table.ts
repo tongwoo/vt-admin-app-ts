@@ -8,7 +8,7 @@ interface SpanTableProps<T> {
 }
 
 /**
- * 使用表格合并
+ * 使用表格合并，先用 filter 过滤数据并赋予表格 data 属性，然后表格 span-method 属性设置 span 方法
  * @param fieldName 要提取合并的字段名
  */
 export function useSpanTable<T>(fieldName: keyof T) {
@@ -16,8 +16,8 @@ export function useSpanTable<T>(fieldName: keyof T) {
     const map = new Map<string, { span: number, handled: boolean }>()
 
     /**
-     * 过滤提取，需要保证数据里的同名字段是连续的
-     * @param items 要提取的集合，即：对数据列表进行过滤处理并记录连续同名的字段有多少行，用于合并处理
+     * 过滤提取，表格数据需要用此方法调用1次
+     * @param items 要提取的集合
      */
     const filter = (items: T[]) => {
         map.clear()
@@ -39,7 +39,7 @@ export function useSpanTable<T>(fieldName: keyof T) {
     }
 
     /**
-     * 用于给 el-table#span-method 调用的合并方法
+     * 合并方法（element-ui的表格的属性需要传递此方法），需要保证数据里的同名字段是连续的
      */
     const span = (prop: SpanTableProps<T>) => {
         //表格组件有bug，会整体的调用2次合并，所以此处判断如果又出现

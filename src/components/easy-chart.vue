@@ -63,7 +63,7 @@ const props = withDefaults(defineProps<{
     seriesHeaderName?: string,
     //双击恢复数据缩放
     enableZoomReset?: boolean,
-    //2个数据之间有null是否自动修复平均值进行填充
+    //是否自动修复2个数据之间有null进行平均值填充
     fixBreak?: boolean,
 }>(), {
     resizeAnimation: true,
@@ -120,7 +120,9 @@ const table: {
 watch(
     () => props.option,
     () => {
-        fixBreakData(props.option)
+        if (props.fixBreak) {
+            fixBreakData(props.option)
+        }
         instance!.setOption(props.option as EChartsOption, true)
     },
     {
@@ -230,9 +232,9 @@ const tableResize = () => {
 
 /**
  * 下载为图片
- * @param {string} name 文件名
+ * @param name 文件名
  */
-const downloadAsImage = (name = '图表') => {
+const downloadAsImage = (name: string = '图表') => {
     const dataUrl = instance!.getDataURL({
         type: 'png',
         excludeComponents: ['toolbox']
@@ -286,7 +288,9 @@ onMounted(() => {
     nextTick(() => {
         //初始化图表
         instance = echarts.init(chartInstance.value!)
-        fixBreakData(props.option)
+        if (props.fixBreak) {
+            fixBreakData(props.option)
+        }
         instance!.setOption(props.option, true)
         //监听尺寸变化以便重置图表尺寸
         observer = new ResizeObserver(handler)
@@ -318,15 +322,16 @@ const onChartDblClick = () => {
 }
 
 /**
- * 修复缺失的点，只算前后都有值的中间点
+ * 修复缺失的点，只算前后都有值的中间点，仅对折线图有效
  * @param option 图表选项
  */
 const fixBreakData = (option: any) => {
-    if (!props.fixBreak) {
-        return
-    }
     for (let i = 0; i < option.series.length; i++) {
-        const items = option.series[i]?.data ?? []
+        const series = option.series[i]
+        if (series.type !== 'line') {
+            continue
+        }
+        const items = series?.data ?? []
         for (let j = 0; j < items.length; j++) {
             if (j === 0 || j === items.length - 1) {
                 continue

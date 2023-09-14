@@ -3,37 +3,31 @@ import "moment/locale/zh-cn"
 
 /**
  * 一分钟的秒数
- * @type {number}
  */
 export const ONE_MINUTE_SECONDS = 60
 
 /**
  * 一小时的秒数
- * @type {number}
  */
 export const ONE_HOUR_SECONDS = 3600
 
 /**
  * 一天的秒数
- * @type {number}
  */
 export const ONE_DAY_SECONDS = 86400
 
 /**
  * 一个星期的秒数
- * @type {number}
  */
 export const ONE_WEEK_SECONDS = 604800
 
 /**
  * 一个月的秒数
- * @type {number}
  */
 export const ONE_MONTH_SECONDS = 2592000
 
 /**
  * 当前格式化好的日期时间
- * @return {string}
  */
 export function currentDateText() {
     return moment().format('YYYY年MM月DD日 HH:mm:ss dddd')
@@ -41,7 +35,6 @@ export function currentDateText() {
 
 /**
  * 当前格式化好的日期时间
- * @return {string}
  */
 export function currentTimeText() {
     return moment().format('YYYY-MM-DD HH:mm:ss')

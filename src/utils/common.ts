@@ -28,17 +28,40 @@ export function mergeProps<T extends Record<string, any>>(items: T[], nameField:
 }
 
 /**
- * 查找第一个叶子节点
- * @param items 要查找的数据节点集合
+ * 从树中查找第一个叶子节点
+ * @param nodes 要查找的数据节点集合
  * @param childKey 子节点子属性名
  */
-export function findLeafNode<T extends { [key: string]: any }>(items: T[], childKey: string = 'children'): T | null {
-    if (items.length === 0) {
+export function findLeafNode<T extends { [key: string]: any }>(nodes: T[], childKey: string = 'children'): T | null {
+    if (nodes.length === 0) {
         return null
     }
-    const item = items[0]
-    if (item[childKey]?.length > 0) {
-        return findLeafNode(item[childKey], childKey)
+    const node = nodes[0]
+    if (node[childKey]?.length > 0) {
+        return findLeafNode(node[childKey], childKey)
     }
-    return item
+    return node
+}
+
+/**
+ * 从树中查找目标节点
+ * @param nodes 要查找的数据节点集合
+ * @param property 节点值所对应的属性名称
+ * @param target 要查找的目标节点值
+ * @param childKey 子节点子属性名
+ */
+export function findTargetNode<T extends { [key: string]: any }>(nodes: T[], property: string, target: any, childKey: string = 'children'): T | null {
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        if (node[property] == target) {
+            return node
+        }
+        if (node[childKey]?.length > 0) {
+            const tn = findTargetNode(node[childKey] as T[], property, target, childKey)
+            if (tn !== null) {
+                return tn
+            }
+        }
+    }
+    return null
 }

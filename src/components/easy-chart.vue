@@ -8,26 +8,27 @@
      2022-09-30 重构部分代码
      2023-04-10 增加防抖
      2023-07-04 增加没数据的提示插槽
+     2023-09-14 增加两点之间为null的话则修复为中间值
 -->
 <template>
     <div ref="chartContainer" :style="style" class="chart-container">
-        <slot name="empty" v-if="!hasDara">
+        <slot name="empty" v-if="!showTable && !hasDara">
             <div class="message-tip">暂无数据</div>
         </slot>
-        <div ref="chartInstance" class="chart-instance"></div>
-        <transition name="el-fade-in" mode="out-in">
-            <div v-if="showTable" class="chart-table">
-                <el-table :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
-                    <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
-                        <template v-slot="{row}">{{ row[i] }}</template>
-                    </el-table-column>
-                </el-table>
-            </div>
-        </transition>
+        <div ref="chartInstance" class="chart-instance" @dblclick="onChartDblClick"></div>
+        <div v-if="showTable" class="chart-table">
+            <el-table-v2 v-if="tableV2" class="chart-tablev2" :columns="tableColumns" :data="tableRows" border :size="table.size" row-key="key" :height="table.height" :width="table.width" fixed></el-table-v2>
+            <el-table v-else :data="tableRows" :height="table.height" :size="table.size" border row-key="key">
+                <el-table-column v-for="(column,i) in tableColumns" :key="column" :fixed="i===0" :label="column" align="center" :show-overflow-tooltip="true">
+                    <template v-slot="{row}">{{ row[i] }}</template>
+                </el-table-column>
+            </el-table>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import 'echarts-gl'
 import {EChartsOption, EChartsType, SeriesOption} from 'echarts'
 import {BarDataItemOption} from 'echarts/types/src/chart/bar/BarSeries'
 import {LineDataItemOption} from 'echarts/types/src/chart/line/LineSeries'
@@ -56,20 +57,34 @@ const props = withDefaults(defineProps<{
     resizeAnimation?: boolean,
     //是否显示表格
     showTable?: boolean
+    //是否使用element-ui的表格v2版本
+    tableV2?: boolean,
+    //序列首行名称
+    seriesHeaderName?: string,
+    //双击恢复数据缩放
+    enableZoomReset?: boolean,
+    //2个数据之间有null是否自动修复平均值进行填充
+    fixBreak?: boolean,
 }>(), {
     resizeAnimation: true,
-    showTable: false
+    showTable: false,
+    tableV2: false,
+    seriesHeaderName: '序列',
+    fixBreak: false
 })
 
 //是否有数据
 const hasDara = computed(() => {
     let xAxis
-    if (Array.isArray(props.option?.xAxis)) {
-        xAxis = props.option.xAxis?.[0]
-    }else{
-        xAxis = props.option.xAxis
+    if (props.option?.xAxis !== undefined) {
+        if (Array.isArray(props.option?.xAxis)) {
+            xAxis = props.option.xAxis?.[0]
+        } else {
+            xAxis = props.option.xAxis
+        }
+        return xAxis?.data?.length !== 0
     }
-    return xAxis?.data?.length !== 0
+    return true
 })
 
 //样式
@@ -93,16 +108,19 @@ const position = reactive({
 //表格
 const table: {
     size: string,
-    height: number
+    height: number,
+    width: number,
 } = reactive({
     size: 'small',
-    height: 100
+    height: 100,
+    width: 400,
 })
 
 //在图表选项变化的时候更新图表
 watch(
     () => props.option,
     () => {
+        fixBreakData(props.option)
         instance!.setOption(props.option as EChartsOption, true)
     },
     {
@@ -113,18 +131,55 @@ watch(
 /**
  * 表格列集合
  */
+//const tableColumnsBak = computed(() => {
+//    const option = props.option
+//    if (option.xAxis) {
+//        const xAxis = (Array.isArray(option.xAxis) && option.xAxis.length > 0 ? option.xAxis[0] : option.xAxis) as CategoryAxisBaseOption
+//        if (Array.isArray(xAxis.data)) {
+//            return ['类型', ...xAxis.data!]
+//        }
+//    }
+//    如果序列里有饼图则最终以饼图出现的为最终列
+//for (let series of option.series!) {
+//    if (series.type === 'pie') {
+//        return ['类型', '值']
+//    }
+//}
+//return []
+//})
+
+/**
+ * 表格列集合
+ */
 const tableColumns = computed(() => {
     const option = props.option
     if (option.xAxis) {
         const xAxis = (Array.isArray(option.xAxis) && option.xAxis.length > 0 ? option.xAxis[0] : option.xAxis) as CategoryAxisBaseOption
         if (Array.isArray(xAxis.data)) {
-            return ['类型', ...xAxis.data!]
+            if (props.tableV2) {
+                return [props.seriesHeaderName, ...xAxis.data!].map((axis, index) => {
+                    return {
+                        fixed: index === 0,
+                        class: 'chart-column',
+                        headerClass: 'chart-header-column',
+                        align: 'center',
+                        title: axis,
+                        dataKey: index,
+                        key: axis,
+                        width: 100,
+                        minWidth: 100,
+                        maxWidth: 120,
+                    }
+                })
+            } else {
+                return [props.seriesHeaderName, ...xAxis.data!]
+            }
         }
     }
     //如果序列里有饼图则最终以饼图出现的为最终列
     for (let series of option.series!) {
         if (series.type === 'pie') {
-            return ['类型', '值']
+            return [props.seriesHeaderName, '值']
         }
     }
     return []
@@ -135,9 +190,8 @@ const tableColumns = computed(() => {
  * 表格行集合
  */
 const tableRows = computed(() => {
-    const option = props.option
     const rows = []
-    for (let series of option.series!) {
+    for (let series of props.option.series!) {
         if (series.type === 'pie') {
             const items = series.data as PieDataItemOption[]
             items.forEach((item) => {
@@ -171,6 +225,7 @@ const resizeChart = () => {
  */
 const tableResize = () => {
     table.height = container!.clientHeight - position.top - position.bottom
+    table.width = container!.clientWidth - position.left - position.right
 }
 
 /**
@@ -200,8 +255,15 @@ const observerResize = () => {
 
 const {destroy, handler} = debounce(observerResize, 300)
 
+/**
+ * 获取图表实例
+ */
+const getInstance = () => {
+    return instance
+}
+
 defineExpose({
-    instance,
+    getInstance,
     container,
     downloadAsImage
 })
@@ -224,6 +286,7 @@ onMounted(() => {
     nextTick(() => {
         //初始化图表
         instance = echarts.init(chartInstance.value!)
+        fixBreakData(props.option)
         instance!.setOption(props.option, true)
         //监听尺寸变化以便重置图表尺寸
         observer = new ResizeObserver(handler)
@@ -236,8 +299,50 @@ onUnmounted(() => {
     instance?.dispose()
     destroy()
 })
-</script>
 
+
+/**
+ * 图表双击
+ */
+const onChartDblClick = () => {
+    if (!props.enableZoomReset) {
+        return
+    }
+    instance!.dispatchAction({
+        type: 'dataZoom',
+        // 开始位置的百分比，0 - 100
+        start: 0,
+        // 结束位置的百分比，0 - 100
+        end: 100,
+    })
+}
+
+/**
+ * 修复缺失的点，只算前后都有值的中间点
+ * @param option 图表选项
+ */
+const fixBreakData = (option: any) => {
+    if (!props.fixBreak) {
+        return
+    }
+    for (let i = 0; i < option.series.length; i++) {
+        const items = option.series[i]?.data ?? []
+        for (let j = 0; j < items.length; j++) {
+            if (j === 0 || j === items.length - 1) {
+                continue
+            }
+            const item = items[j]
+            if (item !== null) {
+                continue
+            }
+            if (items[j - 1] === null || items[j + 1] === null) {
+                continue
+            }
+            items[j] = (items[j - 1] + items[j + 1]) / 2
+        }
+    }
+}
+</script>
 <style lang="scss" scoped>
 .chart-container {
     position: absolute;
@@ -254,14 +359,12 @@ onUnmounted(() => {
         transform: translateX(-50%) translateY(-50%);
         text-align: center;
         font-size: 14px;
-        color: #8d8d8d;
-        background: #f8f8f8;
-        border: 1px solid #bebebe;
+        color: #489cea;
+        background: #071426;
+        border: 1px solid #23497e;
         padding: 10px 20px;
         line-height: 1;
     }
-
-
 }
 
 .chart-instance {

@@ -23,7 +23,6 @@ export function httpErrorHandler(response: any) {
     }
     const code = response.data.code
     const isJson = response.headers['content-type']?.includes('application/json')
-    const messageExists = document.querySelector('.is-message-box') !== null
     if (response.status === 404 || isJson && code === ResponseCode.NOT_FOUND) {
         messageTip.error('页面不存在')
     } else if (response.status === 500 || isJson && code === ResponseCode.ERROR) {
@@ -40,6 +39,8 @@ export function httpErrorHandler(response: any) {
         }
     } else if (response?.message) {
         messageTip.error(response.message)
+    } else if (response?.data?.message) {
+        messageTip.error(response.data.message)
     } else {
         messageTip.error('发生了未知错误')
     }

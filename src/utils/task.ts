@@ -50,6 +50,7 @@ export function loop(executor: (...args: any[]) => Promise<void>, interval = 100
     async function run() {
         await executor()
         if (id !== null) {
+            window.clearTimeout(id)
             id = window.setTimeout(run, interval)
         }
     }

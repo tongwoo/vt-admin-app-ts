@@ -12,3 +12,18 @@ export const PATTERN_CHINESE_INCLUDE = /[\u0391-\uFFE5]+/
 
 //是否全部中文
 export const PATTERN_CHINESE = /^[\u0391-\uFFE5]+$/
+
+//是否包含大小写字母
+export const PATTERN_WORD = /[A-Za-z]+/
+
+//是否包含大写字母
+export const PATTERN_WORD_UPPER = /[A-Z]+/
+
+//是否包含小写字母
+export const PATTERN_WORD_LOWER = /[a-z]+/
+
+//是否包含数字
+export const PATTERN_NUMERIC = /[0-9]+/
+
+//是否包含特殊字符
+export const PATTERN_SPECIAL_SYMBOL = /[`~\!@#\$%\^&\*\(\)\-_\+=]+/

@@ -3,15 +3,15 @@
 -->
 <template>
     <div class="form-container">
-        <el-form ref="form" :model="model" :rules="rules" size="default" label-width="100px" label-suffix=":" :disabled="loading" @submit.prevent>
+        <el-form ref="form" :model="model" :rules="rules" size="default" label-width="90px" label-suffix=":" :disabled="loading" @submit.prevent>
             <el-form-item label="原密码" prop="oldPassword">
                 <el-input v-model="model.oldPassword" type="password" autocomplete="new-password"></el-input>
             </el-form-item>
             <el-form-item label="新密码" prop="newPassword">
-                <el-input v-model="model.newPassword" type="password" autocomplete="new-password"></el-input>
+                <el-input v-model="model.newPassword" type="password" autocomplete="new-password" show-password></el-input>
             </el-form-item>
             <el-form-item label="确认密码" prop="confirmPassword">
-                <el-input v-model="model.confirmPassword" type="password" autocomplete="new-password"></el-input>
+                <el-input v-model="model.confirmPassword" type="password" autocomplete="new-password" show-password></el-input>
             </el-form-item>
             <div class="error-container" v-if="tip">
                 <el-alert type="error" :description="tip" :closable="false" show-icon></el-alert>

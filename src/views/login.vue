@@ -9,7 +9,7 @@
         <div class="login-box">
             <!--登录界面图-->
             <div class="login-welcome">
-                <h1>前端儿脚手架管理系统</h1>
+                <h1>小前端儿的脚手架</h1>
             </div>
             <!--登录框-->
             <div class="login-panel">
@@ -37,12 +37,17 @@
                             <el-alert type="error" title="提示" :description="tip" :closable="false" show-icon></el-alert>
                         </div>
                         <el-button type="primary" round @click="mockLogin" native-type="submit" :loading="loading">登录</el-button>
-                        <!--<el-divider content-position="center">或者</el-divider>-->
-                        <!--<el-button round>找回密码</el-button>-->
+                        <el-divider content-position="center">或者</el-divider>
+                        <el-button round @click="onForgetBtnClick">找回密码</el-button>
                     </el-form>
                 </div>
             </div>
         </div>
+        <el-dialog :title="forget.dialog.title" v-model="forget.dialog.show" :close-on-click-modal="false" @close="onForgetDialogClose" append-to-body width="500px" align-center>
+            <transition name="el-fade-in" mode="out-in">
+                <forget-password v-if="forget.dialog.show" :payload="forget.data" @close="onForgetDialogClose"></forget-password>
+            </transition>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts" setup>
@@ -56,7 +61,9 @@ import setting from '@/setting'
 import {API_PATH_DEFAULT} from '@/constants/api-path'
 import {fetchProfile, readRemember, removeRemember, requestLogin, writeRemember} from '@/modules/authorization'
 import {useUserStore} from '@/pinia/user'
-import {PropNullable} from '@/types/built-in'
+import {DialogOption, PropNullable} from '@/types/built-in'
+import ForgetPassword from '@/views/forget-password.vue'
+import {cloneObject} from '@/utils/object'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -233,6 +240,37 @@ onMounted(() => {
         model.password = data?.password ?? null
     }
 })
+
+/**
+ * 忘记密码
+ */
+const forget: {
+    //传递给表单的数据
+    data: any,
+    //弹框
+    dialog: DialogOption
+} = reactive({
+    data: null,
+    dialog: {
+        show: false,
+        title: '忘记密码'
+    }
+})
+
+/**
+ * 忘记密码按钮点击
+ */
+const onForgetBtnClick = (row: any) => {
+    forget.dialog.show = true
+}
+
+/**
+ * 忘记密码弹框关闭
+ * @param payload 返回的数据
+ */
+const onForgetDialogClose = (payload: any) => {
+    forget.dialog.show = false
+}
 </script>
 
 <style lang="scss" src="../assets/styles/login.scss" scoped></style>

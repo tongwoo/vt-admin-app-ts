@@ -19,15 +19,17 @@ interface TimeSegment {
  * @param timeField 要提取的时间字段
  * @param format 是否自动格式化成时间格式
  */
-export function buildTimeSegments<T extends Record<string, any>>(items: T[], nameField: string, timeField: string, format: boolean = false): TimeSegment[] {
-    const segments: TimeSegment[] = []
+export function buildTimeSegments<T extends Record<string, any>>(items: T[], nameField: string, timeField: string, format: boolean = false) {
+    const segments: Array<T & { name: string, start: string, stop: string }> = []
     for (let i = 0; i < items.length; i++) {
         const item = items[i]
         const key = item[nameField]
-        const segment: TimeSegment = {
+        const start = format ? moment(item[timeField]).format('HH:mm') : item[timeField]
+        const segment = {
             name: key,
-            start: format ? moment(item[timeField]).format('HH:mm') : item[timeField],
-            stop: null
+            start: start,
+            stop: start, //默认以start结束，因为下个数据可能是不是同名
+            ...item,
         }
         segments.push(segment)
         for (let j = i + 1; j < items.length; j++) {

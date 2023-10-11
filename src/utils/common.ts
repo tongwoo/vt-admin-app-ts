@@ -45,21 +45,24 @@ export function findLeafNode<T extends { [key: string]: any }>(nodes: T[], child
 
 /**
  * 从树中查找目标节点
- * @param nodes 要查找的数据节点集合
- * @param property 节点值所对应的属性名称
- * @param target 要查找的目标节点值
+ * @param items 要查找的数据节点集合
+ * @param conditions 匹配条件
  * @param childKey 子节点子属性名
  */
-export function findTargetNode<T extends { [key: string]: any }>(nodes: T[], property: string, target: any, childKey: string = 'children'): T | null {
-    for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i]
-        if (node[property] == target) {
-            return node
+export function findTargetNode<T extends { [key: string]: any }>(items: T[], conditions: Record<string, any>, childKey: string = 'children'): T | null {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const keys = Object.keys(conditions)
+        const matched = keys.filter((key) => {
+            return item[key] === conditions[key]
+        }).length === keys.length
+        if (matched) {
+            return item
         }
-        if (node[childKey]?.length > 0) {
-            const tn = findTargetNode(node[childKey] as T[], property, target, childKey)
-            if (tn !== null) {
-                return tn
+        if (item[childKey]?.length > 0) {
+            const t = findTargetNode(item[childKey] as T[], conditions, childKey)
+            if (t !== null) {
+                return t
             }
         }
     }
